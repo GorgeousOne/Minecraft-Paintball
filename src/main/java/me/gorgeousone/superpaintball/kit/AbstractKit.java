@@ -1,10 +1,10 @@
 package me.gorgeousone.superpaintball.kit;
 
+import me.gorgeousone.superpaintball.team.Team;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Snowball;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
@@ -19,13 +19,13 @@ public abstract class AbstractKit {
 		this.rnd = new Random();
 	}
 	
-	public void launchShot(Player player) {
+	public void launchShot(Player player, Team team) {
 		Location eyeLoc = player.getEyeLocation();
 		Vector facing = player.getLocation().getDirection();
 		World world = player.getWorld();
 		
 		for (int i = 0; i < kitType.bulletCount; ++i) {
-			Projectile bullet = world.spawn(eyeLoc, Snowball.class);
+			Projectile bullet = world.spawn(eyeLoc, team.getType().projectileType);
 			bullet.setShooter(player);
 			bullet.setVelocity(createVelocity(facing, kitType.bulletSpeed, kitType.bulletSpread));
 		}
