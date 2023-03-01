@@ -3,7 +3,9 @@ package me.gorgeousone.superpaintball;
 import me.gorgeousone.superpaintball.cmdframework.command.ParentCommand;
 import me.gorgeousone.superpaintball.command.KitCommand;
 import me.gorgeousone.superpaintball.event.ClickListener;
+import me.gorgeousone.superpaintball.team.TeamType;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -21,6 +23,14 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {}
+	
+	private void setupTest() {
+		GameInstance game = gameHandler.createGame();
+		
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			game.addPlayer(player, TeamType.FROST);
+		}
+	}
 	
 	private void registerCommands() {
 		paintballCmd = new ParentCommand("paintball");
