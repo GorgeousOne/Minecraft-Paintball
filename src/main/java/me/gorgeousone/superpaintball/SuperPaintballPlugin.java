@@ -2,7 +2,7 @@ package me.gorgeousone.superpaintball;
 
 import me.gorgeousone.superpaintball.cmdframework.command.ParentCommand;
 import me.gorgeousone.superpaintball.command.KitCommand;
-import me.gorgeousone.superpaintball.event.BulletHitListener;
+import me.gorgeousone.superpaintball.event.ProjectileListener;
 import me.gorgeousone.superpaintball.event.ShootListener;
 import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.team.TeamType;
@@ -44,6 +44,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			game.addPlayer(player.getUniqueId(), TeamType.NETHER);
 		}
+		game.start();
 	}
 	
 	private void registerCommands() {
@@ -55,6 +56,6 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	void registerListeners() {
 		PluginManager manager = Bukkit.getPluginManager();
 		manager.registerEvents(new ShootListener(gameHandler), this);
-		manager.registerEvents(new BulletHitListener(gameHandler), this);
+		manager.registerEvents(new ProjectileListener(gameHandler), this);
 	}
 }

@@ -20,18 +20,18 @@ public class GameInstance {
 	
 	private final Map<UUID, Long> shootCooldowns;
 	private BukkitRunnable cooldownTimer;
-//	private Arena arena
-//	private long startTime
-//	private bool isRunning;
+	//	private Arena arena
+	//	private long startTime
+	//	private bool isRunning;
 	
-	public GameInstance() {
+	public GameInstance(GameHandler gameHandler) {
 		this.gameId = UUID.randomUUID();
 		this.teams = new HashMap<>();
 		this.players = new HashSet<>();
 		this.shootCooldowns = new HashMap<>();
 		
 		for (TeamType teamType : TeamType.values()) {
-			teams.put(teamType, new Team(teamType, this));
+			teams.put(teamType, new Team(teamType, this, gameHandler));
 		}
 		start();
 	}
@@ -41,11 +41,14 @@ public class GameInstance {
 	}
 	
 	public void start() {
+		for (Team team : teams.values()) {
+			team.start();
+		}
 		cooldownTimer = new BukkitRunnable() {
 			@Override
 			public void run() {
 				for (UUID playerId : players) {
-//					if (Pla)
+					//					if (Pla)
 				}
 			}
 		};

@@ -1,11 +1,17 @@
 package me.gorgeousone.superpaintball.team;
 
+import me.gorgeousone.superpaintball.GameHandler;
 import me.gorgeousone.superpaintball.GameInstance;
+import me.gorgeousone.superpaintball.kit.AbstractKit;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -23,31 +29,32 @@ public class Team {
 	private final static PotionEffect KNOCKOUT_BLINDNESS = new PotionEffect(PotionEffectType.BLINDNESS, 30, 4);
 	private static final int DMG_POINTS = 4;
 	private static final int HEARTS_PER_DMG_POINT = 5;
-	private static final Random rng = new Random();
 	
 	private final TeamType teamType;
+	private final GameHandler gameHandler;
 	private final GameInstance game;
+	private final ItemStack[] teamArmorSet;
 	private final Set<UUID> players;
 	private final Set<UUID> remainingPlayers;
 	private final Map<UUID, Integer> playerHealth;
+	private final Random rng = new Random();
 	
-	public Team(TeamType teamType, GameInstance game) {
+	public Team(TeamType teamType, GameInstance game, GameHandler gameHandler) {
 		this.teamType = teamType;
 		this.game = game;
+		this.gameHandler = gameHandler;
 		this.players = new HashSet<>();
 		this.remainingPlayers = new HashSet<>();
 		this.playerHealth = new HashMap<>();
+		this.teamArmorSet = createArmorSet();
 	}
 	
 	public void start() {
 		for (UUID playerId : remainingPlayers) {
 			Player player = Bukkit.getPlayer(playerId);
 			healPlayer(player);
+			equipPlayers(player);
 		}
-	}
-	
-	private void healPlayer(Player player) {
-		player.setHealth(DMG_POINTS * HEARTS_PER_DMG_POINT);
 	}
 	
 	public TeamType getType() {
@@ -116,6 +123,34 @@ public class Team {
 		//make player spectator
 		//
 		remainingPlayers.remove(player.getUniqueId());
+	}
+	
+	private void healPlayer(Player player) {
+		player.setHealth(DMG_POINTS * HEARTS_PER_DMG_POINT);
+	}
+	
+	private ItemStack[] createArmorSet() {
+		ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
+		ItemStack chest = new ItemStack(Material.LEATHER_CHESTPLATE);
+		ItemStack legs = new ItemStack(Material.LEATHER_LEGGINGS);
+		ItemStack boots = new ItemStack(Material.LEATHER_BOOTS);
+		
+		LeatherArmorMeta meta = (LeatherArmorMeta) helmet.getItemMeta();
+		meta.setColor(teamType.garmentColor);
+		
+		helmet.setItemMeta(meta);
+		chest.setItemMeta(meta);
+		legs.setItemMeta(meta);
+		boots.setItemMeta(meta);
+		return new ItemStack[]{boots, legs, chest, helmet};
+	}
+	
+	private void equipPlayers(Player player) {
+		PlayerInventory inv = player.getInventory();
+		inv.setArmorContents(teamArmorSet);
+		AbstractKit kit = gameHandler.getKit(player.getUniqueId());
+		inv.setItem(0, kit.getType().getGun());
+		inv.setItem(1, gameHandler.getWaterBombs());
 	}
 	
 	//TODO make this nicer block patterns :(

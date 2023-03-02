@@ -8,7 +8,6 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
-import java.util.UUID;
 
 public abstract class AbstractKit {
 	
@@ -22,8 +21,14 @@ public abstract class AbstractKit {
 	protected final float gunshotPitch;
 	protected final Random rnd = new Random();
 	
-	protected AbstractKit(KitType kitType, int bulletDmg, int bulletCount, float bulletSpeed, float bulletSpread, long fireRate,
-	                      Sound gunshotSound, float gunshotPitch) {
+	protected AbstractKit(KitType kitType,
+	                      int bulletDmg,
+	                      int bulletCount,
+	                      float bulletSpeed,
+	                      float bulletSpread,
+	                      long fireRate,
+	                      Sound gunshotSound,
+	                      float gunshotPitch) {
 		this.kitType = kitType;
 		this.bulletDmg = bulletDmg;
 		this.bulletCount = bulletCount;
@@ -34,6 +39,9 @@ public abstract class AbstractKit {
 		this.gunshotPitch = gunshotPitch;
 	}
 	
+	public KitType getType() {
+		return kitType;
+	}
 	
 	public long launchShot(Player player, Team team) {
 		Vector facing = player.getLocation().getDirection();

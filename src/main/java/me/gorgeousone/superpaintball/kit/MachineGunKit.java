@@ -1,6 +1,5 @@
 package me.gorgeousone.superpaintball.kit;
 
-import org.bukkit.Location;
 import org.bukkit.Sound;
 
 public class MachineGunKit extends AbstractKit {
