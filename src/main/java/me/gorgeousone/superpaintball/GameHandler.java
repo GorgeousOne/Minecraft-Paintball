@@ -7,26 +7,25 @@ import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.kit.ShotgunKit;
 import me.gorgeousone.superpaintball.kit.SniperKit;
 import me.gorgeousone.superpaintball.team.Team;
-import me.gorgeousone.superpaintball.team.TeamType;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 public class GameHandler {
 	
-	
+	private final JavaPlugin plugin;
 	private final Map<KitType, AbstractKit> kits;
 	private final Map<UUID, GameInstance> games;
 	
-	public GameHandler() {
+	public GameHandler(JavaPlugin plugin) {
+		this.plugin = plugin;
 		this.kits = new HashMap<>();
 		this.games = new HashMap<>();
 		kits.put(KitType.RIFLE, new RifleKit());
-		kits.put(KitType.SHOTGUN, new ShotgunKit());
+		kits.put(KitType.SHOTGUN, new ShotgunKit(this.plugin));
 		kits.put(KitType.MACHINE_GUN, new MachineGunKit());
 		kits.put(KitType.SNIPER, new SniperKit());
 	}

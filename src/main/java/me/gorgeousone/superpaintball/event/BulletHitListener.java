@@ -70,7 +70,8 @@ public class BulletHitListener implements Listener {
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		Player player = event.getPlayer();
 		
-		if (gameHandler.getGame(player) != null) {
+		if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL &&
+		    gameHandler.getGame(player) != null) {
 			event.setCancelled(true);
 		}
 	}

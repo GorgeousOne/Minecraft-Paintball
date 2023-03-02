@@ -22,7 +22,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	public void onEnable() {
 		setupVersioning();
 		
-		this.gameHandler = new GameHandler();
+		this.gameHandler = new GameHandler(this);
 		registerCommands();
 		registerListeners();
 		setupTest();
