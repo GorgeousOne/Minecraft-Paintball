@@ -11,11 +11,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-public class ClickListener implements Listener {
+public class ShootListener implements Listener {
 	
 	private final GameHandler gameHandler;
 	
-	public ClickListener(GameHandler gameHandler) {
+	public ShootListener(GameHandler gameHandler) {
 		this.gameHandler = gameHandler;
 	}
 	
