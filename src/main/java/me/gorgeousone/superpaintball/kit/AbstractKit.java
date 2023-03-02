@@ -20,15 +20,13 @@ public abstract class AbstractKit {
 	}
 	
 	public void launchShot(Player player, Team team) {
-		Location eyeLoc = player.getEyeLocation();
 		Vector facing = player.getLocation().getDirection();
-		World world = player.getWorld();
 		
 		for (int i = 0; i < kitType.bulletCount; ++i) {
 			Projectile bullet = player.launchProjectile(team.getType().projectileType);
 			bullet.setShooter(player);
 			bullet.setVelocity(createVelocity(facing, kitType.bulletSpeed, kitType.bulletSpread));
-			bullet.setCustomName(team.getGame().getId() + "-" + team.getType().name());
+			bullet.setCustomName("" + kitType.bulletDmg);
 		}
 	}
 	

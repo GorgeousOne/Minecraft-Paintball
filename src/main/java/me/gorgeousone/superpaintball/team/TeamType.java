@@ -31,7 +31,7 @@ public enum TeamType {
 	 * call setup after BlockType is setup for server version (legacy)
 	 */
 	public static void setup() {
-		NETHER.blockColor = BlockType.get("minecraft:light_blue_terracotta", "stained_clay:3");
-		FROST.blockColor = BlockType.get("minecraft:red_terracotta", "stained_clay:14");
+		NETHER.blockColor = BlockType.get("minecraft:light_blue_terracotta", "stained_clay:14");
+		FROST.blockColor = BlockType.get("minecraft:red_terracotta", "stained_clay:3");
 	}
 }
