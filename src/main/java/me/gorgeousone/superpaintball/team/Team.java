@@ -2,6 +2,8 @@ package me.gorgeousone.superpaintball.team;
 
 import me.gorgeousone.superpaintball.GameInstance;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -79,8 +81,11 @@ public class Team {
 	
 	//TODO make this nicer patterns :(
 	private void paintBlot(Block block, int blockCount, int range) {
+		World world = block.getWorld();
+		
 		if (isTerracotta(block)) {
 			teamType.blockColor.updateBlock(block, false);
+			world.playSound(block.getLocation(), Sound.BLOCK_STONE_PLACE, .25f, .8f);
 		}
 		List<Block> neighbors = getNeighbors(block, range);
 		
@@ -91,6 +96,8 @@ public class Team {
 			int rndIdx = rng.nextInt(neighbors.size());
 			Block neighbor = neighbors.get(rndIdx);
 			teamType.blockColor.updateBlock(neighbor, false);
+			world.playSound(block.getLocation(), Sound.BLOCK_STONE_PLACE, .25f, .8f);
+
 			neighbors.remove(rndIdx);
 		}
 	}

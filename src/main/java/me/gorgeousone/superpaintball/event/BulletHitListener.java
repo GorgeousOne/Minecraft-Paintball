@@ -28,8 +28,9 @@ public class BulletHitListener implements Listener {
 		}
 		Player player = (Player) bullet.getShooter();
 		Team team = gameHandler.getTeam(player);
+		int bulletDmg = getBulletDmg(bullet);
 
-		if (team == null) {
+		if (team == null || bulletDmg == 0) {
 			return;
 		}
 		bullet.remove();
@@ -48,7 +49,7 @@ public class BulletHitListener implements Listener {
 			return;
 		}
 		if (otherTeam.getType() != team.getType()) {
-			otherTeam.damagePlayer(otherPlayer, getBulletDmg(bullet));
+			otherTeam.damagePlayer(otherPlayer, bulletDmg);
 		}
 	}
 	
@@ -56,13 +57,11 @@ public class BulletHitListener implements Listener {
 		String bulletName = bullet.getCustomName();
 		
 		if (bulletName == null) {
-			Bukkit.broadcastMessage("warning undetected bullet???");
 			return 0;
 		}
 		try {
 			return Integer.parseInt(bulletName);
 		} catch (NumberFormatException e) {
-			Bukkit.broadcastMessage("warning undetected bullet???");
 			return 0;
 		}
 	}

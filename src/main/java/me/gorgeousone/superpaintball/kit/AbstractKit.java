@@ -1,8 +1,6 @@
 package me.gorgeousone.superpaintball.kit;
 
 import me.gorgeousone.superpaintball.team.Team;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.util.Vector;
@@ -12,21 +10,31 @@ import java.util.Random;
 public abstract class AbstractKit {
 	
 	protected final KitType kitType;
-	protected final Random rnd;
+	protected final int bulletDmg;
+	protected final int bulletCount;
+	protected final float bulletSpeed;
+	protected final float bulletSpread;
+	protected final float fireRate;
 	
-	protected AbstractKit(KitType kitType) {
+	protected final Random rnd = new Random();
+	
+	protected AbstractKit(KitType kitType, int bulletDmg, int bulletCount, float bulletSpeed, float bulletSpread, float fireRate) {
 		this.kitType = kitType;
-		this.rnd = new Random();
+		this.bulletDmg = bulletDmg;
+		this.bulletCount = bulletCount;
+		this.bulletSpeed = bulletSpeed;
+		this.bulletSpread = bulletSpread;
+		this.fireRate = fireRate;
 	}
 	
 	public void launchShot(Player player, Team team) {
 		Vector facing = player.getLocation().getDirection();
 		
-		for (int i = 0; i < kitType.bulletCount; ++i) {
+		for (int i = 0; i < bulletCount; ++i) {
 			Projectile bullet = player.launchProjectile(team.getType().projectileType);
 			bullet.setShooter(player);
-			bullet.setVelocity(createVelocity(facing, kitType.bulletSpeed, kitType.bulletSpread));
-			bullet.setCustomName("" + kitType.bulletDmg);
+			bullet.setVelocity(createVelocity(facing, bulletSpeed, bulletSpread));
+			bullet.setCustomName("" + bulletDmg);
 		}
 	}
 	

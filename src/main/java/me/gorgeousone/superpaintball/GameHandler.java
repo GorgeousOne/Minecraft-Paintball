@@ -1,9 +1,11 @@
 package me.gorgeousone.superpaintball;
 
 import me.gorgeousone.superpaintball.kit.AbstractKit;
+import me.gorgeousone.superpaintball.kit.MachineGunKit;
 import me.gorgeousone.superpaintball.kit.RifleKit;
 import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.kit.ShotgunKit;
+import me.gorgeousone.superpaintball.kit.SniperKit;
 import me.gorgeousone.superpaintball.team.Team;
 import me.gorgeousone.superpaintball.team.TeamType;
 import org.bukkit.entity.Player;
@@ -25,6 +27,8 @@ public class GameHandler {
 		this.games = new HashMap<>();
 		kits.put(KitType.RIFLE, new RifleKit());
 		kits.put(KitType.SHOTGUN, new ShotgunKit());
+		kits.put(KitType.MACHINE_GUN, new MachineGunKit());
+		kits.put(KitType.SNIPER, new SniperKit());
 	}
 	
 	public GameInstance createGame() {
