@@ -42,7 +42,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		GameInstance game = gameHandler.createGame();
 		
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			game.addPlayer(player, TeamType.NETHER);
+			game.addPlayer(player.getUniqueId(), TeamType.NETHER);
 		}
 	}
 	

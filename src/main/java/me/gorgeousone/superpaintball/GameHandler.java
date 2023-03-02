@@ -36,27 +36,36 @@ public class GameHandler {
 		return game;
 	}
 	
-	public GameInstance getGame(Player player) {
+	public GameInstance getGame(UUID playerId) {
 		for (GameInstance game : games.values()) {
-			if (game.hasPlayer(player)) {
+			if (game.hasPlayer(playerId)) {
 				return game;
 			}
 		}
 		return null;
 	}
 	
-	public Team getTeam(Player player) {
-		GameInstance game = getGame(player);
+	public boolean hasPlayer(UUID playerId) {
+		for (GameInstance game : games.values()) {
+			if (game.hasPlayer(playerId)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public Team getTeam(UUID playerId) {
+		GameInstance game = getGame(playerId);
 		
 		if (game != null) {
-			return game.getTeam(player);
+			return game.getTeam(playerId);
 		}
 		return null;
 	}
 	
-	public void launchShot(Player player, KitType kitType) {
-		AbstractKit kit = kits.get(kitType);
-		GameInstance game = getGame(player);
-		kit.launchShot(player, game.getTeam(player));
+	
+	public AbstractKit getKit(KitType kitType) {
+		return kits.get(kitType);
 	}
+	
 }

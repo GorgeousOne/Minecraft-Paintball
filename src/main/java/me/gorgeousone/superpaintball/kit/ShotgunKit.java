@@ -10,13 +10,12 @@ public class ShotgunKit extends AbstractKit {
 	private final JavaPlugin plugin;
 	
 	public ShotgunKit(JavaPlugin plugin) {
-		super(KitType.SHOTGUN, 1, 8, 1.5f, .15f, 1.5f, Sound.ENTITY_CHICKEN_EGG, .95f);
+		super(KitType.SHOTGUN, 1, 8, 1.5f, .15f, 30, Sound.ENTITY_CHICKEN_EGG, .95f);
 		this.plugin = plugin;
 	}
 	
 	@Override
 	protected void playGunshotSound(Location location) {
-		//TODO idl make this sound more rapid? more strong? somethings missing
 		location.getWorld().playSound(location, gunshotSound, .5f, gunshotPitch);
 		
 		new BukkitRunnable() {

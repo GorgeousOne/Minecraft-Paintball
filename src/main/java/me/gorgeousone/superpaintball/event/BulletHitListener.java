@@ -11,6 +11,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import java.util.UUID;
+
 public class BulletHitListener implements Listener {
 	
 	private final GameHandler gameHandler;
@@ -27,7 +29,7 @@ public class BulletHitListener implements Listener {
 			return;
 		}
 		Player player = (Player) bullet.getShooter();
-		Team team = gameHandler.getTeam(player);
+		Team team = gameHandler.getTeam(player.getUniqueId());
 		int bulletDmg = getBulletDmg(bullet);
 
 		if (team == null || bulletDmg == 0) {
@@ -43,13 +45,13 @@ public class BulletHitListener implements Listener {
 			return;
 		}
 		Player otherPlayer = (Player) event.getHitEntity();
-		Team otherTeam = gameHandler.getTeam(otherPlayer);
+		Team otherTeam = gameHandler.getTeam(otherPlayer.getUniqueId());
 		
 		if (otherTeam == null) {
 			return;
 		}
 		if (otherTeam.getType() != team.getType()) {
-			otherTeam.damagePlayer(otherPlayer, bulletDmg);
+			otherTeam.damagePlayer(otherPlayer, player, bulletDmg);
 		}
 	}
 	
@@ -71,7 +73,7 @@ public class BulletHitListener implements Listener {
 		Player player = event.getPlayer();
 		
 		if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL &&
-		    gameHandler.getGame(player) != null) {
+		    gameHandler.getGame(player.getUniqueId()) != null) {
 			event.setCancelled(true);
 		}
 	}

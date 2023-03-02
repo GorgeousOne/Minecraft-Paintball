@@ -6,7 +6,6 @@ import org.bukkit.Material;
 public enum KitType {
 	
 	RIFLE, SHOTGUN, MACHINE_GUN, SNIPER;
-	
 	public Material gunItem;
 	
 	KitType() {}
