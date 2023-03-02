@@ -6,8 +6,6 @@ import me.gorgeousone.superpaintball.event.BulletHitListener;
 import me.gorgeousone.superpaintball.event.ShootListener;
 import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.team.TeamType;
-//import me.gorgeousone.superpaintball.util.blocktype.BlockType;
-//import me.gorgeousone.superpaintball.util.version.VersionUtil;
 import me.gorgeousone.superpaintball.util.blocktype.BlockType;
 import me.gorgeousone.superpaintball.util.version.VersionUtil;
 import org.bukkit.Bukkit;
