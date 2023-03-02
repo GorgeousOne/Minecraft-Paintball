@@ -96,9 +96,8 @@ public class Team {
 			int rndIdx = rng.nextInt(neighbors.size());
 			Block neighbor = neighbors.get(rndIdx);
 			teamType.blockColor.updateBlock(neighbor, false);
-			world.playSound(block.getLocation(), Sound.BLOCK_STONE_PLACE, .25f, .8f);
-
 			neighbors.remove(rndIdx);
+			world.playSound(block.getLocation(), Sound.BLOCK_STONE_PLACE, .05f, .8f);
 		}
 	}
 	
