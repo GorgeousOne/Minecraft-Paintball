@@ -5,18 +5,20 @@ import org.bukkit.Material;
 
 public enum KitType {
 	
-	RIFLE(1, 1, 0, 1),
-	SHOTGUN(8, 1, 1, 1),
-	MACHINE_GUN( 1, 1, 1, 1),
-	SNIPER( -1, -1, 0, 1);
+	RIFLE(1, 3,3, 0, 1),
+	SHOTGUN(8, 1,1.5f, .3f, 1),
+	MACHINE_GUN( 1, 2,1, .1f, 1),
+	SNIPER( -1, 4, -1, 0, 1);
 	
 	public Material gunItem;
+	public final int bulletDmg;
 	public final int bulletCount;
 	public final float bulletSpeed;
 	public final float bulletSpread;
 	public final float fireRate;
 	
-	KitType(int bulletCount, float bulletSpeed, float bulletSpread, float fireRate) {
+	KitType(int bulletCount, int bulletDmg, float bulletSpeed, float bulletSpread, float fireRate) {
+		this.bulletDmg = bulletDmg;
 		this.bulletCount = bulletCount;
 		this.bulletSpeed = bulletSpeed;
 		this.bulletSpread = bulletSpread;
