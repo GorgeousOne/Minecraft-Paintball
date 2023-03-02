@@ -13,13 +13,11 @@ public class KitHandler {
 		this.kitSelection = kitSelection;
 	}
 	
-	public void setKit(Player player, KitType kitType) {
-		UUID playerId = player.getUniqueId();
+	public void setKit(UUID playerId, KitType kitType) {
 		kitSelection.put(playerId, kitType);
 	}
 	
-	public KitType getKitType(Player player) {
-		UUID playerId = player.getUniqueId();
+	public KitType getKitType(UUID playerId) {
 		kitSelection.putIfAbsent(playerId, KitType.RIFLE);
 		return kitSelection.get(playerId);
 	}

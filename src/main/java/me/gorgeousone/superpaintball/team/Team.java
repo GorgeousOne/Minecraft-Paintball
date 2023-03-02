@@ -6,30 +6,49 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
 public class Team {
 	
+	private final static PotionEffect KNOCKOUT_BLINDNESS = new PotionEffect(PotionEffectType.BLINDNESS, 30, 4);
+	private static final int DMG_POINTS = 4;
+	private static final int HEARTS_PER_DMG_POINT = 5;
 	private static final Random rng = new Random();
 	
 	private final TeamType teamType;
 	private final GameInstance game;
 	private final Set<UUID> players;
 	private final Set<UUID> remainingPlayers;
+	private final Map<UUID, Integer> playerHealth;
 	
 	public Team(TeamType teamType, GameInstance game) {
 		this.teamType = teamType;
 		this.game = game;
 		this.players = new HashSet<>();
 		this.remainingPlayers = new HashSet<>();
+		this.playerHealth = new HashMap<>();
 	}
 	
+	public void start() {
+		for (UUID playerId : remainingPlayers) {
+			Player player = Bukkit.getPlayer(playerId);
+			healPlayer(player);
+		}
+	}
+	
+	private void healPlayer(Player player) {
+		player.setHealth(DMG_POINTS * HEARTS_PER_DMG_POINT);
+	}
 	
 	public TeamType getType() {
 		return teamType;
@@ -47,21 +66,19 @@ public class Team {
 		return new HashSet<>(remainingPlayers);
 	}
 	
-	public void addPlayer(Player player) {
-		UUID playerId = player.getUniqueId();
-		//if game started, throw
+	public void addPlayer(UUID playerId) {
+		//TODO if game started, throw
 		players.add(playerId);
 		remainingPlayers.add(playerId);
+		playerHealth.put(playerId, DMG_POINTS);
 	}
 	
-	public void removePlayer(Player player) {}
+	public void removePlayer(UUID playerId) {}
 	
-	public void killPlayer(Player player) {}
+	public void revivePlayer(UUID playerId) {}
 	
-	public void revivePlayer(Player player) {}
-	
-	public boolean hasPlayer(Player player) {
-		return players.contains(player.getUniqueId());
+	public boolean hasPlayer(UUID playerId) {
+		return players.contains(playerId);
 	}
 	
 	public void paintBlock(Block shotBlock) {
@@ -70,16 +87,39 @@ public class Team {
 		//make break sound
 	}
 	
-	public void damagePlayer(Player player, int bulletDmg) {
-		UUID playerId = player.getUniqueId();
+	public void damagePlayer(Player target, Player shooter, int bulletDmg) {
+		UUID playerId = target.getUniqueId();
 		
 		if (!remainingPlayers.contains(playerId)) {
 			return;
 		}
-		Bukkit.broadcastMessage(String.format("hit %s for %o dmg", player.getName(), bulletDmg));
+		shooter.playSound(shooter.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 2f);
+		updateHealth(playerId, bulletDmg);
+		Bukkit.broadcastMessage(String.format("hit %s for %o dmg", target.getName(), bulletDmg));
 	}
 	
-	//TODO make this nicer patterns :(
+	private void updateHealth(UUID playerId, int damage) {
+		Player player = Bukkit.getPlayer(playerId);
+		int health = playerHealth.get(playerId);
+		health = Math.max(0, health - damage);
+		playerHealth.put(playerId, health);
+		
+		if (health == 0) {
+			knockoutPlayer(player);
+		}
+		player.damage(damage * HEARTS_PER_DMG_POINT);
+	}
+	
+	private void knockoutPlayer(Player player) {
+		healPlayer(player);
+		player.addPotionEffect(KNOCKOUT_BLINDNESS);
+		//make player spectator
+		//
+		remainingPlayers.remove(player.getUniqueId());
+	}
+	
+	//TODO make this nicer block patterns :(
+	//TODO add water/snoball & lava particles to painted blocks
 	private void paintBlot(Block block, int blockCount, int range) {
 		World world = block.getWorld();
 		

@@ -8,6 +8,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
+import java.util.UUID;
 
 public abstract class AbstractKit {
 	
@@ -16,12 +17,12 @@ public abstract class AbstractKit {
 	protected final int bulletCount;
 	protected final float bulletSpeed;
 	protected final float bulletSpread;
-	protected final float fireRate;
+	protected final long fireRate;
 	protected final Sound gunshotSound;
 	protected final float gunshotPitch;
 	protected final Random rnd = new Random();
 	
-	protected AbstractKit(KitType kitType, int bulletDmg, int bulletCount, float bulletSpeed, float bulletSpread, float fireRate,
+	protected AbstractKit(KitType kitType, int bulletDmg, int bulletCount, float bulletSpeed, float bulletSpread, long fireRate,
 	                      Sound gunshotSound, float gunshotPitch) {
 		this.kitType = kitType;
 		this.bulletDmg = bulletDmg;
@@ -33,7 +34,8 @@ public abstract class AbstractKit {
 		this.gunshotPitch = gunshotPitch;
 	}
 	
-	public void launchShot(Player player, Team team) {
+	
+	public long launchShot(Player player, Team team) {
 		Vector facing = player.getLocation().getDirection();
 		
 		for (int i = 0; i < bulletCount; ++i) {
@@ -43,6 +45,7 @@ public abstract class AbstractKit {
 			bullet.setCustomName("" + bulletDmg);
 		}
 		playGunshotSound(player.getEyeLocation());
+		return fireRate;
 	}
 	
 	//TODO make own gunshots sound high pitched
