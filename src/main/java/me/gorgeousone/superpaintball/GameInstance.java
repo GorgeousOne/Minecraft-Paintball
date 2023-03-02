@@ -20,14 +20,13 @@ public class GameInstance {
 //	private long startTime
 //	private bool isRunning;
 	
-	
 	public GameInstance() {
 		this.gameId = UUID.randomUUID();
 		this.teams = new HashMap<>();
 		this.players = new HashSet<>();
 		
 		for (TeamType teamType : TeamType.values()) {
-			teams.put(teamType, new Team(teamType));
+			teams.put(teamType, new Team(teamType, this));
 		}
 	}
 	
@@ -41,7 +40,6 @@ public class GameInstance {
 	}
 	
 	public void removePlayer(Player player) {
-	
 	}
 	
 	public boolean hasPlayer(Player player) {

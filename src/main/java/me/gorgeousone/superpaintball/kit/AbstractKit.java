@@ -25,9 +25,10 @@ public abstract class AbstractKit {
 		World world = player.getWorld();
 		
 		for (int i = 0; i < kitType.bulletCount; ++i) {
-			Projectile bullet = world.spawn(eyeLoc, team.getType().projectileType);
+			Projectile bullet = player.launchProjectile(team.getType().projectileType);
 			bullet.setShooter(player);
 			bullet.setVelocity(createVelocity(facing, kitType.bulletSpeed, kitType.bulletSpread));
+			bullet.setCustomName(team.getGame().getId() + "-" + team.getType().name());
 		}
 	}
 	
