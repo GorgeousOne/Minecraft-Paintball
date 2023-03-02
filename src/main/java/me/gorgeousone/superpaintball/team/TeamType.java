@@ -4,13 +4,11 @@ import me.gorgeousone.superpaintball.util.blocktype.BlockType;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.entity.EnderPearl;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
-import org.bukkit.material.MaterialData;
 
 public enum TeamType {
-
+	
 	NETHER("Nether", EnderPearl.class, Color.RED, ChatColor.RED),
 	FROST("Frost", Snowball.class, Color.AQUA, ChatColor.AQUA);
 	
@@ -20,7 +18,10 @@ public enum TeamType {
 	public final ChatColor prefixColor;
 	public BlockType blockColor;
 	
-	TeamType(String displayName, Class<? extends Projectile> projectileType, Color garmentColor, ChatColor prefixColor) {
+	TeamType(String displayName,
+	         Class<? extends Projectile> projectileType,
+	         Color garmentColor,
+	         ChatColor prefixColor) {
 		this.displayName = displayName;
 		this.projectileType = projectileType;
 		this.garmentColor = garmentColor;

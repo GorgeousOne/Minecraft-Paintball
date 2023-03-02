@@ -12,8 +12,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.UUID;
-
 public class ShootListener implements Listener {
 	
 	private final GameHandler gameHandler;
@@ -43,7 +41,7 @@ public class ShootListener implements Listener {
 	
 	KitType getKitType(Material mat) {
 		for (KitType kitType : KitType.values()) {
-			if (kitType.gunItem == mat) {
+			if (kitType.gunMaterial == mat) {
 				return kitType;
 			}
 		}
