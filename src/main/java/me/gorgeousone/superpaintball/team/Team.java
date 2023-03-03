@@ -4,17 +4,18 @@ import me.gorgeousone.superpaintball.GameHandler;
 import me.gorgeousone.superpaintball.GameInstance;
 import me.gorgeousone.superpaintball.kit.AbstractKit;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -37,7 +38,10 @@ public class Team {
 	private final Set<UUID> players;
 	private final Set<UUID> remainingPlayers;
 	private final Map<UUID, Integer> playerHealth;
+	//key: armorstand, value: player
+	private final Map<UUID, UUID> reviveSkellies;
 	private final Random rng = new Random();
+	
 	
 	public Team(TeamType teamType, GameInstance game, GameHandler gameHandler) {
 		this.teamType = teamType;
@@ -46,7 +50,8 @@ public class Team {
 		this.players = new HashSet<>();
 		this.remainingPlayers = new HashSet<>();
 		this.playerHealth = new HashMap<>();
-		this.teamArmorSet = createArmorSet();
+		this.reviveSkellies = new HashMap<>();
+		this.teamArmorSet = TeamUtil.createColoredArmoSet(teamType.armorColor);
 	}
 	
 	public void start() {
@@ -82,7 +87,6 @@ public class Team {
 	
 	public void removePlayer(UUID playerId) {}
 	
-	public void revivePlayer(UUID playerId) {}
 	
 	public boolean hasPlayer(UUID playerId) {
 		return players.contains(playerId);
@@ -117,32 +121,46 @@ public class Team {
 		player.damage(damage * HEARTS_PER_DMG_POINT);
 	}
 	
-	private void knockoutPlayer(Player player) {
-		healPlayer(player);
-		player.addPotionEffect(KNOCKOUT_BLINDNESS);
-		//make player spectator
-		//
+	public void knockoutPlayer(Player player) {
+		UUID playerId = player.getUniqueId();
 		remainingPlayers.remove(player.getUniqueId());
+		healPlayer(player);
+		player.setCollidable(false);
+		player.teleport(player.getLocation().add(0, 1, 0));
+		player.setAllowFlight(true);
+		player.setFlying(true);
+		player.addPotionEffect(KNOCKOUT_BLINDNESS);
+		game.hidePlayer(player);
+		
+		ArmorStand skelly = gameHandler.createSkelly(player, teamType.prefixColor);
+		reviveSkellies.put(skelly.getUniqueId(), playerId);
 	}
 	
-	private void healPlayer(Player player) {
+	public boolean hasReviveSkelly(ArmorStand reviveSkelly) {
+		return reviveSkellies.containsKey(reviveSkelly.getUniqueId());
+	}
+	
+	public void revivePlayer(ArmorStand skelly) {
+		UUID skellyId = skelly.getUniqueId();
+		
+		if (!reviveSkellies.containsKey(skelly.getUniqueId())) {
+			return;
+		}
+		UUID playerId = reviveSkellies.get(skellyId);
+		Player player = Bukkit.getPlayer(playerId);
+		player.setCollidable(true);
+		player.setAllowFlight(false);
+		player.setFlying(false);
+		
+		player.teleport(skelly.getLocation());
+		skelly.remove();
+		game.showPlayer(player);
+		reviveSkellies.remove(skellyId);
+		remainingPlayers.add(playerId);
+	}
+	
+	public void healPlayer(Player player) {
 		player.setHealth(DMG_POINTS * HEARTS_PER_DMG_POINT);
-	}
-	
-	private ItemStack[] createArmorSet() {
-		ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
-		ItemStack chest = new ItemStack(Material.LEATHER_CHESTPLATE);
-		ItemStack legs = new ItemStack(Material.LEATHER_LEGGINGS);
-		ItemStack boots = new ItemStack(Material.LEATHER_BOOTS);
-		
-		LeatherArmorMeta meta = (LeatherArmorMeta) helmet.getItemMeta();
-		meta.setColor(teamType.garmentColor);
-		
-		helmet.setItemMeta(meta);
-		chest.setItemMeta(meta);
-		legs.setItemMeta(meta);
-		boots.setItemMeta(meta);
-		return new ItemStack[]{boots, legs, chest, helmet};
 	}
 	
 	private void equipPlayers(Player player) {
@@ -198,4 +216,5 @@ public class Team {
 		String matName = block.getType().name();
 		return matName.contains("STAINED_CLAY") || matName.contains("TERRACOTTA");
 	}
+	
 }

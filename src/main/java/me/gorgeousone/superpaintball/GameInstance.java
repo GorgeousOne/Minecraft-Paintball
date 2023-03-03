@@ -3,9 +3,12 @@ package me.gorgeousone.superpaintball;
 import me.gorgeousone.superpaintball.kit.AbstractKit;
 import me.gorgeousone.superpaintball.team.Team;
 import me.gorgeousone.superpaintball.team.TeamType;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -14,6 +17,7 @@ import java.util.UUID;
 
 public class GameInstance {
 	
+	private final JavaPlugin plugin;
 	private final UUID gameId;
 	private final Map<TeamType, Team> teams;
 	private final Set<UUID> players;
@@ -24,7 +28,8 @@ public class GameInstance {
 	//	private long startTime
 	//	private bool isRunning;
 	
-	public GameInstance(GameHandler gameHandler) {
+	public GameInstance(GameHandler gameHandler, JavaPlugin plugin) {
+		this.plugin = plugin;
 		this.gameId = UUID.randomUUID();
 		this.teams = new HashMap<>();
 		this.players = new HashSet<>();
@@ -75,6 +80,10 @@ public class GameInstance {
 		return null;
 	}
 	
+	public Collection<Team> getTeams() {
+		return teams.values();
+	}
+	
 	public void launchShot(Player player, AbstractKit kit) {
 		UUID playerId = player.getUniqueId();
 		
@@ -85,6 +94,20 @@ public class GameInstance {
 		
 		if (cooldownTicks > 0) {
 			shootCooldowns.put(playerId, System.currentTimeMillis() + cooldownTicks * 50);
+		}
+	}
+	
+	public void hidePlayer(Player player) {
+		for (UUID playerId : players) {
+			Player otherPlayer = Bukkit.getPlayer(playerId);
+			otherPlayer.hidePlayer(plugin, player);
+		}
+	}
+	
+	public void showPlayer(Player player) {
+		for (UUID playerId : players) {
+			Player otherPlayer = Bukkit.getPlayer(playerId);
+			otherPlayer.showPlayer(plugin, player);
 		}
 	}
 }

@@ -3,6 +3,10 @@ package me.gorgeousone.superpaintball.event;
 import me.gorgeousone.superpaintball.GameHandler;
 import me.gorgeousone.superpaintball.team.Team;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.ThrownPotion;
@@ -14,6 +18,10 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionType;
+import org.checkerframework.checker.units.qual.A;
+
+import java.util.Collection;
+import java.util.UUID;
 
 public class ProjectileListener implements Listener {
 	
@@ -37,7 +45,8 @@ public class ProjectileListener implements Listener {
 		if (team == null || bulletDmg == 0) {
 			return;
 		}
-//		projectile.remove();
+		//does this prevent teleporting? probably no
+		projectile.remove();
 		
 		if (event.getHitBlock() != null) {
 			team.paintBlock(event.getHitBlock());
@@ -70,13 +79,30 @@ public class ProjectileListener implements Listener {
 		if (team == null) {
 			return;
 		}
-		ItemStack item = potion.getItem();
-		PotionMeta meta = (PotionMeta) item.getItemMeta();
-		
-		if (meta.getBasePotionData().getType() != PotionType.AWKWARD) {
+		if (!gameHandler.getWaterBombs().isSimilar(potion.getItem())) {
 			return;
 		}
-		Bukkit.broadcastMessage("that dont do much yet");
+		healPlayers(getEffectedEntities(potion), team);
+	}
+	
+	private void healPlayers(Collection<Entity> entities, Team team) {
+		for (Entity entity : entities) {
+			if (entity instanceof Player) {
+				Player player = (Player) entity;
+				Team playerTeam = gameHandler.getTeam(player.getUniqueId());
+				
+				if (team == playerTeam) {
+					team.healPlayer(player);
+				}
+			} else if (entity instanceof ArmorStand) {
+				ArmorStand skelly = (ArmorStand) entity;
+				Team skellyTeam = gameHandler.getTeam(skelly);
+				
+				if (skellyTeam != null) {
+					skellyTeam.revivePlayer(skelly);
+				}
+			}
+		}
 	}
 	
 	int getBulletDmg(Projectile bullet) {
@@ -101,4 +127,12 @@ public class ProjectileListener implements Listener {
 			event.setCancelled(true);
 		}
 	}
+	
+	private Collection<Entity> getEffectedEntities(ThrownPotion potion) {
+		Location pos = potion.getLocation();
+		Collection<Entity> entities = pos.getWorld().getNearbyEntities(pos, 4, 2, 4);
+		entities.remove(potion);
+		return entities;
+	}
+	
 }

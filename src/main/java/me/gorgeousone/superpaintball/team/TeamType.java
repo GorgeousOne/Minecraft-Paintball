@@ -12,9 +12,10 @@ public enum TeamType {
 	NETHER("Nether", EnderPearl.class, Color.RED, ChatColor.RED),
 	FROST("Frost", Snowball.class, Color.AQUA, ChatColor.AQUA);
 	
+	public static final Color DEATH_COLOR = Color.PURPLE;
 	public final String displayName;
 	public final Class<? extends Projectile> projectileType;
-	public final Color garmentColor;
+	public final Color armorColor;
 	public final ChatColor prefixColor;
 	public BlockType blockColor;
 	
@@ -24,7 +25,7 @@ public enum TeamType {
 	         ChatColor prefixColor) {
 		this.displayName = displayName;
 		this.projectileType = projectileType;
-		this.garmentColor = garmentColor;
+		this.armorColor = garmentColor;
 		this.prefixColor = prefixColor;
 	}
 	

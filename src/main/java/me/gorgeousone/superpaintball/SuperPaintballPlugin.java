@@ -1,9 +1,13 @@
 package me.gorgeousone.superpaintball;
 
 import me.gorgeousone.superpaintball.cmdframework.command.ParentCommand;
+import me.gorgeousone.superpaintball.cmdframework.handler.CommandHandler;
+import me.gorgeousone.superpaintball.command.DebugKillCommand;
 import me.gorgeousone.superpaintball.command.KitCommand;
+import me.gorgeousone.superpaintball.event.PlayerListener;
 import me.gorgeousone.superpaintball.event.ProjectileListener;
 import me.gorgeousone.superpaintball.event.ShootListener;
+import me.gorgeousone.superpaintball.event.SkellyInteractListener;
 import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.team.TeamType;
 import me.gorgeousone.superpaintball.util.blocktype.BlockType;
@@ -51,11 +55,17 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		paintballCmd = new ParentCommand("paintball");
 		paintballCmd.addAlias("pb");
 		paintballCmd.addChild(new KitCommand());
+		paintballCmd.addChild(new DebugKillCommand(gameHandler));
+		
+		CommandHandler cmdHandler = new CommandHandler(this);
+		cmdHandler.registerCommand(paintballCmd);
 	}
 	
 	void registerListeners() {
 		PluginManager manager = Bukkit.getPluginManager();
+		manager.registerEvents(new PlayerListener(gameHandler), this);
 		manager.registerEvents(new ShootListener(gameHandler), this);
 		manager.registerEvents(new ProjectileListener(gameHandler), this);
+		manager.registerEvents(new SkellyInteractListener(gameHandler), this);
 	}
 }
