@@ -1,7 +1,7 @@
 package me.gorgeousone.superpaintball.event;
 
 import me.gorgeousone.superpaintball.GameHandler;
-import me.gorgeousone.superpaintball.GameInstance;
+import me.gorgeousone.superpaintball.PbGame;
 import me.gorgeousone.superpaintball.kit.KitType;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -32,7 +32,7 @@ public class ShootListener implements Listener {
 		if (kitType == null) {
 			return;
 		}
-		GameInstance game = gameHandler.getGame(player.getUniqueId());
+		PbGame game = gameHandler.getGame(player.getUniqueId());
 		
 		if (game != null) {
 			game.launchShot(player, gameHandler.getKit(kitType));

@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 
 public class PlayerListener implements Listener {
 	
@@ -16,6 +17,18 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerDamage(EntityDamageEvent event) {
+		if (!(event.getEntity() instanceof Player)) {
+			return;
+		}
+		Player player = (Player) event.getEntity();
+		
+		if (gameHandler.isPlaying(player.getUniqueId()) && event.getCause() != EntityDamageEvent.DamageCause.CUSTOM) {
+			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerHunger(FoodLevelChangeEvent event) {
 		if (!(event.getEntity() instanceof Player)) {
 			return;
 		}
