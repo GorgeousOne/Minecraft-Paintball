@@ -21,9 +21,8 @@ public class PlayerListener implements Listener {
 		}
 		Player player = (Player) event.getEntity();
 		
-		if (gameHandler.hasPlayer(player.getUniqueId())) {
+		if (gameHandler.isPlaying(player.getUniqueId())) {
 			event.setCancelled(true);
-			player.sendMessage("u no die!");
 		}
 	}
 }
