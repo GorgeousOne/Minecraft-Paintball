@@ -1,7 +1,7 @@
 package me.gorgeousone.superpaintball.team;
 
 import me.gorgeousone.superpaintball.GameHandler;
-import me.gorgeousone.superpaintball.GameInstance;
+import me.gorgeousone.superpaintball.PbGame;
 import me.gorgeousone.superpaintball.kit.AbstractKit;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -13,9 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -25,7 +23,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-public class Team {
+public class PbTeam {
 	
 	private final static PotionEffect KNOCKOUT_BLINDNESS = new PotionEffect(PotionEffectType.BLINDNESS, 30, 4);
 	private static final int DMG_POINTS = 4;
@@ -33,32 +31,33 @@ public class Team {
 	
 	private final TeamType teamType;
 	private final GameHandler gameHandler;
-	private final GameInstance game;
+	private final PbGame game;
 	private final ItemStack[] teamArmorSet;
 	private final Set<UUID> players;
-	private final Set<UUID> remainingPlayers;
+	private final Set<UUID> alivePlayers;
 	private final Map<UUID, Integer> playerHealth;
 	//key: armorstand, value: player
 	private final Map<UUID, UUID> reviveSkellies;
 	private final Random rng = new Random();
 	
 	
-	public Team(TeamType teamType, GameInstance game, GameHandler gameHandler) {
+	public PbTeam(TeamType teamType, PbGame game, GameHandler gameHandler) {
 		this.teamType = teamType;
 		this.game = game;
 		this.gameHandler = gameHandler;
 		this.players = new HashSet<>();
-		this.remainingPlayers = new HashSet<>();
+		this.alivePlayers = new HashSet<>();
 		this.playerHealth = new HashMap<>();
 		this.reviveSkellies = new HashMap<>();
 		this.teamArmorSet = TeamUtil.createColoredArmoSet(teamType.armorColor);
 	}
 	
 	public void start() {
-		for (UUID playerId : remainingPlayers) {
+		for (UUID playerId : alivePlayers) {
 			Player player = Bukkit.getPlayer(playerId);
 			healPlayer(player);
 			equipPlayers(player);
+			
 		}
 	}
 	
@@ -66,7 +65,7 @@ public class Team {
 		return teamType;
 	}
 	
-	public GameInstance getGame() {
+	public PbGame getGame() {
 		return game;
 	}
 	
@@ -74,14 +73,14 @@ public class Team {
 		return new HashSet<>(players);
 	}
 	
-	public Set<UUID> getRemainingPlayers() {
-		return new HashSet<>(remainingPlayers);
+	public Set<UUID> getAlivePlayers() {
+		return new HashSet<>(alivePlayers);
 	}
 	
 	public void addPlayer(UUID playerId) {
 		//TODO if game started, throw
 		players.add(playerId);
-		remainingPlayers.add(playerId);
+		alivePlayers.add(playerId);
 		playerHealth.put(playerId, DMG_POINTS);
 	}
 	
@@ -101,7 +100,7 @@ public class Team {
 	public void damagePlayer(Player target, Player shooter, int bulletDmg) {
 		UUID playerId = target.getUniqueId();
 		
-		if (!remainingPlayers.contains(playerId)) {
+		if (!alivePlayers.contains(playerId)) {
 			return;
 		}
 		shooter.playSound(shooter.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 2f);
@@ -117,22 +116,23 @@ public class Team {
 		
 		if (health == 0) {
 			knockoutPlayer(player);
+		} else {
+			player.damage(damage * HEARTS_PER_DMG_POINT);
 		}
-		player.damage(damage * HEARTS_PER_DMG_POINT);
 	}
 	
 	public void knockoutPlayer(Player player) {
 		UUID playerId = player.getUniqueId();
-		remainingPlayers.remove(player.getUniqueId());
+		alivePlayers.remove(player.getUniqueId());
 		healPlayer(player);
 		player.setCollidable(false);
-		player.teleport(player.getLocation().add(0, 1, 0));
+		player.teleport(player.getLocation().add(0, .5, 0));
 		player.setAllowFlight(true);
 		player.setFlying(true);
 		player.addPotionEffect(KNOCKOUT_BLINDNESS);
 		game.hidePlayer(player);
 		
-		ArmorStand skelly = gameHandler.createSkelly(player, teamType.prefixColor);
+		ArmorStand skelly = TeamUtil.createSkelly(TeamUtil.DEATH_ARMOR_SET, player, teamType, gameHandler.getKit(playerId).getType());
 		reviveSkellies.put(skelly.getUniqueId(), playerId);
 	}
 	
@@ -156,16 +156,20 @@ public class Team {
 		skelly.remove();
 		game.showPlayer(player);
 		reviveSkellies.remove(skellyId);
-		remainingPlayers.add(playerId);
+		playerHealth.put(playerId, DMG_POINTS);
+		alivePlayers.add(playerId);
 	}
 	
 	public void healPlayer(Player player) {
+		player.setFoodLevel(20);
 		player.setHealth(DMG_POINTS * HEARTS_PER_DMG_POINT);
+		
+		PlayerInventory inv = player.getInventory();
+		inv.setArmorContents(teamArmorSet);
 	}
 	
 	private void equipPlayers(Player player) {
 		PlayerInventory inv = player.getInventory();
-		inv.setArmorContents(teamArmorSet);
 		AbstractKit kit = gameHandler.getKit(player.getUniqueId());
 		inv.setItem(0, kit.getType().getGun());
 		inv.setItem(1, gameHandler.getWaterBombs());
@@ -216,5 +220,4 @@ public class Team {
 		String matName = block.getType().name();
 		return matName.contains("STAINED_CLAY") || matName.contains("TERRACOTTA");
 	}
-	
 }
