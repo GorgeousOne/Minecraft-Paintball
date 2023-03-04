@@ -11,8 +11,6 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,10 +22,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public class PbTeam {
-	
-	private final static PotionEffect KNOCKOUT_BLINDNESS = new PotionEffect(PotionEffectType.BLINDNESS, 30, 4);
-	private static final int DMG_POINTS = 4;
-	private static final int HEARTS_PER_DMG_POINT = 5;
 	
 	private final TeamType teamType;
 	private final GameHandler gameHandler;
@@ -57,7 +51,6 @@ public class PbTeam {
 			Player player = Bukkit.getPlayer(playerId);
 			healPlayer(player);
 			equipPlayers(player);
-			
 		}
 	}
 	
@@ -81,10 +74,25 @@ public class PbTeam {
 		//TODO if game started, throw
 		players.add(playerId);
 		alivePlayers.add(playerId);
-		playerHealth.put(playerId, DMG_POINTS);
+		playerHealth.put(playerId, TeamUtil.DMG_POINTS);
 	}
 	
-	public void removePlayer(UUID playerId) {}
+	public void removePlayer(UUID playerId) {
+		if (!players.contains(playerId)) {
+			throw new IllegalArgumentException("Can't remove player with id: " + playerId + ". They are not in this team.");
+		}
+		players.remove(playerId);
+		alivePlayers.remove(playerId);
+		UUID skellyId = getReviveSkellyId(playerId);
+		
+		if (skellyId != null) {
+			Bukkit.getEntity(skellyId).remove();
+			reviveSkellies.remove(skellyId);
+		}
+		if (alivePlayers.isEmpty()) {
+			game.onTeamKill(this);
+		}
+	}
 	
 	
 	public boolean hasPlayer(UUID playerId) {
@@ -93,8 +101,6 @@ public class PbTeam {
 	
 	public void paintBlock(Block shotBlock) {
 		paintBlot(shotBlock, 5, 1);
-		//spawn fancy particle stuff
-		//make break sound
 	}
 	
 	public void damagePlayer(Player target, Player shooter, int bulletDmg) {
@@ -117,7 +123,7 @@ public class PbTeam {
 		if (health == 0) {
 			knockoutPlayer(player);
 		} else {
-			player.damage(damage * HEARTS_PER_DMG_POINT);
+			player.damage(damage * TeamUtil.HEARTS_PER_DMG_POINT);
 		}
 	}
 	
@@ -129,15 +135,29 @@ public class PbTeam {
 		player.teleport(player.getLocation().add(0, .5, 0));
 		player.setAllowFlight(true);
 		player.setFlying(true);
-		player.addPotionEffect(KNOCKOUT_BLINDNESS);
+		player.addPotionEffect(TeamUtil.KNOCKOUT_BLINDNESS);
 		game.hidePlayer(player);
 		
 		ArmorStand skelly = TeamUtil.createSkelly(TeamUtil.DEATH_ARMOR_SET, player, teamType, gameHandler.getKit(playerId).getType());
 		reviveSkellies.put(skelly.getUniqueId(), playerId);
+		game.updateAliveScores();
+		
+		if (alivePlayers.isEmpty()) {
+			game.onTeamKill(this);
+		}
 	}
 	
 	public boolean hasReviveSkelly(ArmorStand reviveSkelly) {
 		return reviveSkellies.containsKey(reviveSkelly.getUniqueId());
+	}
+	
+	public UUID getReviveSkellyId(UUID playerId) {
+		for (UUID skellyId : reviveSkellies.keySet()) {
+			if (reviveSkellies.get(skellyId) == playerId) {
+				return skellyId;
+			}
+		}
+		return null;
 	}
 	
 	public void revivePlayer(ArmorStand skelly) {
@@ -156,13 +176,13 @@ public class PbTeam {
 		skelly.remove();
 		game.showPlayer(player);
 		reviveSkellies.remove(skellyId);
-		playerHealth.put(playerId, DMG_POINTS);
+		playerHealth.put(playerId, TeamUtil.DMG_POINTS);
 		alivePlayers.add(playerId);
 	}
 	
 	public void healPlayer(Player player) {
 		player.setFoodLevel(20);
-		player.setHealth(DMG_POINTS * HEARTS_PER_DMG_POINT);
+		player.setHealth(TeamUtil.DMG_POINTS * TeamUtil.HEARTS_PER_DMG_POINT);
 		
 		PlayerInventory inv = player.getInventory();
 		inv.setArmorContents(teamArmorSet);

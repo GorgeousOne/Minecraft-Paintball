@@ -28,15 +28,18 @@ public class PbGame {
 	private final UUID gameId;
 	private final Map<TeamType, PbTeam> teams;
 	private final Set<UUID> players;
+	private GameState state;
 	
 	private final Map<UUID, Long> shootCooldowns;
 	private BukkitRunnable cooldownTimer;
+	
 	//	private Arena arena
 	//	private long startTime
 	//	private bool isRunning;
 	
 	private Scoreboard gameBoard;
 	private Objective aliveObj;
+	private Map<TeamType, String> aliveEntries;
 	
 	public PbGame(GameHandler gameHandler, JavaPlugin plugin) {
 		this.plugin = plugin;
@@ -44,6 +47,7 @@ public class PbGame {
 		this.teams = new HashMap<>();
 		this.players = new HashSet<>();
 		this.shootCooldowns = new HashMap<>();
+		this.aliveEntries = new HashMap<>();
 		
 		for (TeamType teamType : TeamType.values()) {
 			teams.put(teamType, new PbTeam(teamType, this, gameHandler));
@@ -53,6 +57,10 @@ public class PbGame {
 	
 	public UUID getId() {
 		return gameId;
+	}
+	
+	public GameState getState() {
+		return state;
 	}
 	
 	public void start() {
@@ -77,6 +85,7 @@ public class PbGame {
 		};
 		cooldownTimer.runTaskTimer(plugin, 0, 1);
 		createScoreboard();
+		state = GameState.RUNNING;
 	}
 	
 	public void addPlayer(UUID playerId, TeamType teamType) {
@@ -85,6 +94,13 @@ public class PbGame {
 	}
 	
 	public void removePlayer(UUID playerId) {
+		if (!players.contains(playerId)) {
+			throw new IllegalArgumentException("Can't remove player with id: " + playerId + ". They are not in this game");
+		}
+		PbTeam team = getTeam(playerId);
+		team.removePlayer(playerId);
+		players.remove(playerId);
+		updateAliveScores();
 	}
 	
 	public boolean hasPlayer(UUID playerId) {
@@ -137,6 +153,10 @@ public class PbGame {
 		aliveObj.setDisplaySlot(DisplaySlot.SIDEBAR);
 		aliveObj.setDisplayName("" + ChatColor.GOLD + ChatColor.BOLD + "SUPER PAINTBALL");
 		
+		Score blank = aliveObj.getScore("");
+		blank.setScore(1);
+		int i = 2;
+		
 		for (TeamType teamType : teams.keySet()) {
 			PbTeam team = teams.get(teamType);
 			Team boardTeam = gameBoard.registerNewTeam(teamType.name());
@@ -148,31 +168,56 @@ public class PbGame {
 				Player player = Bukkit.getPlayer(playerId);
 				boardTeam.addEntry(player.getName());
 			}
+			Score teamScore = aliveObj.getScore("" + ChatColor.BOLD + team.getAlivePlayers().size() + " Alive" + pad(' ', i));
+			Score teamName = aliveObj.getScore("" + teamType.prefixColor + ChatColor.BOLD + teamType.displayName);
+			blank = aliveObj.getScore(pad(' ', i));
+			aliveEntries.put(teamType, teamScore.getEntry());
+			
+			teamScore.setScore(i);
+			teamName.setScore(i + 1);
+			blank.setScore(i + 2);
+			i += 3;
 		}
-		
 		for (UUID playerId : players) {
 			Player player = Bukkit.getPlayer(playerId);
 			player.setScoreboard(gameBoard);
 		}
-		
-		for (int i = 1; i <= 3 * teams.size() + 1; i += 3) {
-			Score blank = aliveObj.getScore(pad(' ', i));
-			blank.setScore(i);
-		}
-		updateAliveScores();
 	}
 	
-	private void updateAliveScores() {
+	public void updateAliveScores() {
 		int i = 2;
 		
 		for (TeamType teamType : teams.keySet()) {
 			PbTeam team = teams.get(teamType);
-			Score teamName = aliveObj.getScore("" + teamType.prefixColor + ChatColor.BOLD + teamType.displayName);
+			gameBoard.resetScores(aliveEntries.get(teamType));
 			Score teamScore = aliveObj.getScore("" + ChatColor.BOLD + team.getAlivePlayers().size() + " Alive" + pad(' ', i));
-			
-			teamName.setScore(i + 1);
 			teamScore.setScore(i);
+			aliveEntries.put(teamType, teamScore.getEntry());
 			i += 3;
+		}
+	}
+	
+	public void onTeamKill(PbTeam killedTeam) {
+		TeamType leftTeam = null;
+		
+		for (PbTeam team : teams.values()) {
+			if (team.getAlivePlayers().size() > 0 && leftTeam != null) {
+				return;
+			}
+			leftTeam = team.getType();
+		}
+		announceWinners(leftTeam);
+	}
+	
+	private void announceWinners(TeamType winningTeam) {
+		state = GameState.OVER;
+		sendTitle(winningTeam.prefixColor + winningTeam.displayName + " won!");
+	}
+	
+	private void sendTitle(String text) {
+		for (UUID playerId : players) {
+			Player player = Bukkit.getPlayer(playerId);
+			player.sendTitle(text, "");
 		}
 	}
 	
@@ -180,3 +225,4 @@ public class PbGame {
 		return new String(new char[n]).replace('\0', c);
 	}
 }
+
