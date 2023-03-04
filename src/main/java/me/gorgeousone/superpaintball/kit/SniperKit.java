@@ -1,6 +1,6 @@
 package me.gorgeousone.superpaintball.kit;
 
-import me.gorgeousone.superpaintball.team.Team;
+import me.gorgeousone.superpaintball.team.PbTeam;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
@@ -11,7 +11,7 @@ public class SniperKit extends AbstractKit {
 	}
 	
 	@Override
-	public long launchShot(Player player, Team team) {
+	public long launchShot(Player player, PbTeam team) {
 		//TODO complicated stuff
 		return fireRate;
 	}

@@ -1,12 +1,10 @@
 package me.gorgeousone.superpaintball.event;
 
 import me.gorgeousone.superpaintball.GameHandler;
-import me.gorgeousone.superpaintball.team.Team;
-import org.bukkit.Bukkit;
+import me.gorgeousone.superpaintball.team.PbTeam;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.ThrownPotion;
@@ -15,13 +13,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionType;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.Collection;
-import java.util.UUID;
 
 public class ProjectileListener implements Listener {
 	
@@ -39,7 +32,7 @@ public class ProjectileListener implements Listener {
 			return;
 		}
 		Player player = (Player) projectile.getShooter();
-		Team team = gameHandler.getTeam(player.getUniqueId());
+		PbTeam team = gameHandler.getTeam(player.getUniqueId());
 		int bulletDmg = getBulletDmg(projectile);
 		
 		if (team == null || bulletDmg == 0) {
@@ -56,7 +49,7 @@ public class ProjectileListener implements Listener {
 			return;
 		}
 		Player otherPlayer = (Player) event.getHitEntity();
-		Team otherTeam = gameHandler.getTeam(otherPlayer.getUniqueId());
+		PbTeam otherTeam = gameHandler.getTeam(otherPlayer.getUniqueId());
 		
 		if (otherTeam == null) {
 			return;
@@ -74,7 +67,7 @@ public class ProjectileListener implements Listener {
 			return;
 		}
 		Player player = (Player) potion.getShooter();
-		Team team = gameHandler.getTeam(player.getUniqueId());
+		PbTeam team = gameHandler.getTeam(player.getUniqueId());
 		
 		if (team == null) {
 			return;
@@ -85,20 +78,20 @@ public class ProjectileListener implements Listener {
 		healPlayers(getEffectedEntities(potion), team);
 	}
 	
-	private void healPlayers(Collection<Entity> entities, Team team) {
+	private void healPlayers(Collection<Entity> entities, PbTeam team) {
 		for (Entity entity : entities) {
 			if (entity instanceof Player) {
 				Player player = (Player) entity;
-				Team playerTeam = gameHandler.getTeam(player.getUniqueId());
+				PbTeam playerTeam = gameHandler.getTeam(player.getUniqueId());
 				
 				if (team == playerTeam) {
 					team.healPlayer(player);
 				}
 			} else if (entity instanceof ArmorStand) {
 				ArmorStand skelly = (ArmorStand) entity;
-				Team skellyTeam = gameHandler.getTeam(skelly);
+				PbTeam skellyTeam = gameHandler.getTeam(skelly);
 				
-				if (skellyTeam != null) {
+				if (team == skellyTeam) {
 					skellyTeam.revivePlayer(skelly);
 				}
 			}

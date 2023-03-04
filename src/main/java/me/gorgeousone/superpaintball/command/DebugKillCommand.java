@@ -2,7 +2,7 @@ package me.gorgeousone.superpaintball.command;
 
 import me.gorgeousone.superpaintball.GameHandler;
 import me.gorgeousone.superpaintball.cmdframework.command.BaseCommand;
-import me.gorgeousone.superpaintball.team.Team;
+import me.gorgeousone.superpaintball.team.PbTeam;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -18,7 +18,7 @@ public class DebugKillCommand extends BaseCommand {
 	@Override
 	protected void onCommand(CommandSender sender, String[] args) {
 		Player player = (Player) sender;
-		Team team = gameHandler.getTeam(player.getUniqueId());
+		PbTeam team = gameHandler.getTeam(player.getUniqueId());
 		
 		if (team != null) {
 			team.knockoutPlayer(player);
