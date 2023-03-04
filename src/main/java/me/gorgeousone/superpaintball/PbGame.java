@@ -41,6 +41,7 @@ public class PbGame {
 	private Objective aliveObj;
 	private Map<TeamType, String> aliveEntries;
 	
+	
 	public PbGame(GameHandler gameHandler, JavaPlugin plugin) {
 		this.plugin = plugin;
 		this.gameId = UUID.randomUUID();
@@ -78,7 +79,7 @@ public class PbGame {
 					if (cooldown < currentMillis) {
 						shootCooldowns.remove(playerId);
 						Player player = Bukkit.getPlayer(playerId);
-						player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, .5f, .75f);
+						player.playSound(player.getLocation(), GameUtil.RELOAD_SOUND, .2f, 1f);
 					}
 				}
 			}
@@ -201,10 +202,12 @@ public class PbGame {
 		TeamType leftTeam = null;
 		
 		for (PbTeam team : teams.values()) {
-			if (team.getAlivePlayers().size() > 0 && leftTeam != null) {
-				return;
+			if (team.getAlivePlayers().size() > 0) {
+				if (leftTeam != null) {
+					return;
+				}
+				leftTeam = team.getType();
 			}
-			leftTeam = team.getType();
 		}
 		announceWinners(leftTeam);
 	}
