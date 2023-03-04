@@ -1,6 +1,6 @@
 package me.gorgeousone.superpaintball.kit;
 
-import me.gorgeousone.superpaintball.team.Team;
+import me.gorgeousone.superpaintball.team.PbTeam;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -43,7 +43,7 @@ public abstract class AbstractKit {
 		return kitType;
 	}
 	
-	public long launchShot(Player player, Team team) {
+	public long launchShot(Player player, PbTeam team) {
 		Vector facing = player.getLocation().getDirection();
 		
 		for (int i = 0; i < bulletCount; ++i) {

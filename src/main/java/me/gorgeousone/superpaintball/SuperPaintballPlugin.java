@@ -42,11 +42,13 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	@Override
 	public void onDisable() {}
 	
+	private boolean randomize;
 	private void setupTest() {
-		GameInstance game = gameHandler.createGame();
+		PbGame game = gameHandler.createGame();
 		
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			game.addPlayer(player.getUniqueId(), TeamType.NETHER);
+			game.addPlayer(player.getUniqueId(), Math.random() >= .5 ? TeamType.NETHER : TeamType.FROST);
+			randomize = !randomize;
 		}
 		game.start();
 	}
