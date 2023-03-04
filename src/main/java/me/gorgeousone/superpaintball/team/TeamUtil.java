@@ -11,10 +11,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class TeamUtil {
 	
 	public static final ItemStack[] DEATH_ARMOR_SET = createColoredArmoSet(TeamType.DEATH_COLOR);
+	final static PotionEffect KNOCKOUT_BLINDNESS = new PotionEffect(PotionEffectType.BLINDNESS, 30, 4);
+	static final int HEARTS_PER_DMG_POINT = 5;
+	static final int DMG_POINTS = 4;
 	
 	public static ItemStack[] createColoredArmoSet(Color color) {
 		ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
