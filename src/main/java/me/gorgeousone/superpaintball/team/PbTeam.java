@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -30,6 +32,7 @@ public class PbTeam {
 	private final Set<UUID> players;
 	private final Set<UUID> alivePlayers;
 	private final Map<UUID, Integer> playerHealth;
+	private final Map<UUID, List<Integer>> unccoloredArmorSlots;
 	//key: armorstand, value: player
 	private final Map<UUID, UUID> reviveSkellies;
 	private final Random rng = new Random();
@@ -42,6 +45,7 @@ public class PbTeam {
 		this.players = new HashSet<>();
 		this.alivePlayers = new HashSet<>();
 		this.playerHealth = new HashMap<>();
+		this.unccoloredArmorSlots = new HashMap<>();
 		this.reviveSkellies = new HashMap<>();
 		this.teamArmorSet = TeamUtil.createColoredArmoSet(teamType.armorColor);
 	}
@@ -74,7 +78,6 @@ public class PbTeam {
 		//TODO if game started, throw
 		players.add(playerId);
 		alivePlayers.add(playerId);
-		playerHealth.put(playerId, TeamUtil.DMG_POINTS);
 	}
 	
 	public void removePlayer(UUID playerId) {
@@ -83,6 +86,8 @@ public class PbTeam {
 		}
 		players.remove(playerId);
 		alivePlayers.remove(playerId);
+		playerHealth.remove(playerId);
+		unccoloredArmorSlots.remove(playerId);
 		UUID skellyId = getReviveSkellyId(playerId);
 		
 		if (skellyId != null) {
@@ -111,7 +116,7 @@ public class PbTeam {
 		}
 		shooter.playSound(shooter.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 2f);
 		updateHealth(playerId, bulletDmg);
-		Bukkit.broadcastMessage(String.format("hit %s for %o dmg", target.getName(), bulletDmg));
+		paintArmor(playerId, bulletDmg);
 	}
 	
 	private void updateHealth(UUID playerId, int damage) {
@@ -122,21 +127,29 @@ public class PbTeam {
 		
 		if (health == 0) {
 			knockoutPlayer(player);
-		} else {
-			player.damage(damage * TeamUtil.HEARTS_PER_DMG_POINT);
+			return;
 		}
+		player.damage(damage * TeamUtil.HEARTS_PER_DMG_POINT);
+	}
+	
+	private void paintArmor(UUID playerId, int damage) {
+		Player player = Bukkit.getPlayer(playerId);
+		PlayerInventory inv = player.getInventory();
+		ItemStack[] playerAmor = inv.getArmorContents();
+		List<Integer> uncoloredSlots = unccoloredArmorSlots.get(playerId);
+		
+		for (int i = 0; i < damage; ++i) {
+			int rndSlot = uncoloredSlots.get(rng.nextInt(uncoloredSlots.size()));
+			playerAmor[rndSlot] = TeamUtil.DEATH_ARMOR_SET[rndSlot];
+			uncoloredSlots.remove(Integer.valueOf(rndSlot));
+		}
+		inv.setArmorContents(playerAmor);
 	}
 	
 	public void knockoutPlayer(Player player) {
 		UUID playerId = player.getUniqueId();
 		alivePlayers.remove(player.getUniqueId());
-		healPlayer(player);
-		player.setCollidable(false);
-		player.teleport(player.getLocation().add(0, .5, 0));
-		player.setAllowFlight(true);
-		player.setFlying(true);
-		player.addPotionEffect(TeamUtil.KNOCKOUT_BLINDNESS);
-		game.hidePlayer(player);
+		setSpectator(player, true);
 		
 		ArmorStand skelly = TeamUtil.createSkelly(TeamUtil.DEATH_ARMOR_SET, player, teamType, gameHandler.getKit(playerId).getType());
 		reviveSkellies.put(skelly.getUniqueId(), playerId);
@@ -144,6 +157,21 @@ public class PbTeam {
 		
 		if (alivePlayers.isEmpty()) {
 			game.onTeamKill(this);
+		}
+	}
+	
+	private void setSpectator(Player player, boolean isSpectator) {
+		player.setCollidable(!isSpectator);
+		player.setAllowFlight(isSpectator);
+		player.setFlying(isSpectator);
+		
+		if (isSpectator) {
+			healPlayer(player);
+			player.teleport(player.getLocation().add(0, 1, 0));
+			player.addPotionEffect(TeamUtil.KNOCKOUT_BLINDNESS);
+			game.hidePlayer(player);
+		} else {
+			game.showPlayer(player);
 		}
 	}
 	
@@ -168,24 +196,25 @@ public class PbTeam {
 		}
 		UUID playerId = reviveSkellies.get(skellyId);
 		Player player = Bukkit.getPlayer(playerId);
-		player.setCollidable(true);
-		player.setAllowFlight(false);
-		player.setFlying(false);
-		
+
+		setSpectator(player, false);
 		player.teleport(skelly.getLocation());
 		skelly.remove();
-		game.showPlayer(player);
+		
 		reviveSkellies.remove(skellyId);
 		playerHealth.put(playerId, TeamUtil.DMG_POINTS);
 		alivePlayers.add(playerId);
+		game.updateAliveScores();
 	}
 	
 	public void healPlayer(Player player) {
 		player.setFoodLevel(20);
 		player.setHealth(TeamUtil.DMG_POINTS * TeamUtil.HEARTS_PER_DMG_POINT);
+		player.getInventory().setArmorContents(teamArmorSet);
 		
-		PlayerInventory inv = player.getInventory();
-		inv.setArmorContents(teamArmorSet);
+		UUID playerId = player.getUniqueId();
+		playerHealth.put(player.getUniqueId(), TeamUtil.DMG_POINTS);
+		unccoloredArmorSlots.put(playerId, new ArrayList<>(Arrays.asList(0, 1, 2, 3)));
 	}
 	
 	private void equipPlayers(Player player) {

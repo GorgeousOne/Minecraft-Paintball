@@ -37,6 +37,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		BlockType.setup(VersionUtil.IS_LEGACY_SERVER);
 		KitType.setup();
 		TeamType.setup();
+		GameUtil.setup();
 	}
 	
 	@Override
