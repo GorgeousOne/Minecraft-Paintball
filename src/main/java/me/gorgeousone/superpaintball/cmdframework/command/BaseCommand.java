@@ -21,7 +21,7 @@ public abstract class BaseCommand {
 	private final Set<String> aliases;
 	private ParentCommand parent;
 	private String permission;
-	private boolean isPlayerRequired;
+	private boolean isPlayerRequired = true;
 	
 	public BaseCommand(String name) {
 		this.name = name.toLowerCase();

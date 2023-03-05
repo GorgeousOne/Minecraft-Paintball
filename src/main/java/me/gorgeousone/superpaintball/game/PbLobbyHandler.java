@@ -1,4 +1,4 @@
-package me.gorgeousone.superpaintball;
+package me.gorgeousone.superpaintball.game;
 
 import me.gorgeousone.superpaintball.kit.AbstractKit;
 import me.gorgeousone.superpaintball.kit.KitType;
@@ -20,15 +20,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class GameHandler {
+public class PbLobbyHandler {
 	
 	private final JavaPlugin plugin;
 	private final Map<KitType, AbstractKit> kits;
 	private final Map<UUID, KitType> playerKits;
-	private final Map<UUID, PbGame> games;
+	private final Map<UUID, PbLobby> games;
 	private final ItemStack waterBombs;
 	
-	public GameHandler(JavaPlugin plugin) {
+	public PbLobbyHandler(JavaPlugin plugin) {
 		this.plugin = plugin;
 		this.kits = new HashMap<>();
 		this.playerKits = new HashMap<>();
@@ -42,24 +42,24 @@ public class GameHandler {
 		this.waterBombs = createWaterBombs();
 	}
 	
-	public PbGame createGame() {
-		PbGame game = new PbGame(this, plugin);
-		games.put(game.getId(), game);
-		return game;
+	public PbLobby createGame() {
+		PbLobby lobby = new PbLobby(this, plugin);
+		games.put(lobby.getId(), lobby);
+		return lobby;
 	}
 	
-	public PbGame getGame(UUID playerId) {
-		for (PbGame game : games.values()) {
-			if (game.hasPlayer(playerId)) {
-				return game;
+	public PbLobby getLobby(UUID playerId) {
+		for (PbLobby lobby : games.values()) {
+			if (lobby.hasPlayer(playerId)) {
+				return lobby;
 			}
 		}
 		return null;
 	}
 	
 	public boolean isPlaying(UUID playerId) {
-		for (PbGame game : games.values()) {
-			if (game.hasPlayer(playerId)) {
+		for (PbLobby lobby : games.values()) {
+			if (lobby.hasPlayer(playerId)) {
 				return true;
 			}
 		}
@@ -67,17 +67,17 @@ public class GameHandler {
 	}
 	
 	public PbTeam getTeam(UUID playerId) {
-		PbGame game = getGame(playerId);
+		PbLobby lobby = getLobby(playerId);
 		
-		if (game != null) {
-			return game.getTeam(playerId);
+		if (lobby != null) {
+			return lobby.getTeam(playerId);
 		}
 		return null;
 	}
 	
 	public PbTeam getTeam(ArmorStand reviveSkelly) {
-		for (PbGame game : games.values()) {
-			for (PbTeam team : game.getTeams()) {
+		for (PbLobby lobby : games.values()) {
+			for (PbTeam team : lobby.getTeams()) {
 				if (team.hasReviveSkelly(reviveSkelly)) {
 					return team;
 				}

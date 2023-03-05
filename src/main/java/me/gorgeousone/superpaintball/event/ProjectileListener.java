@@ -1,6 +1,6 @@
 package me.gorgeousone.superpaintball.event;
 
-import me.gorgeousone.superpaintball.GameHandler;
+import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.team.PbTeam;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -18,10 +18,10 @@ import java.util.Collection;
 
 public class ProjectileListener implements Listener {
 	
-	private final GameHandler gameHandler;
+	private final PbLobbyHandler lobbyHandler;
 	
-	public ProjectileListener(GameHandler gameHandler) {
-		this.gameHandler = gameHandler;
+	public ProjectileListener(PbLobbyHandler lobbyHandler) {
+		this.lobbyHandler = lobbyHandler;
 	}
 	
 	@EventHandler
@@ -32,7 +32,7 @@ public class ProjectileListener implements Listener {
 			return;
 		}
 		Player player = (Player) projectile.getShooter();
-		PbTeam team = gameHandler.getTeam(player.getUniqueId());
+		PbTeam team = lobbyHandler.getTeam(player.getUniqueId());
 		int bulletDmg = getBulletDmg(projectile);
 		
 		if (team == null || bulletDmg == 0) {
@@ -49,7 +49,7 @@ public class ProjectileListener implements Listener {
 			return;
 		}
 		Player otherPlayer = (Player) event.getHitEntity();
-		PbTeam otherTeam = gameHandler.getTeam(otherPlayer.getUniqueId());
+		PbTeam otherTeam = lobbyHandler.getTeam(otherPlayer.getUniqueId());
 		
 		if (otherTeam == null) {
 			return;
@@ -67,12 +67,12 @@ public class ProjectileListener implements Listener {
 			return;
 		}
 		Player player = (Player) potion.getShooter();
-		PbTeam team = gameHandler.getTeam(player.getUniqueId());
+		PbTeam team = lobbyHandler.getTeam(player.getUniqueId());
 		
 		if (team == null) {
 			return;
 		}
-		if (!gameHandler.getWaterBombs().isSimilar(potion.getItem())) {
+		if (!lobbyHandler.getWaterBombs().isSimilar(potion.getItem())) {
 			return;
 		}
 		healPlayers(getEffectedEntities(potion), team);
@@ -82,14 +82,14 @@ public class ProjectileListener implements Listener {
 		for (Entity entity : entities) {
 			if (entity instanceof Player) {
 				Player player = (Player) entity;
-				PbTeam playerTeam = gameHandler.getTeam(player.getUniqueId());
+				PbTeam playerTeam = lobbyHandler.getTeam(player.getUniqueId());
 				
 				if (team == playerTeam) {
 					team.healPlayer(player);
 				}
 			} else if (entity instanceof ArmorStand) {
 				ArmorStand skelly = (ArmorStand) entity;
-				PbTeam skellyTeam = gameHandler.getTeam(skelly);
+				PbTeam skellyTeam = lobbyHandler.getTeam(skelly);
 				
 				if (team == skellyTeam) {
 					skellyTeam.revivePlayer(skelly);
@@ -116,7 +116,7 @@ public class ProjectileListener implements Listener {
 		Player player = event.getPlayer();
 		
 		if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL &&
-		    gameHandler.getGame(player.getUniqueId()) != null) {
+		    lobbyHandler.getLobby(player.getUniqueId()) != null) {
 			event.setCancelled(true);
 		}
 	}

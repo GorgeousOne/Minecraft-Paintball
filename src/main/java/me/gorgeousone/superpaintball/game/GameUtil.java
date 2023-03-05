@@ -1,4 +1,4 @@
-package me.gorgeousone.superpaintball;
+package me.gorgeousone.superpaintball.game;
 
 import me.gorgeousone.superpaintball.util.version.VersionUtil;
 import org.bukkit.Sound;

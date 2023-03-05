@@ -9,8 +9,8 @@ import org.bukkit.entity.Snowball;
 
 public enum TeamType {
 	
-	NETHER("Nether", EnderPearl.class, Color.RED, ChatColor.RED),
-	FROST("Frost", Snowball.class, Color.AQUA, ChatColor.AQUA);
+	EMBER("Ember", EnderPearl.class, Color.RED, ChatColor.RED),
+	ICE("Ice", Snowball.class, Color.AQUA, ChatColor.AQUA);
 	
 	public static final Color DEATH_COLOR = Color.PURPLE;
 	public final String displayName;
@@ -33,7 +33,7 @@ public enum TeamType {
 	 * call setup after BlockType is setup for server version (legacy)
 	 */
 	public static void setup() {
-		NETHER.blockColor = BlockType.get("minecraft:light_blue_terracotta", "stained_clay:14");
-		FROST.blockColor = BlockType.get("minecraft:red_terracotta", "stained_clay:3");
+		EMBER.blockColor = BlockType.get("minecraft:light_blue_terracotta", "stained_clay:14");
+		ICE.blockColor = BlockType.get("minecraft:red_terracotta", "stained_clay:3");
 	}
 }

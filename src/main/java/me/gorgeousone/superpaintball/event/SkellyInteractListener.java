@@ -1,6 +1,6 @@
 package me.gorgeousone.superpaintball.event;
 
-import me.gorgeousone.superpaintball.GameHandler;
+import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
@@ -12,10 +12,10 @@ import org.bukkit.inventory.PlayerInventory;
 
 public class SkellyInteractListener implements Listener {
 	
-	private final GameHandler gameHandler;
+	private final PbLobbyHandler lobbyHandler;
 	
-	public SkellyInteractListener(GameHandler gameHandler) {
-		this.gameHandler = gameHandler;
+	public SkellyInteractListener(PbLobbyHandler lobbyHandler) {
+		this.lobbyHandler = lobbyHandler;
 	}
 	
 	@EventHandler
@@ -26,14 +26,14 @@ public class SkellyInteractListener implements Listener {
 		Player player = event.getPlayer();
 		
 		//idk i'm a bit uncreative rn
-		if (!gameHandler.isPlaying(player.getUniqueId())) {
+		if (!lobbyHandler.isPlaying(player.getUniqueId())) {
 			return;
 		}
 		event.setCancelled(true);
 		PlayerInventory inv = player.getInventory();
 		ItemStack heldItem = inv.getItemInMainHand();
 		
-		if (!gameHandler.getWaterBombs().isSimilar(heldItem)) {
+		if (!lobbyHandler.getWaterBombs().isSimilar(heldItem)) {
 			return;
 		}
 		ThrownPotion waterBomb = player.launchProjectile(ThrownPotion.class);
