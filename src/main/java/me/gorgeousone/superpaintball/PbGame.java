@@ -214,7 +214,12 @@ public class PbGame {
 	
 	private void announceWinners(TeamType winningTeam) {
 		state = GameState.OVER;
-		sendTitle(winningTeam.prefixColor + winningTeam.displayName + " won!");
+		
+		if (winningTeam != null) {
+			sendTitle(winningTeam.prefixColor + winningTeam.displayName + " won!");
+		} else {
+			sendTitle("It's a draw?");
+		}
 	}
 	
 	private void sendTitle(String text) {
