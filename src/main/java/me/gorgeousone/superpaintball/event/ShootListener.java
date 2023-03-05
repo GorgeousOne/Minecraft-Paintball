@@ -1,8 +1,8 @@
 package me.gorgeousone.superpaintball.event;
 
-import me.gorgeousone.superpaintball.GameHandler;
-import me.gorgeousone.superpaintball.GameState;
-import me.gorgeousone.superpaintball.PbGame;
+import me.gorgeousone.superpaintball.game.PbLobbyHandler;
+import me.gorgeousone.superpaintball.game.GameState;
+import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.kit.KitType;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,10 +17,10 @@ import java.util.UUID;
 
 public class ShootListener implements Listener {
 	
-	private final GameHandler gameHandler;
+	private final PbLobbyHandler lobbyHandler;
 	
-	public ShootListener(GameHandler gameHandler) {
-		this.gameHandler = gameHandler;
+	public ShootListener(PbLobbyHandler lobbyHandler) {
+		this.lobbyHandler = lobbyHandler;
 	}
 	
 	@EventHandler
@@ -30,13 +30,13 @@ public class ShootListener implements Listener {
 		}
 		Player player = event.getPlayer();
 		UUID playerId = player.getUniqueId();
-		PbGame game = gameHandler.getGame(playerId);
+		PbLobby lobby = lobbyHandler.getLobby(playerId);
 		
-		if (game == null) {
+		if (lobby == null) {
 			return;
 		}
 		ItemStack heldItem = getHeldItem(player);
-		boolean canPlayerInteract = game.getState() == GameState.RUNNING && game.getTeam(playerId).getAlivePlayers().contains(playerId);
+		boolean canPlayerInteract = lobby.getState() == GameState.RUNNING && lobby.getTeam(playerId).getAlivePlayers().contains(playerId);
 		
 		if (!canPlayerInteract) {
 			event.setCancelled(true);
@@ -47,7 +47,7 @@ public class ShootListener implements Listener {
 		if (kitType == null) {
 			return;
 		}
-		game.launchShot(player, gameHandler.getKit(kitType));
+		lobby.launchShot(player, lobbyHandler.getKit(kitType));
 	}
 	
 	KitType getKitType(Material mat) {
