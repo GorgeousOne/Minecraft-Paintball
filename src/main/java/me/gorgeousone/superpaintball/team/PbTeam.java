@@ -4,6 +4,7 @@ import me.gorgeousone.superpaintball.GameHandler;
 import me.gorgeousone.superpaintball.PbGame;
 import me.gorgeousone.superpaintball.kit.AbstractKit;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -53,6 +54,7 @@ public class PbTeam {
 	public void start() {
 		for (UUID playerId : alivePlayers) {
 			Player player = Bukkit.getPlayer(playerId);
+			player.setGameMode(GameMode.ADVENTURE);
 			healPlayer(player);
 			equipPlayers(player);
 		}
@@ -186,6 +188,15 @@ public class PbTeam {
 			}
 		}
 		return null;
+	}
+	
+	public void revivePlayer(UUID playerId) {
+		for (UUID skellyId : reviveSkellies.keySet()) {
+			if (reviveSkellies.get(skellyId) == playerId) {
+				revivePlayer((ArmorStand) Bukkit.getEntity(skellyId));
+				return;
+			}
+		}
 	}
 	
 	public void revivePlayer(ArmorStand skelly) {

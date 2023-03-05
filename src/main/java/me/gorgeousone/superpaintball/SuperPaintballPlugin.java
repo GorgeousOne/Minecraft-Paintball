@@ -3,6 +3,7 @@ package me.gorgeousone.superpaintball;
 import me.gorgeousone.superpaintball.cmdframework.command.ParentCommand;
 import me.gorgeousone.superpaintball.cmdframework.handler.CommandHandler;
 import me.gorgeousone.superpaintball.command.DebugKillCommand;
+import me.gorgeousone.superpaintball.command.DebugReviveCommand;
 import me.gorgeousone.superpaintball.command.KitCommand;
 import me.gorgeousone.superpaintball.event.PlayerListener;
 import me.gorgeousone.superpaintball.event.ProjectileListener;
@@ -59,6 +60,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		paintballCmd.addAlias("pb");
 		paintballCmd.addChild(new KitCommand());
 		paintballCmd.addChild(new DebugKillCommand(gameHandler));
+		paintballCmd.addChild(new DebugReviveCommand(gameHandler));
 		
 		CommandHandler cmdHandler = new CommandHandler(this);
 		cmdHandler.registerCommand(paintballCmd);
