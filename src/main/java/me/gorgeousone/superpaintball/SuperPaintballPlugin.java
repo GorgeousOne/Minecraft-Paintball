@@ -9,6 +9,7 @@ import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.game.GameUtil;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.kit.KitType;
+import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.team.TeamType;
 import me.gorgeousone.superpaintball.util.blocktype.BlockType;
 import me.gorgeousone.superpaintball.util.version.VersionUtil;
@@ -20,12 +21,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class SuperPaintballPlugin extends JavaPlugin {
 	
 	private PbLobbyHandler lobbyHandler;
+	private PbKitHandler kitHandler;
 	
 	@Override
 	public void onEnable() {
 		setupVersioning();
-		
-		this.lobbyHandler = new PbLobbyHandler(this);
+		this.kitHandler = new PbKitHandler();
+		this.lobbyHandler = new PbLobbyHandler(this, kitHandler);
 		registerCommands();
 		registerListeners();
 		setupTest();
@@ -37,6 +39,9 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		KitType.setup();
 		TeamType.setup();
 		GameUtil.setup();
+		
+		//IDK this is just creating kits? not actually version dependent
+		PbKitHandler.setupKits(this);
 	}
 	
 	@Override

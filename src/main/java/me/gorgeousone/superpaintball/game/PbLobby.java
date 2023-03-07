@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball.game;
 
+import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.kit.AbstractKit;
 import me.gorgeousone.superpaintball.team.PbTeam;
 import me.gorgeousone.superpaintball.team.TeamType;
@@ -41,7 +42,7 @@ public class PbLobby {
 	private Map<TeamType, String> aliveEntries;
 	
 	
-	public PbLobby(PbLobbyHandler lobbyHandler, JavaPlugin plugin) {
+	public PbLobby(PbLobbyHandler lobbyHandler, JavaPlugin plugin, PbKitHandler kitHandler) {
 		this.plugin = plugin;
 		this.gameId = UUID.randomUUID();
 		this.teams = new HashMap<>();
@@ -50,7 +51,7 @@ public class PbLobby {
 		this.aliveEntries = new HashMap<>();
 		
 		for (TeamType teamType : TeamType.values()) {
-			teams.put(teamType, new PbTeam(teamType, this, lobbyHandler));
+			teams.put(teamType, new PbTeam(teamType, this, lobbyHandler, kitHandler));
 		}
 		start();
 	}

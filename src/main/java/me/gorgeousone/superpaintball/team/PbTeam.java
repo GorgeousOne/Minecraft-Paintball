@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball.team;
 
+import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.kit.AbstractKit;
@@ -28,6 +29,7 @@ public class PbTeam {
 	
 	private final TeamType teamType;
 	private final PbLobbyHandler lobbyHandler;
+	private final PbKitHandler kitHandler;
 	private final PbLobby lobby;
 	private final ItemStack[] teamArmorSet;
 	private final Set<UUID> players;
@@ -39,10 +41,11 @@ public class PbTeam {
 	private final Random rng = new Random();
 	
 	
-	public PbTeam(TeamType teamType, PbLobby lobby, PbLobbyHandler lobbyHandler) {
+	public PbTeam(TeamType teamType, PbLobby lobby, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
 		this.teamType = teamType;
 		this.lobby = lobby;
 		this.lobbyHandler = lobbyHandler;
+		this.kitHandler = kitHandler;
 		this.players = new HashSet<>();
 		this.alivePlayers = new HashSet<>();
 		this.playerHealth = new HashMap<>();
@@ -153,7 +156,7 @@ public class PbTeam {
 		alivePlayers.remove(player.getUniqueId());
 		setSpectator(player, true);
 		
-		ArmorStand skelly = TeamUtil.createSkelly(TeamUtil.DEATH_ARMOR_SET, player, teamType, lobbyHandler.getKit(playerId).getType());
+		ArmorStand skelly = TeamUtil.createSkelly(TeamUtil.DEATH_ARMOR_SET, player, teamType, kitHandler.getKit(playerId).getType());
 		reviveSkellies.put(skelly.getUniqueId(), playerId);
 		lobby.updateAliveScores();
 		
@@ -230,9 +233,9 @@ public class PbTeam {
 	
 	private void equipPlayers(Player player) {
 		PlayerInventory inv = player.getInventory();
-		AbstractKit kit = lobbyHandler.getKit(player.getUniqueId());
+		AbstractKit kit = kitHandler.getKit(player.getUniqueId());
 		inv.setItem(0, kit.getType().getGun());
-		inv.setItem(1, lobbyHandler.getWaterBombs());
+		inv.setItem(1, PbKitHandler.getWaterBombs());
 	}
 	
 	//TODO make this nicer block patterns :(
