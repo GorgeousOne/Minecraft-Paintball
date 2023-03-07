@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -33,6 +34,18 @@ public class PlayerListener implements Listener {
 		if (lobbyHandler.isPlaying(player.getUniqueId()) &&
 		    !(dmgCause == EntityDamageEvent.DamageCause.CUSTOM ||
 		      dmgCause == EntityDamageEvent.DamageCause.VOID)) {
+			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerHeal(EntityRegainHealthEvent event) {
+		if (!(event.getEntity() instanceof Player)) {
+			return;
+		}
+		Player player = (Player) event.getEntity();
+		
+		if (lobbyHandler.isPlaying(player.getUniqueId())) {
 			event.setCancelled(true);
 		}
 	}

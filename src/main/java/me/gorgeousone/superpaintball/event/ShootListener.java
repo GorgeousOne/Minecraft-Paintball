@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball.event;
 
+import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.game.GameState;
 import me.gorgeousone.superpaintball.game.PbLobby;
@@ -47,7 +48,7 @@ public class ShootListener implements Listener {
 		if (kitType == null) {
 			return;
 		}
-		lobby.launchShot(player, lobbyHandler.getKit(kitType));
+		lobby.launchShot(player, PbKitHandler.getKit(kitType));
 	}
 	
 	KitType getKitType(Material mat) {

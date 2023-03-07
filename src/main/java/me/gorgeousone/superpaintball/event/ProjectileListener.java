@@ -1,6 +1,7 @@
 package me.gorgeousone.superpaintball.event;
 
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
+import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.team.PbTeam;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -72,7 +73,7 @@ public class ProjectileListener implements Listener {
 		if (team == null) {
 			return;
 		}
-		if (!lobbyHandler.getWaterBombs().isSimilar(potion.getItem())) {
+		if (!PbKitHandler.getWaterBombs().isSimilar(potion.getItem())) {
 			return;
 		}
 		healPlayers(getEffectedEntities(potion), team);
