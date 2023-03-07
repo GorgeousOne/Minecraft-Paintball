@@ -1,7 +1,8 @@
 package me.gorgeousone.superpaintball.team;
 
-import me.gorgeousone.superpaintball.GameHandler;
-import me.gorgeousone.superpaintball.PbGame;
+import me.gorgeousone.superpaintball.kit.PbKitHandler;
+import me.gorgeousone.superpaintball.game.PbLobbyHandler;
+import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.kit.AbstractKit;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -27,8 +28,9 @@ import java.util.UUID;
 public class PbTeam {
 	
 	private final TeamType teamType;
-	private final GameHandler gameHandler;
-	private final PbGame game;
+	private final PbLobbyHandler lobbyHandler;
+	private final PbKitHandler kitHandler;
+	private final PbLobby lobby;
 	private final ItemStack[] teamArmorSet;
 	private final Set<UUID> players;
 	private final Set<UUID> alivePlayers;
@@ -39,10 +41,11 @@ public class PbTeam {
 	private final Random rng = new Random();
 	
 	
-	public PbTeam(TeamType teamType, PbGame game, GameHandler gameHandler) {
+	public PbTeam(TeamType teamType, PbLobby lobby, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
 		this.teamType = teamType;
-		this.game = game;
-		this.gameHandler = gameHandler;
+		this.lobby = lobby;
+		this.lobbyHandler = lobbyHandler;
+		this.kitHandler = kitHandler;
 		this.players = new HashSet<>();
 		this.alivePlayers = new HashSet<>();
 		this.playerHealth = new HashMap<>();
@@ -64,8 +67,8 @@ public class PbTeam {
 		return teamType;
 	}
 	
-	public PbGame getGame() {
-		return game;
+	public PbLobby getGame() {
+		return lobby;
 	}
 	
 	public Set<UUID> getPlayers() {
@@ -97,7 +100,7 @@ public class PbTeam {
 			reviveSkellies.remove(skellyId);
 		}
 		if (alivePlayers.isEmpty()) {
-			game.onTeamKill(this);
+			lobby.onTeamKill(this);
 		}
 	}
 	
@@ -153,12 +156,12 @@ public class PbTeam {
 		alivePlayers.remove(player.getUniqueId());
 		setSpectator(player, true);
 		
-		ArmorStand skelly = TeamUtil.createSkelly(TeamUtil.DEATH_ARMOR_SET, player, teamType, gameHandler.getKit(playerId).getType());
+		ArmorStand skelly = TeamUtil.createSkelly(TeamUtil.DEATH_ARMOR_SET, player, teamType, kitHandler.getKit(playerId).getType());
 		reviveSkellies.put(skelly.getUniqueId(), playerId);
-		game.updateAliveScores();
+		lobby.updateAliveScores();
 		
 		if (alivePlayers.isEmpty()) {
-			game.onTeamKill(this);
+			lobby.onTeamKill(this);
 		}
 	}
 	
@@ -171,9 +174,9 @@ public class PbTeam {
 			healPlayer(player);
 			player.teleport(player.getLocation().add(0, 1, 0));
 			player.addPotionEffect(TeamUtil.KNOCKOUT_BLINDNESS);
-			game.hidePlayer(player);
+			lobby.hidePlayer(player);
 		} else {
-			game.showPlayer(player);
+			lobby.showPlayer(player);
 		}
 	}
 	
@@ -215,7 +218,7 @@ public class PbTeam {
 		reviveSkellies.remove(skellyId);
 		playerHealth.put(playerId, TeamUtil.DMG_POINTS);
 		alivePlayers.add(playerId);
-		game.updateAliveScores();
+		lobby.updateAliveScores();
 	}
 	
 	public void healPlayer(Player player) {
@@ -230,9 +233,9 @@ public class PbTeam {
 	
 	private void equipPlayers(Player player) {
 		PlayerInventory inv = player.getInventory();
-		AbstractKit kit = gameHandler.getKit(player.getUniqueId());
+		AbstractKit kit = kitHandler.getKit(player.getUniqueId());
 		inv.setItem(0, kit.getType().getGun());
-		inv.setItem(1, gameHandler.getWaterBombs());
+		inv.setItem(1, PbKitHandler.getWaterBombs());
 	}
 	
 	//TODO make this nicer block patterns :(
