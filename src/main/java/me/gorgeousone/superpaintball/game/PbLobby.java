@@ -1,11 +1,11 @@
-package me.gorgeousone.superpaintball;
+package me.gorgeousone.superpaintball.game;
 
+import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.kit.AbstractKit;
 import me.gorgeousone.superpaintball.team.PbTeam;
 import me.gorgeousone.superpaintball.team.TeamType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class PbGame {
+public class PbLobby {
 	
 	private final JavaPlugin plugin;
 	private final UUID gameId;
@@ -42,7 +42,7 @@ public class PbGame {
 	private Map<TeamType, String> aliveEntries;
 	
 	
-	public PbGame(GameHandler gameHandler, JavaPlugin plugin) {
+	public PbLobby(PbLobbyHandler lobbyHandler, JavaPlugin plugin, PbKitHandler kitHandler) {
 		this.plugin = plugin;
 		this.gameId = UUID.randomUUID();
 		this.teams = new HashMap<>();
@@ -51,7 +51,7 @@ public class PbGame {
 		this.aliveEntries = new HashMap<>();
 		
 		for (TeamType teamType : TeamType.values()) {
-			teams.put(teamType, new PbTeam(teamType, this, gameHandler));
+			teams.put(teamType, new PbTeam(teamType, this, lobbyHandler, kitHandler));
 		}
 		start();
 	}

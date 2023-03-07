@@ -2,14 +2,14 @@ package me.gorgeousone.superpaintball;
 
 import me.gorgeousone.superpaintball.cmdframework.command.ParentCommand;
 import me.gorgeousone.superpaintball.cmdframework.handler.CommandHandler;
-import me.gorgeousone.superpaintball.command.DebugKillCommand;
-import me.gorgeousone.superpaintball.command.DebugReviveCommand;
-import me.gorgeousone.superpaintball.command.KitCommand;
-import me.gorgeousone.superpaintball.event.PlayerListener;
-import me.gorgeousone.superpaintball.event.ProjectileListener;
-import me.gorgeousone.superpaintball.event.ShootListener;
-import me.gorgeousone.superpaintball.event.SkellyInteractListener;
+import me.gorgeousone.superpaintball.command.*;
+import me.gorgeousone.superpaintball.command.arena.*;
+import me.gorgeousone.superpaintball.event.*;
+import me.gorgeousone.superpaintball.game.PbLobbyHandler;
+import me.gorgeousone.superpaintball.game.GameUtil;
+import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.kit.KitType;
+import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.team.TeamType;
 import me.gorgeousone.superpaintball.util.blocktype.BlockType;
 import me.gorgeousone.superpaintball.util.version.VersionUtil;
@@ -20,14 +20,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SuperPaintballPlugin extends JavaPlugin {
 	
-	private ParentCommand paintballCmd;
-	private GameHandler gameHandler;
+	private PbLobbyHandler lobbyHandler;
+	private PbKitHandler kitHandler;
 	
 	@Override
 	public void onEnable() {
 		setupVersioning();
-		
-		this.gameHandler = new GameHandler(this);
+		this.kitHandler = new PbKitHandler();
+		this.lobbyHandler = new PbLobbyHandler(this, kitHandler);
 		registerCommands();
 		registerListeners();
 		setupTest();
@@ -39,6 +39,9 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		KitType.setup();
 		TeamType.setup();
 		GameUtil.setup();
+		
+		//IDK this is just creating kits? not actually version dependent
+		PbKitHandler.setupKits(this);
 	}
 	
 	@Override
@@ -46,31 +49,39 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	
 	private boolean randomize;
 	private void setupTest() {
-		PbGame game = gameHandler.createGame();
+		PbLobby lobby = lobbyHandler.createLobby();
 		
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			game.addPlayer(player.getUniqueId(), Math.random() >= .5 ? TeamType.NETHER : TeamType.FROST);
+			lobby.addPlayer(player.getUniqueId(), Math.random() >= .5 ? TeamType.EMBER : TeamType.ICE);
 			randomize = !randomize;
 		}
-		game.start();
+		lobby.start();
 	}
 	
 	private void registerCommands() {
-		paintballCmd = new ParentCommand("paintball");
-		paintballCmd.addAlias("pb");
-		paintballCmd.addChild(new KitCommand());
-		paintballCmd.addChild(new DebugKillCommand(gameHandler));
-		paintballCmd.addChild(new DebugReviveCommand(gameHandler));
+		ParentCommand pbCmd = new ParentCommand("paintball");
+		pbCmd.addAlias("pb");
+		
+		ParentCommand arenaCmd = new ParentCommand("arena");
+		arenaCmd.addChild(new ArenaCreateCommand(this, lobbyHandler));
+		arenaCmd.addChild(new ArenaDeleteCommand(lobbyHandler));
+		arenaCmd.addChild(new ArenaCopyCommand(lobbyHandler));
+		arenaCmd.addChild(new ArenaAddSpawnCommand(lobbyHandler));
+		
+		pbCmd.addChild(arenaCmd);
+		pbCmd.addChild(new KitCommand());
+		pbCmd.addChild(new DebugKillCommand(lobbyHandler));
+		pbCmd.addChild(new DebugReviveCommand(lobbyHandler));
 		
 		CommandHandler cmdHandler = new CommandHandler(this);
-		cmdHandler.registerCommand(paintballCmd);
+		cmdHandler.registerCommand(pbCmd);
 	}
 	
 	void registerListeners() {
 		PluginManager manager = Bukkit.getPluginManager();
-		manager.registerEvents(new PlayerListener(gameHandler), this);
-		manager.registerEvents(new ShootListener(gameHandler), this);
-		manager.registerEvents(new ProjectileListener(gameHandler), this);
-		manager.registerEvents(new SkellyInteractListener(gameHandler), this);
+		manager.registerEvents(new PlayerListener(lobbyHandler), this);
+		manager.registerEvents(new ShootListener(lobbyHandler), this);
+		manager.registerEvents(new ProjectileListener(lobbyHandler), this);
+		manager.registerEvents(new SkellyInteractListener(lobbyHandler), this);
 	}
 }
