@@ -13,22 +13,25 @@ public class PbLobbyHandler {
 	
 	private final JavaPlugin plugin;
 	private final PbKitHandler kitHandler;
-	private final Map<UUID, PbLobby> games;
+	private final Map<UUID, PbLobby> lobbies;
+	
+	private final Map<String, PbArena> arenas;
 	
 	public PbLobbyHandler(JavaPlugin plugin, PbKitHandler kitHandler) {
 		this.plugin = plugin;
 		this.kitHandler = kitHandler;
-		this.games = new HashMap<>();
+		this.lobbies = new HashMap<>();
+		this.arenas = new HashMap<>();
 	}
 	
-	public PbLobby createGame() {
+	public PbLobby createLobby() {
 		PbLobby lobby = new PbLobby(this, plugin, kitHandler);
-		games.put(lobby.getId(), lobby);
+		lobbies.put(lobby.getId(), lobby);
 		return lobby;
 	}
 	
 	public PbLobby getLobby(UUID playerId) {
-		for (PbLobby lobby : games.values()) {
+		for (PbLobby lobby : lobbies.values()) {
 			if (lobby.hasPlayer(playerId)) {
 				return lobby;
 			}
@@ -37,7 +40,7 @@ public class PbLobbyHandler {
 	}
 	
 	public boolean isPlaying(UUID playerId) {
-		for (PbLobby lobby : games.values()) {
+		for (PbLobby lobby : lobbies.values()) {
 			if (lobby.hasPlayer(playerId)) {
 				return true;
 			}
@@ -55,7 +58,7 @@ public class PbLobbyHandler {
 	}
 	
 	public PbTeam getTeam(ArmorStand reviveSkelly) {
-		for (PbLobby lobby : games.values()) {
+		for (PbLobby lobby : lobbies.values()) {
 			for (PbTeam team : lobby.getTeams()) {
 				if (team.hasReviveSkelly(reviveSkelly)) {
 					return team;
@@ -63,5 +66,15 @@ public class PbLobbyHandler {
 			}
 		}
 		return null;
+	}
+	
+	public boolean containsArena(String arenaName) {
+		return arenas.containsKey(arenaName);
+	}
+	
+	public void registerArena(PbArena newArena) {
+		if (arenas.containsKey(newArena.getName())) {
+			throw new IllegalArgumentException("Already registered arena with name " + newArena.getName());
+		}
 	}
 }

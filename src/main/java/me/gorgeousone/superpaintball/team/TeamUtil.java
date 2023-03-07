@@ -44,9 +44,9 @@ public class TeamUtil {
 				ChatColor.BOLD + teamType.prefixColor + player.getName() + ChatColor.RESET +
 				ChatColor.BOLD + ChatColor.MAGIC + "XX";
 		
-		deathLoc.setX((int) deathLoc.getX() + .5);
-		deathLoc.setY((int) deathLoc.getY() + .5);
-		deathLoc.setZ((int) deathLoc.getZ() + .5);
+//		deathLoc.setX((int) deathLoc.getX() + .5);
+//		deathLoc.setY((int) deathLoc.getY() + .5);
+//		deathLoc.setZ((int) deathLoc.getZ() + .5);
 		
 		ArmorStand stand = (ArmorStand) player.getWorld().spawnEntity(deathLoc, EntityType.ARMOR_STAND);
 		stand.getEquipment().setArmorContents(deathArmorSet);
