@@ -49,7 +49,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	
 	private boolean randomize;
 	private void setupTest() {
-		PbLobby lobby = lobbyHandler.createGame();
+		PbLobby lobby = lobbyHandler.createLobby();
 		
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			lobby.addPlayer(player.getUniqueId(), Math.random() >= .5 ? TeamType.EMBER : TeamType.ICE);
@@ -61,15 +61,17 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	private void registerCommands() {
 		ParentCommand pbCmd = new ParentCommand("paintball");
 		pbCmd.addAlias("pb");
-		pbCmd.addChild(new KitCommand());
-		pbCmd.addChild(new DebugKillCommand(lobbyHandler));
-		pbCmd.addChild(new DebugReviveCommand(lobbyHandler));
 		
 		ParentCommand arenaCmd = new ParentCommand("arena");
-		arenaCmd.addChild(new ArenaCreateCommand(lobbyHandler));
+		arenaCmd.addChild(new ArenaCreateCommand(this, lobbyHandler));
 		arenaCmd.addChild(new ArenaDeleteCommand(lobbyHandler));
 		arenaCmd.addChild(new ArenaCopyCommand(lobbyHandler));
 		arenaCmd.addChild(new ArenaAddSpawnCommand(lobbyHandler));
+		
+		pbCmd.addChild(arenaCmd);
+		pbCmd.addChild(new KitCommand());
+		pbCmd.addChild(new DebugKillCommand(lobbyHandler));
+		pbCmd.addChild(new DebugReviveCommand(lobbyHandler));
 		
 		CommandHandler cmdHandler = new CommandHandler(this);
 		cmdHandler.registerCommand(pbCmd);
