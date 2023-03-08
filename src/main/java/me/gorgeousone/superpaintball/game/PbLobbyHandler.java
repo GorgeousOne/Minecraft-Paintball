@@ -2,6 +2,10 @@ package me.gorgeousone.superpaintball.game;
 
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.team.PbTeam;
+import me.gorgeousone.superpaintball.util.ConfigUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,21 +18,28 @@ public class PbLobbyHandler {
 	
 	private final JavaPlugin plugin;
 	private final PbKitHandler kitHandler;
-	private final Map<UUID, PbLobby> lobbies;
-	
-	private final Map<String, PbArena> arenas;
-	
+	private final Map<String, PbLobby> lobbies;
+
 	public PbLobbyHandler(JavaPlugin plugin, PbKitHandler kitHandler) {
 		this.plugin = plugin;
 		this.kitHandler = kitHandler;
 		this.lobbies = new HashMap<>();
-		this.arenas = new HashMap<>();
 	}
 	
-	public PbLobby createLobby() {
-		PbLobby lobby = new PbLobby(this, plugin, kitHandler);
-		lobbies.put(lobby.getId(), lobby);
+	public PbLobby createLobby(String name, Location spawn) {
+		if (lobbies.containsKey(name)) {
+			throw new IllegalArgumentException(String.format("Lobby with name '%s' already exists."));
+		}
+		PbLobby lobby = new PbLobby(name, spawn, plugin, this, kitHandler);
+		lobbies.put(lobby.getName(), lobby);
 		return lobby;
+	}
+
+	public void registerLobby(PbLobby lobby) {
+		if (lobbies.containsKey(lobby.getName())) {
+			throw new IllegalArgumentException(String.format("Lobby with name '%s' already exists."));
+		}
+		lobbies.put(lobby.getName(), lobby);
 	}
 	
 	public PbLobby getLobby(UUID playerId) {
@@ -68,20 +79,15 @@ public class PbLobbyHandler {
 		}
 		return null;
 	}
-	
-	public boolean containsArena(String arenaName) {
-		return arenas.containsKey(arenaName);
-	}
-	
-	public void registerArena(PbArena newArena) {
-		if (arenas.containsKey(newArena.getName())) {
-			throw new IllegalArgumentException("Already registered arena with name " + newArena.getName());
+
+	public void loadLobbies(YamlConfiguration lobbyConfig) {
+		ConfigUtil.assertKeyExists(lobbyConfig, "lobbies");
+		ConfigurationSection lobbies = lobbyConfig.getConfigurationSection("lobbies");
+
+		for (String name : lobbies.getKeys(false)) {
+			PbLobby lobby = PbLobby.fromYml(name, lobbies, plugin, this, kitHandler);
+			registerLobby(lobby);
 		}
 	}
-	
-	public void loadArenas(YamlConfiguration arenaConfig) {
-		for (String key : arenaConfig.getKeys(false)) {
-		
-		}
-	}
+
 }

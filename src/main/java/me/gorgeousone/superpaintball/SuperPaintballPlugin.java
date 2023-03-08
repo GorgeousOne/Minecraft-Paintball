@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball;
 
+import me.gorgeousone.superpaintball.arena.PbArenaHandler;
 import me.gorgeousone.superpaintball.cmdframework.command.ParentCommand;
 import me.gorgeousone.superpaintball.cmdframework.handler.CommandHandler;
 import me.gorgeousone.superpaintball.command.*;
@@ -15,23 +16,29 @@ import me.gorgeousone.superpaintball.util.ConfigUtil;
 import me.gorgeousone.superpaintball.util.blocktype.BlockType;
 import me.gorgeousone.superpaintball.util.version.VersionUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 public final class SuperPaintballPlugin extends JavaPlugin {
 	
 	private PbLobbyHandler lobbyHandler;
 	private PbKitHandler kitHandler;
-	
+	private PbArenaHandler arenaHandler;
+
 	@Override
 	public void onEnable() {
 		setupVersioning();
 		this.kitHandler = new PbKitHandler();
+		this.arenaHandler = new PbArenaHandler();
 		this.lobbyHandler = new PbLobbyHandler(this, kitHandler);
+		loadSaves();
 		registerCommands();
 		registerListeners();
 		setupTest();
@@ -53,10 +60,10 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	
 	private boolean randomize;
 	private void setupTest() {
-		PbLobby lobby = lobbyHandler.createLobby();
+		PbLobby lobby = lobbyHandler.createLobby("lobby", new Location(Bukkit.getWorld("world"), 0, 128, 0));
 		
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			lobby.addPlayer(player.getUniqueId(), Math.random() >= .5 ? TeamType.EMBER : TeamType.ICE);
+			lobby.joinPlayer(player, Math.random() >= .5 ? TeamType.EMBER : TeamType.ICE);
 			randomize = !randomize;
 		}
 		lobby.start();
@@ -67,7 +74,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		pbCmd.addAlias("pb");
 		
 		ParentCommand arenaCmd = new ParentCommand("arena");
-		arenaCmd.addChild(new ArenaCreateCommand(this, lobbyHandler));
+		arenaCmd.addChild(new ArenaCreateCommand(arenaHandler, getDataFolder().getAbsolutePath()));
 		arenaCmd.addChild(new ArenaDeleteCommand(lobbyHandler));
 		arenaCmd.addChild(new ArenaCopyCommand(lobbyHandler));
 		arenaCmd.addChild(new ArenaAddSpawnCommand(lobbyHandler));
@@ -95,9 +102,19 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		
 		try {
 			arenaConfig.save("arenas");
-			arenaConfig.save("lobbies");
+			lobbyConfig.save("lobbies");
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+		}
+		try {
+			arenaHandler.loadArenas(arenaConfig, this.getDataFolder().toString());
+		} catch (Exception e) {
+			Bukkit.getLogger().log(Level.WARNING, e.getMessage());
+		}
+		try {
+			lobbyHandler.loadLobbies(lobbyConfig);
+		} catch (Exception e) {
+			Bukkit.getLogger().log(Level.WARNING, e.getMessage());
 		}
 	}
 }

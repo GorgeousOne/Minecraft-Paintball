@@ -15,16 +15,15 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.World;
 import me.gorgeousone.superpaintball.team.TeamType;
 import me.gorgeousone.superpaintball.util.ConfigUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PbArena {
 
@@ -46,6 +45,14 @@ public class PbArena {
 		schemPos.setX(schemPos.getBlockX());
 		schemPos.setY(schemPos.getBlockY());
 		schemPos.setZ(schemPos.getBlockZ());
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public Location getSchemPos() {
+		return schemPos.clone();
 	}
 
 	public void addSpawn(TeamType teamType, Location spawnPos) {
@@ -81,14 +88,6 @@ public class PbArena {
 		}
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public Location getSchemPos() {
-		return schemPos.clone();
-	}
-
 	public void toYml(ConfigurationSection parentSection) {
 		ConfigurationSection section = parentSection.createSection(name);
 		section.set("schematic", schemFile.getName());
@@ -105,6 +104,24 @@ public class PbArena {
 		}
 	}
 
+	public boolean hasSpawns(TeamType teamType) {
+		return teamSpawns.containsKey(teamType);
+	}
+
+	public void spawnPlayers(TeamType teamType, Collection<UUID> playerIds) {
+		if (!hasSpawns(teamType)) {
+			throw new IllegalArgumentException(String.format("Arena '%s' does not have spawn points for team '%s'", name, teamType.displayName));
+		}
+		List<Location> spawns = teamSpawns.get(teamType);
+		int i = 0;
+
+		for (UUID playerId : playerIds) {
+			Player player = Bukkit.getPlayer(playerId);
+			player.teleport(spawns.get(i));
+			i = (i + 1) % spawns.size();
+		}
+	}
+
 	public static PbArena fromYml(String name, ConfigurationSection section, String dataFolder) {
 		PbArena arena;
 
@@ -116,7 +133,7 @@ public class PbArena {
 			Location schemPos = ConfigUtil.blockPosFromYmlString(section.getString("position"));
 			arena = new PbArena(name, schemFile, schemPos);
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException(String.format("Could not load arena '%s': %s", name, e.getMessage());
+			throw new IllegalArgumentException(String.format("Could not load arena '%s': %s", name, e.getMessage()));
 		}
 		ConfigurationSection spawnsSection = section.getConfigurationSection("spawns");
 
@@ -127,7 +144,7 @@ public class PbArena {
 				teamType = ConfigUtil.teamTypeFromYml(teamName);
 				spawnStrings = spawnsSection.getStringList(teamName);
 			} catch (IllegalArgumentException e) {
-				throw new IllegalArgumentException(String.format("Could not load arena '%s': %s", name, e.getMessage());
+				throw new IllegalArgumentException(String.format("Could not load arena '%s': %s", name, e.getMessage()));
 			}
 			try {
 				for (String spawnString : spawnStrings) {
