@@ -1,10 +1,12 @@
 package me.gorgeousone.superpaintball.util;
 
 import me.gorgeousone.superpaintball.game.GameUtil;
+import me.gorgeousone.superpaintball.team.TeamType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -51,24 +53,24 @@ public final class ConfigUtil {
 	
 	public static Location blockPosFromYmlString(String ymlBlockPos) {
 		Map<String, String> dataMap = getDataMapFromString(ymlBlockPos);
-		assertContainsKeys(dataMap, "world", "x", "y", "z");
-		
-		World world = Bukkit.getWorld(dataMap.get("world"));
-		int x = Integer.parseInt(dataMap.get("x"));
-		int y = Integer.parseInt(dataMap.get("y"));
-		int z = Integer.parseInt(dataMap.get("z"));
+		assertKeysExist(dataMap, "world", "x", "y", "z");
+
+		World world = parseWorld(dataMap, "world");
+		int x = parseInt(dataMap, "x");
+		int y = parseInt(dataMap, "y");
+		int z = parseInt(dataMap, "z");
 		return new Location(world, x, y, z);
 	}
 	
 	public static Location spawnFromYmlString(String ymlBlockPos) {
 		Map<String, String> dataMap = getDataMapFromString(ymlBlockPos);
-		assertContainsKeys(dataMap, "world", "x", "y", "z", "facing");
-		
-		World world = Bukkit.getWorld(dataMap.get("world"));
-		double x = Integer.parseInt(dataMap.get("x")) + .5;
-		double y = Integer.parseInt(dataMap.get("y")) + .5;
-		double z = Integer.parseInt(dataMap.get("z")) + .5;
-		BlockFace facing = BlockFace.valueOf(dataMap.get("facing"));
+		assertKeysExist(dataMap, "world", "x", "y", "z", "facing");
+
+		World world = parseWorld(dataMap, "world");
+		double x = parseInt(dataMap, "x") + .5;
+		double y = parseInt(dataMap, "y") + .5;
+		double z = parseInt(dataMap, "z") + .5;
+		BlockFace facing = parseBlockFace(dataMap, "facing");
 		return new Location(world, x, y, z).setDirection(facing.getDirection());
 	}
 	
@@ -89,12 +91,70 @@ public final class ConfigUtil {
 		}
 		return dataMap;
 	}
-	
-	private static void assertContainsKeys(Map<?, ?> map, Object... keys) {
+
+	public static void assertKeyExists(ConfigurationSection section, String key) {
+		if (!section.contains(key)) {
+			throw new IllegalArgumentException(String.format("Missing key '%s'.", key));
+		}
+	}
+	private static void assertKeysExist(Map<?, ?> map, Object... keys) {
 		for (Object key : keys) {
 			if (!map.containsKey(key)) {
 				throw new IllegalArgumentException(String.format("Missing key '%s'.", key.toString()));
 			}
+		}
+	}
+
+	private static World parseWorld(Map<String, String> dataMap, String key) {
+		String value = dataMap.get(key);
+		World world = Bukkit.getWorld(value);
+
+		if (world != null) {
+			return world;
+		}
+		throw new IllegalArgumentException(String.format("Could not find '%s' with name '%s'.", key, value));
+	}
+
+	private static int parseInt(Map<String, String> dataMap, String key) {
+		String value = dataMap.get(key);
+
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException(String.format("Could not read integer '%s' for '%s'.", value, key));
+		}
+	}
+
+	private static BlockFace parseBlockFace(Map<String, String> dataMap, String key) {
+		String value = dataMap.get(key);
+
+		try {
+			return BlockFace.valueOf(value);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException(String.format("Could not read facing '%s' as '%s'.", value, key));
+		}
+	}
+
+	public static File schemFileFromYml(String fileName, String dataFolder) {
+		File file = new File(dataFolder + File.separator + "schematics" + fileName);
+
+		if (file.exists()) {
+			throw new IllegalArgumentException(String.format("Could not find schematic '%s' in plugin's 'schematics' folder.", fileName));
+		}
+		String[] nameParts = fileName.split(".");
+		String extension = nameParts[nameParts.length - 1];
+
+		if (!("schem".equals(extension) || "schematic".equals(extension))) {
+			throw new IllegalArgumentException(String.format("File '%s' does not have extension '.schem' or '.schematic'", fileName));
+		}
+		return file;
+	}
+
+	public static TeamType teamTypeFromYml(String teamName) {
+		try {
+			return TeamType.valueOf(teamName.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException(String.format("Plugin doesn't have team '%s'.", teamName));
 		}
 	}
 }
