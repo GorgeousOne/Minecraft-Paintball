@@ -4,7 +4,6 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
@@ -15,8 +14,9 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.World;
 import me.gorgeousone.superpaintball.team.TeamType;
+import me.gorgeousone.superpaintball.util.ConfigUtil;
 import org.bukkit.Location;
-import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,12 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 public class PbArena {
-	
-	private static final BlockFace[] CARDINAL_FACES = {
-			BlockFace.NORTH,
-			BlockFace.EAST,
-			BlockFace.SOUTH,
-			BlockFace.WEST};
 	
 	private final String name;
 	private File schemFile;
@@ -55,7 +49,7 @@ public class PbArena {
 	}
 	
 	public void addSpawn(TeamType teamType, Location spawnPos) {
-		spawnPos.setDirection(yawToFace(spawnPos.getYaw()).getDirection());
+		spawnPos.setDirection(GameUtil.yawToFace(spawnPos.getYaw()).getDirection());
 		spawnPos.setX(spawnPos.getBlockX() + .5);
 		spawnPos.setY(spawnPos.getBlockY());
 		spawnPos.setZ(spawnPos.getBlockZ() + .5);
@@ -87,9 +81,6 @@ public class PbArena {
 		}
 	}
 	
-	public static BlockFace yawToFace(float yaw) {
-		return CARDINAL_FACES[Math.round(yaw / 90f) & 0x3].getOppositeFace();
-	}
 	
 	public String getName() {
 		return name;
@@ -97,5 +88,40 @@ public class PbArena {
 	
 	public Location getSchemPos() {
 		return schemPos.clone();
+	}
+	
+	public void toYml(ConfigurationSection parentSection) {
+		ConfigurationSection section = parentSection.createSection(name);
+		section.set("schematic", schemFile.getName());
+		section.set("position", ConfigUtil.blockPosToYmlString(schemPos));
+		ConfigurationSection spawnsSection = section.createSection("spawns");
+		
+		for (TeamType teamType : teamSpawns.keySet()) {
+			List<String> spawnStrings = new ArrayList<>();
+			
+			for (Location spawn : teamSpawns.get(teamType)) {
+				spawnStrings.add(ConfigUtil.spawnToYmlString(spawn));
+			}
+			spawnsSection.set(teamType.displayName.toLowerCase(), spawnStrings);
+		}
+	}
+	public static PbArena fromYml(String name, ConfigurationSection arenaSection) {
+		try {
+			String schemFileName = arenaSection.getString("schematic");
+			Location schemPos = ConfigUtil.blockPosFromYmlString(arenaSection.getString("position"));
+			ConfigurationSection spawnsSection = arenaSection.getConfigurationSection("spawns");
+			
+			for (String teamName : spawnsSection.getKeys(false)) {
+				TeamType teamType = TeamType.valueOf(teamName);
+				
+				List<String> spawnStrings = spawnsSection.getStringList(teamName);
+				for (String spawnString : spawnStrings) {
+					Location spawn = ConfigUtil.spawnFromYmlString(spawnString);
+				}
+			}
+		} catch (Exception e) {
+		
+		}
+		return null;
 	}
 }
