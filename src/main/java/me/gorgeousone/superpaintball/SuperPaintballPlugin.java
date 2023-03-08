@@ -11,12 +11,16 @@ import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.team.TeamType;
+import me.gorgeousone.superpaintball.util.ConfigUtil;
 import me.gorgeousone.superpaintball.util.blocktype.BlockType;
 import me.gorgeousone.superpaintball.util.version.VersionUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.IOException;
 
 public final class SuperPaintballPlugin extends JavaPlugin {
 	
@@ -77,11 +81,23 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		cmdHandler.registerCommand(pbCmd);
 	}
 	
-	void registerListeners() {
+	private void registerListeners() {
 		PluginManager manager = Bukkit.getPluginManager();
 		manager.registerEvents(new PlayerListener(lobbyHandler), this);
 		manager.registerEvents(new ShootListener(lobbyHandler), this);
 		manager.registerEvents(new ProjectileListener(lobbyHandler), this);
 		manager.registerEvents(new SkellyInteractListener(lobbyHandler), this);
+	}
+	
+	private void loadSaves() {
+		YamlConfiguration arenaConfig = ConfigUtil.loadConfig("arenas", this);
+		YamlConfiguration lobbyConfig = ConfigUtil.loadConfig("lobbies", this);
+		
+		try {
+			arenaConfig.save("arenas");
+			arenaConfig.save("lobbies");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

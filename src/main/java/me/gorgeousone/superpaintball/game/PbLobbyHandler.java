@@ -2,6 +2,7 @@ package me.gorgeousone.superpaintball.game;
 
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.team.PbTeam;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -75,6 +76,12 @@ public class PbLobbyHandler {
 	public void registerArena(PbArena newArena) {
 		if (arenas.containsKey(newArena.getName())) {
 			throw new IllegalArgumentException("Already registered arena with name " + newArena.getName());
+		}
+	}
+	
+	public void loadArenas(YamlConfiguration arenaConfig) {
+		for (String key : arenaConfig.getKeys(false)) {
+		
 		}
 	}
 }
