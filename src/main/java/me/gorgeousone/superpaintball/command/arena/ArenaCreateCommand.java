@@ -8,6 +8,7 @@ import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.superpaintball.team.PbTeam;
+import me.gorgeousone.superpaintball.util.ConfigUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,15 +19,15 @@ import java.util.Set;
 
 public class ArenaCreateCommand extends ArgCommand {
 	
-	private final JavaPlugin plugin;
+	private final String dataFolder;
 	private final PbLobbyHandler lobbyHandler;
 	
-	public ArenaCreateCommand(JavaPlugin plugin, PbLobbyHandler lobbyHandler) {
+	public ArenaCreateCommand(PbLobbyHandler lobbyHandler, String dataFolder) {
 		super("create");
 		this.addArg(new Argument("arena name", ArgType.STRING));
 		this.addArg(new Argument("schematic name", ArgType.STRING));
 		
-		this.plugin = plugin;
+		this.dataFolder = dataFolder;
 		this.lobbyHandler = lobbyHandler;
 	}
 	
@@ -45,10 +46,12 @@ public class ArenaCreateCommand extends ArgCommand {
 			return;
 		}
 		String schemFileName = argValues.get(1).get();
-		File schemFile = new File(plugin.getDataFolder() + File.separator + schemFileName);
-		
-		if (!schemFile.exists()) {
-			sender.sendMessage("Could not find schematic named " + schemFileName + " in data folder.");
+		File schemFile;
+
+		try {
+			schemFile = new File(dataFolder + File.separator + schemFileName);
+		} catch (IllegalArgumentException e) {
+			sender.sendMessage(e.getMessage());
 			return;
 		}
 		PbArena newArena = new PbArena(arenaName, schemFile, player.getLocation());
