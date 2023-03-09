@@ -5,6 +5,7 @@ import me.gorgeousone.superpaintball.cmdframework.command.ParentCommand;
 import me.gorgeousone.superpaintball.cmdframework.handler.CommandHandler;
 import me.gorgeousone.superpaintball.command.*;
 import me.gorgeousone.superpaintball.command.arena.*;
+import me.gorgeousone.superpaintball.command.lobby.*;
 import me.gorgeousone.superpaintball.event.*;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.game.GameUtil;
@@ -23,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
@@ -31,6 +33,8 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	private PbLobbyHandler lobbyHandler;
 	private PbKitHandler kitHandler;
 	private PbArenaHandler arenaHandler;
+	private YamlConfiguration arenaConfig;
+	private YamlConfiguration lobbyConfig;
 
 	@Override
 	public void onEnable() {
@@ -41,9 +45,13 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		loadSaves();
 		registerCommands();
 		registerListeners();
-		setupTest();
 	}
-	
+
+	@Override
+	public void onDisable() {
+//		saveSaves();
+	}
+
 	private void setupVersioning() {
 		VersionUtil.setup(this);
 		BlockType.setup(VersionUtil.IS_LEGACY_SERVER);
@@ -54,9 +62,6 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		//IDK this is just creating kits? not actually version dependent
 		PbKitHandler.setupKits(this);
 	}
-	
-	@Override
-	public void onDisable() {}
 	
 	private boolean randomize;
 	private void setupTest() {
@@ -72,18 +77,24 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	private void registerCommands() {
 		ParentCommand pbCmd = new ParentCommand("paintball");
 		pbCmd.addAlias("pb");
-		
+
 		ParentCommand arenaCmd = new ParentCommand("arena");
 		arenaCmd.addChild(new ArenaCreateCommand(arenaHandler, getDataFolder().getAbsolutePath()));
-		arenaCmd.addChild(new ArenaDeleteCommand(lobbyHandler));
-		arenaCmd.addChild(new ArenaCopyCommand(lobbyHandler));
-		arenaCmd.addChild(new ArenaAddSpawnCommand(lobbyHandler));
-		
+		arenaCmd.addChild(new ArenaDeleteCommand(arenaHandler));
+		arenaCmd.addChild(new ArenaCopyCommand(arenaHandler));
+		arenaCmd.addChild(new ArenaAddSpawnCommand(arenaHandler));
+
+		ParentCommand lobbyCmd = new ParentCommand("lobby");
+		lobbyCmd.addChild(new LobbyCreateCommand(lobbyHandler));
+		lobbyCmd.addChild(new LobbyDeleteCommand(lobbyHandler));
+
 		pbCmd.addChild(arenaCmd);
+		pbCmd.addChild(lobbyCmd);
 		pbCmd.addChild(new KitCommand());
+		pbCmd.addChild(new LobbyJoinCommand(lobbyHandler));
 		pbCmd.addChild(new DebugKillCommand(lobbyHandler));
 		pbCmd.addChild(new DebugReviveCommand(lobbyHandler));
-		
+
 		CommandHandler cmdHandler = new CommandHandler(this);
 		cmdHandler.registerCommand(pbCmd);
 	}
@@ -97,8 +108,8 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	}
 	
 	private void loadSaves() {
-		YamlConfiguration arenaConfig = ConfigUtil.loadConfig("arenas", this);
-		YamlConfiguration lobbyConfig = ConfigUtil.loadConfig("lobbies", this);
+		arenaConfig = ConfigUtil.loadConfig("arenas", this);
+		lobbyConfig = ConfigUtil.loadConfig("lobbies", this);
 		
 		try {
 			arenaConfig.save("arenas");
@@ -112,9 +123,20 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 			Bukkit.getLogger().log(Level.WARNING, e.getMessage());
 		}
 		try {
-			lobbyHandler.loadLobbies(lobbyConfig);
+			lobbyHandler.loadLobbies(lobbyConfig, arenaHandler);
 		} catch (Exception e) {
 			Bukkit.getLogger().log(Level.WARNING, e.getMessage());
+		}
+	}
+
+	public void saveSaves() {
+		arenaHandler.saveArenas(arenaConfig);
+		lobbyHandler.saveLobbies(lobbyConfig);
+		try {
+			arenaConfig.save(getDataFolder() + File.separator + "arenas.yml");
+			lobbyConfig.save(getDataFolder() + File.separator + "lobbies.yml");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }

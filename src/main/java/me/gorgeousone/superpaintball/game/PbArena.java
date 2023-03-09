@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PbArena {
 
@@ -33,18 +34,25 @@ public class PbArena {
 	private final Map<TeamType, List<Location>> teamSpawns;
 
 	public PbArena(String name, File schemFile, Location schemPos) {
-		this(name, schemFile, schemPos, new HashMap<>());
-	}
-
-	public PbArena(String name, File schemFile, Location schemPos, Map<TeamType, List<Location>> teamSpawns) {
 		this.name = name;
 		this.schemFile = schemFile;
-		this.schemPos = schemPos;
-		this.teamSpawns = teamSpawns;
+		this.schemPos = GameUtil.cleanSpawn(schemPos);
+		this.teamSpawns = new HashMap<>();
 
 		schemPos.setX(schemPos.getBlockX());
 		schemPos.setY(schemPos.getBlockY());
 		schemPos.setZ(schemPos.getBlockZ());
+	}
+
+	public PbArena(PbArena other, String name, Location schemPos) {
+		this.name = name;
+		this.schemFile = other.schemFile;
+		this.schemPos = GameUtil.cleanSpawn(schemPos);
+		this.teamSpawns = new HashMap<>();
+
+		for (TeamType teamType : other.teamSpawns.keySet()) {
+			teamSpawns.put(teamType, other.teamSpawns.get(teamType).stream().map(Location::clone).collect(Collectors.toList()));
+		}
 	}
 
 	public String getName() {
@@ -56,11 +64,7 @@ public class PbArena {
 	}
 
 	public void addSpawn(TeamType teamType, Location spawnPos) {
-		spawnPos.setDirection(GameUtil.yawToFace(spawnPos.getYaw()).getDirection());
-		spawnPos.setX(spawnPos.getBlockX() + .5);
-		spawnPos.setY(spawnPos.getBlockY());
-		spawnPos.setZ(spawnPos.getBlockZ() + .5);
-
+		GameUtil.cleanSpawn(spawnPos);
 		teamSpawns.computeIfAbsent(teamType, v -> new ArrayList<>());
 		teamSpawns.get(teamType).add(spawnPos);
 	}
@@ -88,22 +92,6 @@ public class PbArena {
 		}
 	}
 
-	public void toYml(ConfigurationSection parentSection) {
-		ConfigurationSection section = parentSection.createSection(name);
-		section.set("schematic", schemFile.getName());
-		section.set("position", ConfigUtil.blockPosToYmlString(schemPos));
-		ConfigurationSection spawnsSection = section.createSection("spawns");
-
-		for (TeamType teamType : teamSpawns.keySet()) {
-			List<String> spawnStrings = new ArrayList<>();
-
-			for (Location spawn : teamSpawns.get(teamType)) {
-				spawnStrings.add(ConfigUtil.spawnToYmlString(spawn));
-			}
-			spawnsSection.set(teamType.displayName.toLowerCase(), spawnStrings);
-		}
-	}
-
 	public boolean hasSpawns(TeamType teamType) {
 		return teamSpawns.containsKey(teamType);
 	}
@@ -122,15 +110,32 @@ public class PbArena {
 		}
 	}
 
-	public static PbArena fromYml(String name, ConfigurationSection section, String dataFolder) {
-		PbArena arena;
+	public void toYml(ConfigurationSection parentSection) {
+		ConfigurationSection section = parentSection.createSection(name);
+		section.set("schematic", schemFile.getName());
+		section.set("position", ConfigUtil.blockPosToYmlString(schemPos));
+		ConfigurationSection spawnsSection = section.createSection("spawns");
 
+		for (TeamType teamType : teamSpawns.keySet()) {
+			List<String> spawnStrings = new ArrayList<>();
+
+			for (Location spawn : teamSpawns.get(teamType)) {
+				spawnStrings.add(ConfigUtil.spawnToYmlString(spawn));
+			}
+			spawnsSection.set(teamType.displayName.toLowerCase(), spawnStrings);
+		}
+	}
+
+	public static PbArena fromYml(String name, ConfigurationSection parentSection, String dataFolder) {
+		ConfigurationSection section = parentSection.getConfigurationSection(name);
+		PbArena arena;
 		try {
 			ConfigUtil.assertKeyExists(section, "schematic");
 			ConfigUtil.assertKeyExists(section, "position");
 			ConfigUtil.assertKeyExists(section, "spawns");
 			File schemFile = ConfigUtil.schemFileFromYml(dataFolder, section.getString("schematic"));
 			Location schemPos = ConfigUtil.blockPosFromYmlString(section.getString("position"));
+			System.out.printf("  Loaded arena '%s'", name);
 			arena = new PbArena(name, schemFile, schemPos);
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException(String.format("Could not load arena '%s': %s", name, e.getMessage()));

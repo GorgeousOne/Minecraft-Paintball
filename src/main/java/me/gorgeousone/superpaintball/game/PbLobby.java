@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball.game;
 
+import me.gorgeousone.superpaintball.arena.PbArenaHandler;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.kit.AbstractKit;
 import me.gorgeousone.superpaintball.team.PbTeam;
@@ -19,13 +20,15 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class PbLobby {
 
 	private final JavaPlugin plugin;
 	private final String name;
-	private Location spawn;
-	private Set<PbArena> arenas;
+	private Location spawnPos;
+	private final Set<PbArena> arenas;
 	private final Map<TeamType, PbTeam> teams;
 	private final Set<UUID> players;
 	private GameState state;
@@ -37,10 +40,11 @@ public class PbLobby {
 	private Objective aliveObj;
 	private Map<TeamType, String> aliveEntries;
 
-	public PbLobby(String name, Location spawn, JavaPlugin plugin, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
+	public PbLobby(String name, Location spawnPos, JavaPlugin plugin, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
 		this.name = name;
-		this.spawn = spawn;
+		this.spawnPos = GameUtil.cleanSpawn(spawnPos);
 		this.plugin = plugin;
+		this.arenas = new HashSet<>();
 		this.teams = new HashMap<>();
 		this.players = new HashSet<>();
 		this.shootCooldowns = new HashMap<>();
@@ -56,8 +60,8 @@ public class PbLobby {
 		return name;
 	}
 
-	public Location getSpawn() {
-		return spawn;
+	public Location getSpawnPos() {
+		return spawnPos;
 	}
 
 	public GameState getState() {
@@ -93,7 +97,7 @@ public class PbLobby {
 		UUID playerId = player.getUniqueId();
 		players.add(playerId);
 		teams.get(teamType).addPlayer(playerId);
-		player.teleport(spawn);
+		player.teleport(spawnPos);
 	}
 
 	public void removePlayer(UUID playerId) {
@@ -241,23 +245,28 @@ public class PbLobby {
 
 	public void toYml(ConfigurationSection parentSection) {
 		ConfigurationSection section = parentSection.createSection(name);
-		section.set("spawn", ConfigUtil.blockPosToYmlString(spawn));
+		section.set("spawn", ConfigUtil.spawnToYmlString(spawnPos));
+		List<String> arenaNames = arenas.stream().map(PbArena::getName).collect(Collectors.toList());
+		section.set("arenas", arenaNames);
 	}
 
 	public static PbLobby fromYml(
 			String name,
-			ConfigurationSection section,
+			ConfigurationSection parentSection,
 			JavaPlugin plugin,
 			PbLobbyHandler lobbyHandler,
+			PbArenaHandler arenaHandler,
 			PbKitHandler kitHandler) {
+		ConfigurationSection section = parentSection.getConfigurationSection(name);
 		try {
-			ConfigUtil.assertKeyExists(section, "name");
 			ConfigUtil.assertKeyExists(section, "spawn");
-			Location spawnPos = ConfigUtil.blockPosFromYmlString(section.getString("position"));
+			ConfigUtil.assertKeyExists(section, "arenas");
+			Location spawnPos = ConfigUtil.spawnFromYmlString(section.getString("spawn"));
+			PbLobby lobby = new PbLobby(name, spawnPos, plugin, lobbyHandler, kitHandler);
 
-			//deserialize arenas
-			
-			return new PbLobby(name, spawnPos, plugin, lobbyHandler, kitHandler);
+			List<String> arenaNames = section.getStringList("arenas");
+			arenaNames.forEach(n -> lobby.addArena(arenaHandler.getArena(n)));
+			return lobby;
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException(String.format("Could not load lobby '%s': %s", name, e.getMessage()));
 		}

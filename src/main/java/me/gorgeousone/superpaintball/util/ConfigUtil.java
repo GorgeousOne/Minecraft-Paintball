@@ -44,34 +44,42 @@ public final class ConfigUtil {
 	}
 	
 	public static String blockPosToYmlString(Location blockPos) {
-		return String.format("world=%s x=%s y=%s z=%s", blockPos.getWorld().getName(), blockPos.getBlockX(), blockPos.getBlockY(), blockPos.getBlockZ());
-	}
-	
-	public static String spawnToYmlString(Location spawn) {
-		return String.format("world=%s x=%s y=%s z=%s facing=%s", spawn.getWorld().getName(), spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ(), GameUtil.yawToFace(spawn.getYaw()));
+		return String.format("world=%s x=%d y=%d z=%d", blockPos.getWorld().getName(), blockPos.getBlockX(), blockPos.getBlockY(), blockPos.getBlockZ());
 	}
 	
 	public static Location blockPosFromYmlString(String ymlBlockPos) {
 		Map<String, String> dataMap = getDataMapFromString(ymlBlockPos);
 		assertKeysExist(dataMap, "world", "x", "y", "z");
 
-		World world = parseWorld(dataMap, "world");
-		int x = parseInt(dataMap, "x");
-		int y = parseInt(dataMap, "y");
-		int z = parseInt(dataMap, "z");
-		return new Location(world, x, y, z);
+		try {
+			World world = parseWorld(dataMap, "world");
+			int x = parseInt(dataMap, "x");
+			int y = parseInt(dataMap, "y");
+			int z = parseInt(dataMap, "z");
+			return new Location(world, x, y, z);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException(String.format("Could not load position '%s': %s", ymlBlockPos, e.getMessage()));
+		}
 	}
-	
+
+	public static String spawnToYmlString(Location spawn) {
+		return String.format("world=%s x=%d y=%d z=%d facing=%s", spawn.getWorld().getName(), spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ(), GameUtil.yawToFace(spawn.getYaw()).name().toLowerCase());
+	}
+
 	public static Location spawnFromYmlString(String ymlBlockPos) {
 		Map<String, String> dataMap = getDataMapFromString(ymlBlockPos);
-		assertKeysExist(dataMap, "world", "x", "y", "z", "facing");
 
-		World world = parseWorld(dataMap, "world");
-		double x = parseInt(dataMap, "x") + .5;
-		double y = parseInt(dataMap, "y") + .5;
-		double z = parseInt(dataMap, "z") + .5;
-		BlockFace facing = parseBlockFace(dataMap, "facing");
-		return new Location(world, x, y, z).setDirection(facing.getDirection());
+		try {
+			assertKeysExist(dataMap, "world", "x", "y", "z", "facing");
+			World world = parseWorld(dataMap, "world");
+			double x = parseInt(dataMap, "x") + .5;
+			double y = parseInt(dataMap, "y") + .5;
+			double z = parseInt(dataMap, "z") + .5;
+			BlockFace facing = parseBlockFace(dataMap, "facing");
+			return new Location(world, x, y, z).setDirection(GameUtil.faceToDirection(facing));
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException(String.format("Could not load spawn '%s': %s", ymlBlockPos, e.getMessage()));
+		}
 	}
 	
 	private static Map<String, String> getDataMapFromString(String s) {
@@ -80,7 +88,10 @@ public final class ConfigUtil {
 	
 	private static Map<String, String> getDataMapFromString(String s, char itemSep, char keyValSep) {
 		Map<String, String> dataMap = new HashMap<>();
-		
+
+		if (s == null) {
+			return dataMap;
+		}
 		for (String item : s.split("" + itemSep)) {
 			String[] keyVal = item.split("" + keyValSep);
 			
@@ -94,13 +105,13 @@ public final class ConfigUtil {
 
 	public static void assertKeyExists(ConfigurationSection section, String key) {
 		if (!section.contains(key)) {
-			throw new IllegalArgumentException(String.format("Missing key '%s'.", key));
+			throw new IllegalArgumentException(String.format("Missing or incomplete value for '%s'.", key));
 		}
 	}
 	private static void assertKeysExist(Map<?, ?> map, Object... keys) {
 		for (Object key : keys) {
 			if (!map.containsKey(key)) {
-				throw new IllegalArgumentException(String.format("Missing key '%s'.", key.toString()));
+				throw new IllegalArgumentException(String.format("Missing or incomplete value for '%s'.", key.toString()));
 			}
 		}
 	}
@@ -112,7 +123,7 @@ public final class ConfigUtil {
 		if (world != null) {
 			return world;
 		}
-		throw new IllegalArgumentException(String.format("Could not find '%s' with name '%s'.", key, value));
+		throw new IllegalArgumentException(String.format("Could not find %s with name '%s'.", key, value));
 	}
 
 	private static int parseInt(Map<String, String> dataMap, String key) {
@@ -121,7 +132,7 @@ public final class ConfigUtil {
 		try {
 			return Integer.parseInt(value);
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException(String.format("Could not read integer '%s' for '%s'.", value, key));
+			throw new IllegalArgumentException(String.format("Could not read integer '%s' for %s.", value, key));
 		}
 	}
 
@@ -129,9 +140,9 @@ public final class ConfigUtil {
 		String value = dataMap.get(key);
 
 		try {
-			return BlockFace.valueOf(value);
+			return BlockFace.valueOf(value.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException(String.format("Could not read facing '%s' as '%s'.", value, key));
+			throw new IllegalArgumentException(String.format("Could not read '%s' as %s.", value, key));
 		}
 	}
 
