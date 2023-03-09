@@ -8,6 +8,7 @@ import me.gorgeousone.superpaintball.cmdframework.argument.ArgType;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
+import me.gorgeousone.superpaintball.util.ConfigUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -42,14 +43,14 @@ public class ArenaCreateCommand extends ArgCommand {
 		File schemFile;
 
 		try {
-			schemFile = new File(dataFolder + File.separator + schemFileName);
-		} catch (IllegalArgumentException e) {
+			schemFile = ConfigUtil.schemFileFromYml(schemFileName, dataFolder);
+		}catch (IllegalArgumentException e) {
 			sender.sendMessage(e.getMessage());
 			return;
 		}
 		PbArena newArena = new PbArena(arenaName, schemFile, player.getLocation());
 		arenaHandler.registerArena(newArena);
 		newArena.reset();
-		sender.sendMessage("Created new arena '" + arenaName + "' at " + GameUtil.humanBlockPos(newArena.getSchemPos()));
+		sender.sendMessage(String.format("Created new arena '%s' at %s", arenaName, GameUtil.humanBlockPos(newArena.getSchemPos())));
 	}
 }

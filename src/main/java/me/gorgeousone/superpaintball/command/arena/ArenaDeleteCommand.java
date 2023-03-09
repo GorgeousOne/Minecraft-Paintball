@@ -1,5 +1,7 @@
 package me.gorgeousone.superpaintball.command.arena;
 
+import me.gorgeousone.superpaintball.arena.PbArenaHandler;
+import me.gorgeousone.superpaintball.game.GameUtil;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgType;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
@@ -13,23 +15,25 @@ import java.util.List;
 import java.util.Set;
 
 public class ArenaDeleteCommand extends ArgCommand {
+
+	private final PbArenaHandler arenaHandler;
 	
-	private final PbLobbyHandler lobbyHandler;
-	
-	public ArenaDeleteCommand(PbLobbyHandler lobbyHandler) {
-		super("delte");
+	public ArenaDeleteCommand(PbArenaHandler arenaHandler) {
+		super("delete");
 		this.addArg(new Argument("arena name", ArgType.STRING));
 		
-		this.lobbyHandler = lobbyHandler;
+		this.arenaHandler = arenaHandler;
 	}
 	
 	@Override
 	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
-		Player player = (Player) sender;
-		PbTeam team = lobbyHandler.getTeam(player.getUniqueId());
-		
-		if (team != null) {
-			team.knockoutPlayer(player);
+		String arenaName = argValues.get(0).get();
+
+		if (!arenaHandler.containsArena(arenaName)) {
+			sender.sendMessage(String.format("No arena found with name '%s'.", arenaName));
+			return;
 		}
+		arenaHandler.removeArena(arenaName);
+		sender.sendMessage(String.format("Removed new arena '%s'.", arenaName));
 	}
 }
