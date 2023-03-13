@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class PbArena {
@@ -122,20 +123,19 @@ public class PbArena {
 			for (Location spawn : teamSpawns.get(teamType)) {
 				spawnStrings.add(ConfigUtil.spawnToYmlString(spawn));
 			}
-			spawnsSection.set(teamType.displayName.toLowerCase(), spawnStrings);
+			spawnsSection.set(teamType.name().toLowerCase(), spawnStrings);
 		}
 	}
 
-	public static PbArena fromYml(String name, ConfigurationSection parentSection, String dataFolder) {
+	public static PbArena fromYml(String name, ConfigurationSection parentSection, String schemFolder) {
 		ConfigurationSection section = parentSection.getConfigurationSection(name);
 		PbArena arena;
 		try {
 			ConfigUtil.assertKeyExists(section, "schematic");
 			ConfigUtil.assertKeyExists(section, "position");
 			ConfigUtil.assertKeyExists(section, "spawns");
-			File schemFile = ConfigUtil.schemFileFromYml(dataFolder, section.getString("schematic"));
+			File schemFile = ConfigUtil.schemFileFromYml(section.getString("schematic"), schemFolder);
 			Location schemPos = ConfigUtil.blockPosFromYmlString(section.getString("position"));
-			System.out.printf("  Loaded arena '%s'", name);
 			arena = new PbArena(name, schemFile, schemPos);
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException(String.format("Could not load arena '%s': %s", name, e.getMessage()));
@@ -160,6 +160,7 @@ public class PbArena {
 				throw new IllegalArgumentException(String.format("Could not load arena '%s' team '%s' spawns: %s", arena, teamName, e.getMessage()));
 			}
 		}
+		Bukkit.getLogger().log(Level.INFO, String.format("'%s' loaded", name));
 		return arena;
 	}
 }

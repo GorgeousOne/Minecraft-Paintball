@@ -3,7 +3,6 @@ package me.gorgeousone.superpaintball.command.arena;
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
 import me.gorgeousone.superpaintball.game.GameUtil;
 import me.gorgeousone.superpaintball.game.PbArena;
-import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgType;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
@@ -18,16 +17,16 @@ import java.util.Set;
 
 public class ArenaCreateCommand extends ArgCommand {
 	
-	private final String dataFolder;
 	private final PbArenaHandler arenaHandler;
-	
-	public ArenaCreateCommand(PbArenaHandler arenaHandler, String dataFolder) {
+	private final String schemFolder;
+
+	public ArenaCreateCommand(PbArenaHandler arenaHandler, String schemFolder) {
 		super("create");
 		this.addArg(new Argument("arena name", ArgType.STRING));
 		this.addArg(new Argument("schematic name", ArgType.STRING));
 		
-		this.dataFolder = dataFolder;
 		this.arenaHandler = arenaHandler;
+		this.schemFolder = schemFolder;
 	}
 	
 	@Override
@@ -43,7 +42,7 @@ public class ArenaCreateCommand extends ArgCommand {
 		File schemFile;
 
 		try {
-			schemFile = ConfigUtil.schemFileFromYml(schemFileName, dataFolder);
+			schemFile = ConfigUtil.schemFileFromYml(schemFileName, schemFolder);
 		}catch (IllegalArgumentException e) {
 			sender.sendMessage(e.getMessage());
 			return;

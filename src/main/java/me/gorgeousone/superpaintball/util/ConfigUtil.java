@@ -42,7 +42,15 @@ public final class ConfigUtil {
 		InputStream defConfigStream = plugin.getResource(configName + ".yml");
 		return YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream));
 	}
-	
+
+	public static void saveConfig(YamlConfiguration config, String configName, JavaPlugin plugin) {
+		try {
+			config.save(plugin.getDataFolder() + File.separator + configName + ".yml");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static String blockPosToYmlString(Location blockPos) {
 		return String.format("world=%s x=%d y=%d z=%d", blockPos.getWorld().getName(), blockPos.getBlockX(), blockPos.getBlockY(), blockPos.getBlockZ());
 	}
@@ -146,13 +154,13 @@ public final class ConfigUtil {
 		}
 	}
 
-	public static File schemFileFromYml(String fileName, String dataFolder) {
-		File file = new File(dataFolder + File.separator + "schematics" + fileName);
+	public static File schemFileFromYml(String fileName, String schemFolder) {
+		File file = new File(schemFolder + File.separator + fileName);
 
-		if (file.exists()) {
-			throw new IllegalArgumentException(String.format("Could not find schematic '%s' in plugin's 'schematics' folder.", fileName));
+		if (!file.exists()) {
+			throw new IllegalArgumentException(String.format("Could not find schematic '%s' in schematics folder.", fileName));
 		}
-		String[] nameParts = fileName.split(".");
+		String[] nameParts = fileName.split("\\.");
 		String extension = nameParts[nameParts.length - 1];
 
 		if (!("schem".equals(extension) || "schematic".equals(extension))) {

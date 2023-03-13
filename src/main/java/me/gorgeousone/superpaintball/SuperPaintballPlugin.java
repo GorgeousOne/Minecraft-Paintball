@@ -18,14 +18,11 @@ import me.gorgeousone.superpaintball.util.blocktype.BlockType;
 import me.gorgeousone.superpaintball.util.version.VersionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.logging.Level;
 
 public final class SuperPaintballPlugin extends JavaPlugin {
@@ -33,23 +30,24 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	private PbLobbyHandler lobbyHandler;
 	private PbKitHandler kitHandler;
 	private PbArenaHandler arenaHandler;
-	private YamlConfiguration arenaConfig;
-	private YamlConfiguration lobbyConfig;
+	private String schemFolder;
 
 	@Override
 	public void onEnable() {
 		setupVersioning();
 		this.kitHandler = new PbKitHandler();
-		this.arenaHandler = new PbArenaHandler();
+
+		this.arenaHandler = new PbArenaHandler(this);
 		this.lobbyHandler = new PbLobbyHandler(this, kitHandler);
-		loadSaves();
+
+		loadBackup();
 		registerCommands();
 		registerListeners();
 	}
 
 	@Override
 	public void onDisable() {
-//		saveSaves();
+		saveBackup();
 	}
 
 	private void setupVersioning() {
@@ -79,7 +77,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		pbCmd.addAlias("pb");
 
 		ParentCommand arenaCmd = new ParentCommand("arena");
-		arenaCmd.addChild(new ArenaCreateCommand(arenaHandler, getDataFolder().getAbsolutePath()));
+		arenaCmd.addChild(new ArenaCreateCommand(arenaHandler, schemFolder));
 		arenaCmd.addChild(new ArenaDeleteCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaCopyCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaAddSpawnCommand(arenaHandler));
@@ -92,6 +90,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		pbCmd.addChild(lobbyCmd);
 		pbCmd.addChild(new KitCommand());
 		pbCmd.addChild(new LobbyJoinCommand(lobbyHandler));
+		pbCmd.addChild(new LobbyStartCommand(lobbyHandler));
 		pbCmd.addChild(new DebugKillCommand(lobbyHandler));
 		pbCmd.addChild(new DebugReviveCommand(lobbyHandler));
 
@@ -107,36 +106,25 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		manager.registerEvents(new SkellyInteractListener(lobbyHandler), this);
 	}
 	
-	private void loadSaves() {
-		arenaConfig = ConfigUtil.loadConfig("arenas", this);
-		lobbyConfig = ConfigUtil.loadConfig("lobbies", this);
-		
+	private void loadBackup() {
+		this.saveDefaultConfig();
+		this.reloadConfig();
+		schemFolder = getConfig().getString("schematics-folder");
+
 		try {
-			arenaConfig.save("arenas");
-			lobbyConfig.save("lobbies");
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		try {
-			arenaHandler.loadArenas(arenaConfig, this.getDataFolder().toString());
+			arenaHandler.loadArenas(schemFolder);
 		} catch (Exception e) {
 			Bukkit.getLogger().log(Level.WARNING, e.getMessage());
 		}
 		try {
-			lobbyHandler.loadLobbies(lobbyConfig, arenaHandler);
+			lobbyHandler.loadLobbies(arenaHandler);
 		} catch (Exception e) {
 			Bukkit.getLogger().log(Level.WARNING, e.getMessage());
 		}
 	}
 
-	public void saveSaves() {
-		arenaHandler.saveArenas(arenaConfig);
-		lobbyHandler.saveLobbies(lobbyConfig);
-		try {
-			arenaConfig.save(getDataFolder() + File.separator + "arenas.yml");
-			lobbyConfig.save(getDataFolder() + File.separator + "lobbies.yml");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void saveBackup() {
+		arenaHandler.saveArenas();
+		lobbyHandler.saveLobbies();
 	}
 }

@@ -95,9 +95,12 @@ public class PbLobby {
 
 	public void joinPlayer(Player player, TeamType teamType) {
 		UUID playerId = player.getUniqueId();
-		players.add(playerId);
-		teams.get(teamType).addPlayer(playerId);
+		//TODO if game started, throw
 		player.teleport(spawnPos);
+		player.sendMessage(String.format("Joined lobby '%s'.", name));
+
+		players.add(playerId);
+		teams.get(teamType).addPlayer(player);
 	}
 
 	public void removePlayer(UUID playerId) {
@@ -180,7 +183,7 @@ public class PbLobby {
 				boardTeam.addEntry(player.getName());
 			}
 			Score teamScore = aliveObj.getScore("" + ChatColor.BOLD + team.getAlivePlayers().size() + " Alive" + pad(' ', i));
-			Score teamName = aliveObj.getScore("" + teamType.prefixColor + ChatColor.BOLD + teamType.displayName);
+			Score teamName = aliveObj.getScore(teamType.displayName);
 			blank = aliveObj.getScore(pad(' ', i));
 			aliveEntries.put(teamType, teamScore.getEntry());
 
@@ -226,7 +229,7 @@ public class PbLobby {
 		state = GameState.OVER;
 
 		if (winningTeam != null) {
-			sendTitle(winningTeam.prefixColor + winningTeam.displayName + " won!");
+			sendTitle(winningTeam.displayName + ChatColor.RESET + " won!");
 		} else {
 			sendTitle("It's a draw?");
 		}
@@ -266,6 +269,7 @@ public class PbLobby {
 
 			List<String> arenaNames = section.getStringList("arenas");
 			arenaNames.forEach(n -> lobby.addArena(arenaHandler.getArena(n)));
+			Bukkit.getLogger().log(Level.INFO, String.format("'%s' loaded", name));
 			return lobby;
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException(String.format("Could not load lobby '%s': %s", name, e.getMessage()));
