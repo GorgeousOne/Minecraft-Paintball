@@ -19,13 +19,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PbLobbyHandler {
-	
+
 	private final JavaPlugin plugin;
+	private final YamlConfiguration backupConfig;
 	private final PbKitHandler kitHandler;
 	private final Map<String, PbLobby> lobbies;
 
 	public PbLobbyHandler(JavaPlugin plugin, PbKitHandler kitHandler) {
 		this.plugin = plugin;
+		this.backupConfig = ConfigUtil.loadConfig("lobbies", plugin);
 		this.kitHandler = kitHandler;
 		this.lobbies = new HashMap<>();
 	}
@@ -44,6 +46,13 @@ public class PbLobbyHandler {
 			throw new IllegalArgumentException(String.format("Lobby with name '%s' already exists."));
 		}
 		lobbies.put(lobby.getName(), lobby);
+		ConfigurationSection lobbiesSection = backupConfig.getConfigurationSection("lobbies");
+		lobby.toYml(lobbiesSection);
+		ConfigUtil.saveConfig(backupConfig, "lobbies", plugin);
+	}
+
+	public PbLobby getLobby(String lobbyName) {
+		return lobbies.getOrDefault(lobbyName, null);
 	}
 
 	public PbLobby getLobby(UUID playerId) {
@@ -88,23 +97,24 @@ public class PbLobbyHandler {
 		return null;
 	}
 
-	public void saveLobbies(YamlConfiguration lobbyConfig) {
+	public void saveLobbies() {
 		Logger logger = Bukkit.getLogger();
 		logger.log(Level.INFO, "  Saving lobbies:");
 
-		if (!lobbyConfig.contains("lobbies")) {
-			lobbyConfig.createSection("lobbies");
+		if (!backupConfig.contains("lobbies")) {
+			backupConfig.createSection("lobbies");
 		}
-		ConfigurationSection lobbiesSection = lobbyConfig.getConfigurationSection("lobbies");
+		ConfigurationSection lobbiesSection = backupConfig.getConfigurationSection("lobbies");
 		lobbies.values().forEach(l -> l.toYml(lobbiesSection));
+		ConfigUtil.saveConfig(backupConfig, "lobbies", plugin);
 		logger.log(Level.INFO, String.format("  Saved %d lobbies", lobbies.size()));
 	}
 
-	public void loadLobbies(YamlConfiguration lobbyConfig, PbArenaHandler arenaHandler) {
+	public void loadLobbies(PbArenaHandler arenaHandler) {
 		Logger logger = Bukkit.getLogger();
 		logger.log(Level.INFO, "  Loading lobbies:");
-		ConfigUtil.assertKeyExists(lobbyConfig, "lobbies");
-		ConfigurationSection lobbySection = lobbyConfig.getConfigurationSection("lobbies");
+		ConfigUtil.assertKeyExists(backupConfig, "lobbies");
+		ConfigurationSection lobbySection = backupConfig.getConfigurationSection("lobbies");
 
 		for (String name : lobbySection.getKeys(false)) {
 			try {

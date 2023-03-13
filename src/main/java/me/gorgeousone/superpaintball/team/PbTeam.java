@@ -79,10 +79,11 @@ public class PbTeam {
 		return new HashSet<>(alivePlayers);
 	}
 	
-	public void addPlayer(UUID playerId) {
-		//TODO if game started, throw
+	public void addPlayer(Player player) {
+		UUID playerId = player.getUniqueId();
 		players.add(playerId);
 		alivePlayers.add(playerId);
+		player.sendMessage(String.format("You are now team %s.", teamType.displayName));
 	}
 	
 	public void removePlayer(UUID playerId) {

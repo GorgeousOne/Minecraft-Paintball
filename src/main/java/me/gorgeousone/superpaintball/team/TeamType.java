@@ -13,6 +13,7 @@ public enum TeamType {
 	ICE("Ice", Snowball.class, Color.AQUA, ChatColor.AQUA);
 	
 	public static final Color DEATH_COLOR = Color.PURPLE;
+
 	public final String displayName;
 	public final Class<? extends Projectile> projectileType;
 	public final Color armorColor;
@@ -23,7 +24,7 @@ public enum TeamType {
 	         Class<? extends Projectile> projectileType,
 	         Color garmentColor,
 	         ChatColor prefixColor) {
-		this.displayName = displayName;
+		this.displayName = "" + prefixColor + ChatColor.BOLD + displayName;
 		this.projectileType = projectileType;
 		this.armorColor = garmentColor;
 		this.prefixColor = prefixColor;
