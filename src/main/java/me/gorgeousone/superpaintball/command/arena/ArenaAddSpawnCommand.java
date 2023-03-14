@@ -1,13 +1,14 @@
 package me.gorgeousone.superpaintball.command.arena;
 
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
-import me.gorgeousone.superpaintball.game.PbArena;
-import me.gorgeousone.superpaintball.game.PbLobbyHandler;
+import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgType;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
+import me.gorgeousone.superpaintball.game.GameUtil;
 import me.gorgeousone.superpaintball.team.TeamType;
+import me.gorgeousone.superpaintball.util.ConfigUtil;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,7 +21,7 @@ public class ArenaAddSpawnCommand extends ArgCommand {
 	private final PbArenaHandler arenaHandler;
 	
 	public ArenaAddSpawnCommand(PbArenaHandler arenaHandler) {
-		super("addspawn");
+		super("add-spawn");
 		this.addArg(new Argument("arena", ArgType.STRING));
 		this.addArg(new Argument("team", ArgType.STRING));
 		
@@ -33,7 +34,7 @@ public class ArenaAddSpawnCommand extends ArgCommand {
 		String arenaName = argValues.get(0).get();
 
 		if (!arenaHandler.containsArena(arenaName)) {
-			sender.sendMessage(String.format("No arena found with name '%s'.", arenaName));
+			sender.sendMessage(String.format("Arena '%s' does not exist!", arenaName));
 			return;
 		}
 		TeamType teamType;
@@ -42,11 +43,12 @@ public class ArenaAddSpawnCommand extends ArgCommand {
 		try {
 			teamType = TeamType.valueOf(teamName.toUpperCase());
 		} catch (IllegalStateException e) {
-			sender.sendMessage(String.format("This plugin has no team '%s'.", teamName));
+			sender.sendMessage(String.format("Team '%s' does not exist!", teamName));
 			return;
 		}
 		PbArena arena = arenaHandler.getArena(arenaName);
 		Location spawnPos = player.getLocation();
 		arena.addSpawn(teamType, spawnPos);
+		sender.sendMessage(String.format("Added spawn %s in arena '%s' for team %s.", GameUtil.humanBlockPos(spawnPos), arenaName, teamType.displayName));
 	}
 }

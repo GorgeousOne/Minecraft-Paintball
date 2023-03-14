@@ -36,6 +36,10 @@ public class LobbyJoinCommand extends ArgCommand {
 			sender.sendMessage(String.format("Lobby '%s' does not exits!", lobbyName));
 			return;
 		}
-		lobby.joinPlayer(player, TeamType.EMBER);
+		try {
+			lobby.joinPlayer(player, TeamType.EMBER);
+		} catch (Exception e) {
+			player.sendMessage(e.getMessage());
+		}
 	}
 }

@@ -6,10 +6,7 @@ import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
-import me.gorgeousone.superpaintball.team.PbTeam;
-import me.gorgeousone.superpaintball.team.TeamType;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Set;
@@ -34,6 +31,6 @@ public class LobbyDeleteCommand extends ArgCommand {
 			sender.sendMessage(String.format("Lobby '%s' does not exits!", lobbyName));
 			return;
 		}
-		sender.sendMessage("cant delete lobbies yet .-.");
+		lobbyHandler.deleteLobby(lobby);
 	}
 }

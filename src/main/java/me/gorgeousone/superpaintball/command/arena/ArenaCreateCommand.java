@@ -2,7 +2,7 @@ package me.gorgeousone.superpaintball.command.arena;
 
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
 import me.gorgeousone.superpaintball.game.GameUtil;
-import me.gorgeousone.superpaintball.game.PbArena;
+import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgType;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
@@ -35,7 +35,7 @@ public class ArenaCreateCommand extends ArgCommand {
 		String arenaName = argValues.get(0).get();
 		
 		if (arenaHandler.containsArena(arenaName)) {
-			sender.sendMessage("Nah bro we already have that name.");
+			sender.sendMessage("Arena '%s' already exists!");
 			return;
 		}
 		String schemFileName = argValues.get(1).get();
@@ -47,9 +47,12 @@ public class ArenaCreateCommand extends ArgCommand {
 			sender.sendMessage(e.getMessage());
 			return;
 		}
-		PbArena newArena = new PbArena(arenaName, schemFile, player.getLocation());
-		arenaHandler.registerArena(newArena);
-		newArena.reset();
-		sender.sendMessage(String.format("Created new arena '%s' at %s", arenaName, GameUtil.humanBlockPos(newArena.getSchemPos())));
+		try {
+			PbArena arena = arenaHandler.createArena(arenaName, schemFile, player.getLocation());
+			sender.sendMessage(String.format("Created new arena '%s' at %s", arenaName, GameUtil.humanBlockPos(arena.getSchemPos())));
+		}catch (IllegalArgumentException e) {
+			sender.sendMessage(e.getMessage());
+			return;
+		}
 	}
 }

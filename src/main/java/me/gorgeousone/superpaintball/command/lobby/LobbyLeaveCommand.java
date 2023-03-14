@@ -12,31 +12,27 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
-public class LobbyStartCommand extends ArgCommand {
+public class LobbyLeaveCommand extends ArgCommand {
 
 	private final PbLobbyHandler lobbyHandler;
 
-	public LobbyStartCommand(PbLobbyHandler lobbyHandler) {
-		super("start");
-		this.addArg(new Argument("lobby name", ArgType.STRING));
-		
+	public LobbyLeaveCommand(PbLobbyHandler lobbyHandler) {
+		super("leave");
 		this.lobbyHandler = lobbyHandler;
 	}
 	
 	@Override
 	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
-		String lobbyName = argValues.get(0).get();
-		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
+		Player player = (Player) sender;
+		UUID playerId = player.getUniqueId();
+		PbLobby lobby = lobbyHandler.getLobby(playerId);
 
 		if (lobby == null) {
-			sender.sendMessage(String.format("Lobby '%s' does not exits!", lobbyName));
+			sender.sendMessage("You are not in a paintball game.");
 			return;
 		}
-		try {
-			lobby.start();
-		} catch (Exception e) {
-			sender.sendMessage(e.getMessage());
-		}
+		lobby.removePlayer(player);
 	}
 }
