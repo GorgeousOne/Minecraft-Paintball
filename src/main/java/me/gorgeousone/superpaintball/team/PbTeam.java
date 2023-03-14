@@ -6,6 +6,7 @@ import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.kit.AbstractKit;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -135,11 +136,16 @@ public class PbTeam {
 			return;
 		}
 		shooter.playSound(shooter.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 2f);
-		updateHealth(playerId, bulletDmg);
-		paintArmor(playerId, bulletDmg);
+		boolean isAlive = updateHealth(playerId, bulletDmg);
+
+		if (isAlive) {
+			paintArmor(playerId, bulletDmg);
+		} else {
+			lobby.broadcastKill(target, shooter);
+		}
 	}
 
-	private void updateHealth(UUID playerId, int damage) {
+	private boolean updateHealth(UUID playerId, int damage) {
 		Player player = Bukkit.getPlayer(playerId);
 		int health = playerHealth.get(playerId);
 		health = Math.max(0, health - damage);
@@ -147,9 +153,10 @@ public class PbTeam {
 
 		if (health == 0) {
 			knockoutPlayer(player);
-			return;
+			return false;
 		}
 		player.damage(damage * TeamUtil.HEARTS_PER_DMG_POINT);
+		return true;
 	}
 
 	private void paintArmor(UUID playerId, int damage) {
