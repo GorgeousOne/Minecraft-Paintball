@@ -21,7 +21,7 @@ public class DebugKillCommand extends BaseCommand {
 		PbTeam team = lobbyHandler.getTeam(player.getUniqueId());
 		
 		if (team != null) {
-			team.knockoutPlayer(player);
+			team.damagePlayer(player, player, 4);
 		}
 	}
 }

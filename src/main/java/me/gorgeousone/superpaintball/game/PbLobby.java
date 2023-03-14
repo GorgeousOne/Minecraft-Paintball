@@ -296,6 +296,17 @@ public class PbLobby {
 		}
 	}
 
+	public void broadcastKill(Player target, Player shooter) {
+		TeamType targetTeam = getTeam(target.getUniqueId()).getType();
+		TeamType shooterTeam = getTeam(shooter.getUniqueId()).getType();
+		String message = targetTeam.prefixColor + target.getDisplayName() + ChatColor.RESET + " was painted by " + shooterTeam.prefixColor + shooter.getDisplayName();
+
+		for (UUID playerId : players) {
+			Player player = Bukkit.getPlayer(playerId);
+			player.sendMessage(message);
+		}
+	}
+
 	private void sendTitle(String text) {
 		for (UUID playerId : players) {
 			Player player = Bukkit.getPlayer(playerId);
