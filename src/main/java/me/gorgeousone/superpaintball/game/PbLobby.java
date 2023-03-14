@@ -76,7 +76,7 @@ public class PbLobby {
 		arenaToPlay.assertIsPlayable();
 
 		for (PbTeam team : teams.values()) {
-			team.start();
+			team.start(arenaToPlay.getSpawns(team.getType()));
 		}
 
 		startCooldownTimer();

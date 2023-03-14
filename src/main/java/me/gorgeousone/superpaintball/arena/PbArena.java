@@ -106,18 +106,8 @@ public class PbArena {
 		return teamSpawns.containsKey(teamType);
 	}
 
-	public void spawnPlayers(TeamType teamType, Collection<UUID> playerIds) {
-		if (!hasSpawns(teamType)) {
-			throw new IllegalArgumentException(String.format("Arena '%s' does not have spawn points for team '%s'", name, teamType.displayName));
-		}
-		List<Location> spawns = teamSpawns.get(teamType);
-		int i = 0;
-
-		for (UUID playerId : playerIds) {
-			Player player = Bukkit.getPlayer(playerId);
-			player.teleport(spawns.get(i));
-			i = (i + 1) % spawns.size();
-		}
+	public List<Location> getSpawns(TeamType type) {
+		return teamSpawns.get(type);
 	}
 
 	public void toYml(ConfigurationSection parentSection) {
