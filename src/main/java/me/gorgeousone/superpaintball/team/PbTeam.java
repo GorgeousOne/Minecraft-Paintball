@@ -54,12 +54,16 @@ public class PbTeam {
 		this.teamArmorSet = TeamUtil.createColoredArmoSet(teamType.armorColor);
 	}
 	
-	public void start() {
+	public void start(List<Location> spawns) {
+		int i = 0;
+
 		for (UUID playerId : alivePlayers) {
 			Player player = Bukkit.getPlayer(playerId);
 			player.setGameMode(GameMode.ADVENTURE);
+			player.teleport(spawns.get(i % spawns.size()));
 			healPlayer(player);
 			equipPlayers(player);
+			++i;
 		}
 	}
 	
