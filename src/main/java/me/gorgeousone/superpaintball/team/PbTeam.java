@@ -35,7 +35,7 @@ public class PbTeam {
 	private final Set<UUID> players;
 	private final Set<UUID> alivePlayers;
 	private final Map<UUID, Integer> playerHealth;
-	private final Map<UUID, List<Integer>> unccoloredArmorSlots;
+	private final Map<UUID, List<Integer>> uncoloredArmorSlots;
 	//key: armorstand, value: player
 	private final Map<UUID, UUID> reviveSkellies;
 	private final Random rng = new Random();
@@ -49,7 +49,7 @@ public class PbTeam {
 		this.players = new HashSet<>();
 		this.alivePlayers = new HashSet<>();
 		this.playerHealth = new HashMap<>();
-		this.unccoloredArmorSlots = new HashMap<>();
+		this.uncoloredArmorSlots = new HashMap<>();
 		this.reviveSkellies = new HashMap<>();
 		this.teamArmorSet = TeamUtil.createColoredArmoSet(teamType.armorColor);
 	}
@@ -79,12 +79,13 @@ public class PbTeam {
 		return new HashSet<>(alivePlayers);
 	}
 	
-	public void addPlayer(UUID playerId) {
-		//TODO if game started, throw
+	public void addPlayer(Player player) {
+		UUID playerId = player.getUniqueId();
 		players.add(playerId);
 		alivePlayers.add(playerId);
+		player.sendMessage(String.format("You are now team %s.", teamType.displayName));
 	}
-	
+
 	public void removePlayer(UUID playerId) {
 		if (!players.contains(playerId)) {
 			throw new IllegalArgumentException("Can't remove player with id: " + playerId + ". They are not in this team.");
@@ -92,9 +93,9 @@ public class PbTeam {
 		players.remove(playerId);
 		alivePlayers.remove(playerId);
 		playerHealth.remove(playerId);
-		unccoloredArmorSlots.remove(playerId);
+		uncoloredArmorSlots.remove(playerId);
 		UUID skellyId = getReviveSkellyId(playerId);
-		
+
 		if (skellyId != null) {
 			Bukkit.getEntity(skellyId).remove();
 			reviveSkellies.remove(skellyId);
@@ -103,19 +104,29 @@ public class PbTeam {
 			lobby.onTeamKill(this);
 		}
 	}
-	
-	
+
+	public void kickPlayers() {
+		for (UUID skellyId : reviveSkellies.keySet()) {
+			Bukkit.getEntity(skellyId).remove();
+		}
+		players.clear();
+		alivePlayers.clear();
+		playerHealth.clear();
+		uncoloredArmorSlots.clear();
+		reviveSkellies.clear();
+	}
+
 	public boolean hasPlayer(UUID playerId) {
 		return players.contains(playerId);
 	}
-	
+
 	public void paintBlock(Block shotBlock) {
 		paintBlot(shotBlock, 5, 1);
 	}
-	
+
 	public void damagePlayer(Player target, Player shooter, int bulletDmg) {
 		UUID playerId = target.getUniqueId();
-		
+
 		if (!alivePlayers.contains(playerId)) {
 			return;
 		}
@@ -123,26 +134,26 @@ public class PbTeam {
 		updateHealth(playerId, bulletDmg);
 		paintArmor(playerId, bulletDmg);
 	}
-	
+
 	private void updateHealth(UUID playerId, int damage) {
 		Player player = Bukkit.getPlayer(playerId);
 		int health = playerHealth.get(playerId);
 		health = Math.max(0, health - damage);
 		playerHealth.put(playerId, health);
-		
+
 		if (health == 0) {
 			knockoutPlayer(player);
 			return;
 		}
 		player.damage(damage * TeamUtil.HEARTS_PER_DMG_POINT);
 	}
-	
+
 	private void paintArmor(UUID playerId, int damage) {
 		Player player = Bukkit.getPlayer(playerId);
 		PlayerInventory inv = player.getInventory();
 		ItemStack[] playerAmor = inv.getArmorContents();
-		List<Integer> uncoloredSlots = unccoloredArmorSlots.get(playerId);
-		
+		List<Integer> uncoloredSlots = uncoloredArmorSlots.get(playerId);
+
 		for (int i = 0; i < damage; ++i) {
 			int rndSlot = uncoloredSlots.get(rng.nextInt(uncoloredSlots.size()));
 			playerAmor[rndSlot] = TeamUtil.DEATH_ARMOR_SET[rndSlot];
@@ -150,26 +161,26 @@ public class PbTeam {
 		}
 		inv.setArmorContents(playerAmor);
 	}
-	
+
 	public void knockoutPlayer(Player player) {
 		UUID playerId = player.getUniqueId();
 		alivePlayers.remove(player.getUniqueId());
 		setSpectator(player, true);
-		
+
 		ArmorStand skelly = TeamUtil.createSkelly(TeamUtil.DEATH_ARMOR_SET, player, teamType, kitHandler.getKit(playerId).getType());
 		reviveSkellies.put(skelly.getUniqueId(), playerId);
 		lobby.updateAliveScores();
-		
+
 		if (alivePlayers.isEmpty()) {
 			lobby.onTeamKill(this);
 		}
 	}
-	
+
 	private void setSpectator(Player player, boolean isSpectator) {
 		player.setCollidable(!isSpectator);
 		player.setAllowFlight(isSpectator);
 		player.setFlying(isSpectator);
-		
+
 		if (isSpectator) {
 			healPlayer(player);
 			player.teleport(player.getLocation().add(0, 1, 0));
@@ -179,11 +190,11 @@ public class PbTeam {
 			lobby.showPlayer(player);
 		}
 	}
-	
+
 	public boolean hasReviveSkelly(ArmorStand reviveSkelly) {
 		return reviveSkellies.containsKey(reviveSkelly.getUniqueId());
 	}
-	
+
 	public UUID getReviveSkellyId(UUID playerId) {
 		for (UUID skellyId : reviveSkellies.keySet()) {
 			if (reviveSkellies.get(skellyId) == playerId) {
@@ -192,7 +203,7 @@ public class PbTeam {
 		}
 		return null;
 	}
-	
+
 	public void revivePlayer(UUID playerId) {
 		for (UUID skellyId : reviveSkellies.keySet()) {
 			if (reviveSkellies.get(skellyId) == playerId) {
@@ -201,10 +212,10 @@ public class PbTeam {
 			}
 		}
 	}
-	
+
 	public void revivePlayer(ArmorStand skelly) {
 		UUID skellyId = skelly.getUniqueId();
-		
+
 		if (!reviveSkellies.containsKey(skelly.getUniqueId())) {
 			return;
 		}
@@ -214,41 +225,41 @@ public class PbTeam {
 		setSpectator(player, false);
 		player.teleport(skelly.getLocation());
 		skelly.remove();
-		
+
 		reviveSkellies.remove(skellyId);
 		playerHealth.put(playerId, TeamUtil.DMG_POINTS);
 		alivePlayers.add(playerId);
 		lobby.updateAliveScores();
 	}
-	
+
 	public void healPlayer(Player player) {
 		player.setFoodLevel(20);
 		player.setHealth(TeamUtil.DMG_POINTS * TeamUtil.HEARTS_PER_DMG_POINT);
 		player.getInventory().setArmorContents(teamArmorSet);
-		
+
 		UUID playerId = player.getUniqueId();
 		playerHealth.put(player.getUniqueId(), TeamUtil.DMG_POINTS);
-		unccoloredArmorSlots.put(playerId, new ArrayList<>(Arrays.asList(0, 1, 2, 3)));
+		uncoloredArmorSlots.put(playerId, new ArrayList<>(Arrays.asList(0, 1, 2, 3)));
 	}
-	
+
 	private void equipPlayers(Player player) {
 		PlayerInventory inv = player.getInventory();
 		AbstractKit kit = kitHandler.getKit(player.getUniqueId());
 		inv.setItem(0, kit.getType().getGun());
 		inv.setItem(1, PbKitHandler.getWaterBombs());
 	}
-	
 	//TODO make this nicer block patterns :(
 	//TODO add water/snoball & lava particles to painted blocks
+
 	private void paintBlot(Block block, int blockCount, int range) {
 		World world = block.getWorld();
-		
+
 		if (isTerracotta(block)) {
 			teamType.blockColor.updateBlock(block, false);
 			world.playSound(block.getLocation(), Sound.BLOCK_STONE_PLACE, .25f, .8f);
 		}
 		List<Block> neighbors = getNeighbors(block, range);
-		
+
 		for (int i = 0; i < blockCount - 1; ++i) {
 			if (neighbors.isEmpty()) {
 				break;
@@ -260,15 +271,15 @@ public class PbTeam {
 			world.playSound(block.getLocation(), Sound.BLOCK_STONE_PLACE, .05f, .8f);
 		}
 	}
-	
+
 	private List<Block> getNeighbors(Block block, int range) {
 		List<Block> terracotta = new LinkedList<>();
-		
+
 		for (int dz = -range; dz <= range; ++dz) {
 			for (int dy = -range; dy <= range; ++dy) {
 				for (int dx = -range; dx <= range; ++dx) {
 					Block neighbor = block.getRelative(dx, dy, dz);
-					
+
 					if (isTerracotta(neighbor)) {
 						terracotta.add(neighbor);
 					}
@@ -278,7 +289,7 @@ public class PbTeam {
 		terracotta.remove(block);
 		return terracotta;
 	}
-	
+
 	private boolean isTerracotta(Block block) {
 		String matName = block.getType().name();
 		return matName.contains("STAINED_CLAY") || matName.contains("TERRACOTTA");

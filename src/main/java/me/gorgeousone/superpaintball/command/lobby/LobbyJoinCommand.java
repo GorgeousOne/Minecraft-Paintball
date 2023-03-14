@@ -4,19 +4,23 @@ import me.gorgeousone.superpaintball.cmdframework.argument.ArgType;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
+import me.gorgeousone.superpaintball.game.GameUtil;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
+import me.gorgeousone.superpaintball.team.PbTeam;
+import me.gorgeousone.superpaintball.team.TeamType;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Set;
 
-public class LobbyDeleteCommand extends ArgCommand {
-	
+public class LobbyJoinCommand extends ArgCommand {
+
 	private final PbLobbyHandler lobbyHandler;
-	
-	public LobbyDeleteCommand(PbLobbyHandler lobbyHandler) {
-		super("delete");
+
+	public LobbyJoinCommand(PbLobbyHandler lobbyHandler) {
+		super("join");
 		this.addArg(new Argument("lobby name", ArgType.STRING));
 		
 		this.lobbyHandler = lobbyHandler;
@@ -24,6 +28,7 @@ public class LobbyDeleteCommand extends ArgCommand {
 	
 	@Override
 	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
+		Player player = (Player) sender;
 		String lobbyName = argValues.get(0).get();
 		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
 
@@ -31,6 +36,10 @@ public class LobbyDeleteCommand extends ArgCommand {
 			sender.sendMessage(String.format("Lobby '%s' does not exits!", lobbyName));
 			return;
 		}
-		lobbyHandler.deleteLobby(lobby);
+		try {
+			lobby.joinPlayer(player, TeamType.EMBER);
+		} catch (Exception e) {
+			player.sendMessage(e.getMessage());
+		}
 	}
 }

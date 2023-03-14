@@ -2,7 +2,7 @@ name: SuperPaintball
 version: '0.0.1'
 main: me.gorgeousone.superpaintball.SuperPaintballPlugin
 api-version: 1.13
-
+depend: [WorldEdit]
 commands:
     paintball:
         aliases: [pb]

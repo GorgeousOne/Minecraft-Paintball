@@ -13,6 +13,7 @@ public enum TeamType {
 	ICE("Ice", Snowball.class, Color.AQUA, ChatColor.AQUA);
 	
 	public static final Color DEATH_COLOR = Color.PURPLE;
+
 	public final String displayName;
 	public final Class<? extends Projectile> projectileType;
 	public final Color armorColor;
@@ -23,7 +24,7 @@ public enum TeamType {
 	         Class<? extends Projectile> projectileType,
 	         Color garmentColor,
 	         ChatColor prefixColor) {
-		this.displayName = displayName;
+		this.displayName = "" + prefixColor + ChatColor.BOLD + displayName + ChatColor.RESET;
 		this.projectileType = projectileType;
 		this.armorColor = garmentColor;
 		this.prefixColor = prefixColor;
@@ -33,7 +34,7 @@ public enum TeamType {
 	 * call setup after BlockType is setup for server version (legacy)
 	 */
 	public static void setup() {
-		EMBER.blockColor = BlockType.get("minecraft:light_blue_terracotta", "stained_clay:14");
-		ICE.blockColor = BlockType.get("minecraft:red_terracotta", "stained_clay:3");
+		EMBER.blockColor = BlockType.get("minecraft:red_terracotta", "stained_clay:14");
+		ICE.blockColor = BlockType.get("minecraft:light_blue_terracotta", "stained_clay:3");
 	}
 }
