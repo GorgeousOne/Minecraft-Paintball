@@ -13,12 +13,10 @@ import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.team.TeamType;
-import me.gorgeousone.superpaintball.util.ConfigUtil;
 import me.gorgeousone.superpaintball.util.blocktype.BlockType;
 import me.gorgeousone.superpaintball.util.version.VersionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -47,7 +45,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		saveBackup();
+//		saveBackup();
 	}
 
 	private void setupVersioning() {
@@ -61,16 +59,16 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		PbKitHandler.setupKits(this);
 	}
 	
-	private boolean randomize;
-	private void setupTest() {
-		PbLobby lobby = lobbyHandler.createLobby("lobby", new Location(Bukkit.getWorld("world"), 0, 128, 0));
-		
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			lobby.joinPlayer(player, Math.random() >= .5 ? TeamType.EMBER : TeamType.ICE);
-			randomize = !randomize;
-		}
-		lobby.start();
-	}
+//	private boolean randomize;
+//	private void setupTest() {
+//		PbLobby lobby = lobbyHandler.createLobby("lobby", new Location(Bukkit.getWorld("world"), 0, 128, 0));
+//
+//		for (Player player : Bukkit.getOnlinePlayers()) {
+//			lobby.joinPlayer(player, Math.random() >= .5 ? TeamType.EMBER : TeamType.ICE);
+//			randomize = !randomize;
+//		}
+//		lobby.start();
+//	}
 	
 	private void registerCommands() {
 		ParentCommand pbCmd = new ParentCommand("paintball");
@@ -85,12 +83,16 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		ParentCommand lobbyCmd = new ParentCommand("lobby");
 		lobbyCmd.addChild(new LobbyCreateCommand(lobbyHandler));
 		lobbyCmd.addChild(new LobbyDeleteCommand(lobbyHandler));
+		lobbyCmd.addChild(new LobbyLinkArenaCommand(lobbyHandler, arenaHandler));
+		lobbyCmd.addChild(new LobbyUnlinkArenaCommand(lobbyHandler, arenaHandler));
 
 		pbCmd.addChild(arenaCmd);
 		pbCmd.addChild(lobbyCmd);
 		pbCmd.addChild(new KitCommand());
 		pbCmd.addChild(new LobbyJoinCommand(lobbyHandler));
 		pbCmd.addChild(new LobbyStartCommand(lobbyHandler));
+		pbCmd.addChild(new LobbyLeaveCommand(lobbyHandler));
+
 		pbCmd.addChild(new DebugKillCommand(lobbyHandler));
 		pbCmd.addChild(new DebugReviveCommand(lobbyHandler));
 

@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball.game;
 
+import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.kit.AbstractKit;
@@ -26,9 +27,10 @@ import java.util.stream.Collectors;
 public class PbLobby {
 
 	private final JavaPlugin plugin;
+	private final PbLobbyHandler lobbyHandler;
 	private final String name;
 	private Location spawnPos;
-	private final Set<PbArena> arenas;
+	private final List<PbArena> arenas;
 	private final Map<TeamType, PbTeam> teams;
 	private final Set<UUID> players;
 	private GameState state;
@@ -44,7 +46,9 @@ public class PbLobby {
 		this.name = name;
 		this.spawnPos = GameUtil.cleanSpawn(spawnPos);
 		this.plugin = plugin;
-		this.arenas = new HashSet<>();
+		this.lobbyHandler = lobbyHandler;
+
+		this.arenas = new LinkedList<>();
 		this.teams = new HashMap<>();
 		this.players = new HashSet<>();
 		this.shootCooldowns = new HashMap<>();
@@ -53,7 +57,6 @@ public class PbLobby {
 		for (TeamType teamType : TeamType.values()) {
 			teams.put(teamType, new PbTeam(teamType, this, lobbyHandler, kitHandler));
 		}
-		start();
 	}
 
 	public String getName() {
@@ -69,9 +72,28 @@ public class PbLobby {
 	}
 
 	public void start() {
+		PbArena arenaToPlay = pickArena();
+		arenaToPlay.assertIsPlayable();
+
 		for (PbTeam team : teams.values()) {
 			team.start();
 		}
+
+		startCooldownTimer();
+		createScoreboard();
+		state = GameState.RUNNING;
+	}
+
+	private PbArena pickArena() {
+		if (arenas.isEmpty()) {
+			throw new IllegalStateException(String.format(
+					"Lobby '%s' cannot start a game because no arenas to play are linked to it. /pb link '%s' <arena name>", name, name));
+		}
+		//TODO take in account votes and/or pick different arena than last time
+		return arenas.get((int) (Math.random() * arenas.size()));
+	}
+
+	private void startCooldownTimer() {
 		cooldownTimer = new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -89,13 +111,15 @@ public class PbLobby {
 			}
 		};
 		cooldownTimer.runTaskTimer(plugin, 0, 1);
-		createScoreboard();
-		state = GameState.RUNNING;
 	}
 
 	public void joinPlayer(Player player, TeamType teamType) {
 		UUID playerId = player.getUniqueId();
-		//TODO if game started, throw
+
+		if (players.contains(playerId)) {
+			throw new IllegalArgumentException(String.format("You already are in lobby '%s'.", name));
+		}
+		//TODO if game started, join as spectator if not full?
 		player.teleport(spawnPos);
 		player.sendMessage(String.format("Joined lobby '%s'.", name));
 
@@ -103,7 +127,9 @@ public class PbLobby {
 		teams.get(teamType).addPlayer(player);
 	}
 
-	public void removePlayer(UUID playerId) {
+	public void removePlayer(Player player) {
+		UUID playerId = player.getUniqueId();
+
 		if (!players.contains(playerId)) {
 			throw new IllegalArgumentException("Can't remove player with id: " + playerId + ". They are not in this game");
 		}
@@ -111,14 +137,31 @@ public class PbLobby {
 		team.removePlayer(playerId);
 		players.remove(playerId);
 		updateAliveScores();
+
+		player.teleport(lobbyHandler.getExitSpawn());
+		player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+		player.sendMessage(String.format("You left lobby '%s'.", name));
+		//TODO reset inventory & gamemode
+	}
+
+	public void kickPlayers() {
+		for (PbTeam team : teams.values()) {
+			team.kickPlayers();
+		}
+		Location exitSpawn = lobbyHandler.getExitSpawn();
+		for (UUID playerId : players) {
+			Player player = Bukkit.getPlayer(playerId);
+			player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+			player.teleport(exitSpawn);
+			player.sendMessage(String.format("Lobby '%s' closed.", name));
+			//TODO reset invnetory and gamemode
+		}
+		players.clear();
+		state = GameState.LOBBYING;
 	}
 
 	public boolean hasPlayer(UUID playerId) {
 		return players.contains(playerId);
-	}
-
-	public void addArena(PbArena arena) {
-		arenas.add(arena);
 	}
 
 	public PbTeam getTeam(UUID playerId) {
@@ -132,6 +175,24 @@ public class PbLobby {
 
 	public Collection<PbTeam> getTeams() {
 		return teams.values();
+	}
+
+	public void linkArena(PbArena arena) {
+		if (arenas.contains(arena)) {
+			throw new IllegalArgumentException(String.format("Arena '%s' already linked to this lobby!", arena.getName()));
+		}
+		arenas.add(arena);
+	}
+
+	public void unlinkArena(PbArena arena) {
+		if (arenas.contains(arena)) {
+			throw new IllegalArgumentException(String.format("Arena '%s' is not linked to this lobby!", arena.getName()));
+		}
+		arenas.remove(arena);
+	}
+
+	public List<PbArena> getArenas() {
+		return arenas;
 	}
 
 	public void launchShot(Player player, AbstractKit kit) {
@@ -229,7 +290,7 @@ public class PbLobby {
 		state = GameState.OVER;
 
 		if (winningTeam != null) {
-			sendTitle(winningTeam.displayName + ChatColor.RESET + " won!");
+			sendTitle(winningTeam.displayName + " won!");
 		} else {
 			sendTitle("It's a draw?");
 		}
@@ -268,7 +329,8 @@ public class PbLobby {
 			PbLobby lobby = new PbLobby(name, spawnPos, plugin, lobbyHandler, kitHandler);
 
 			List<String> arenaNames = section.getStringList("arenas");
-			arenaNames.forEach(n -> lobby.addArena(arenaHandler.getArena(n)));
+			//TODO (somehow) check if arena is arelady linked
+			arenaNames.forEach(n -> lobby.linkArena(arenaHandler.getArena(n)));
 			Bukkit.getLogger().log(Level.INFO, String.format("'%s' loaded", name));
 			return lobby;
 		} catch (IllegalArgumentException e) {

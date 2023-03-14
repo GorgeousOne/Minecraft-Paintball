@@ -2,13 +2,11 @@ package me.gorgeousone.superpaintball.command.arena;
 
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
 import me.gorgeousone.superpaintball.game.GameUtil;
-import me.gorgeousone.superpaintball.game.PbArena;
-import me.gorgeousone.superpaintball.game.PbLobbyHandler;
+import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgType;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
-import me.gorgeousone.superpaintball.team.PbTeam;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -33,7 +31,7 @@ public class ArenaCopyCommand extends ArgCommand {
 		String oldName = argValues.get(0).get();
 
 		if (!arenaHandler.containsArena(oldName)) {
-			sender.sendMessage(String.format("No arena found with name '%s'.", oldName));
+			sender.sendMessage(String.format("Arena '%s' does not exist!", oldName));
 			return;
 		}
 		String newName = argValues.get(1).get();
@@ -43,9 +41,13 @@ public class ArenaCopyCommand extends ArgCommand {
 			return;
 		}
 		PbArena oldArena = arenaHandler.getArena(oldName);
-		PbArena newArena = new PbArena(oldArena, newName, player.getLocation());
-		arenaHandler.registerArena(newArena);
-		newArena.reset();
-		sender.sendMessage(String.format("Copied new arena '%s' to %s", newName, GameUtil.humanBlockPos(newArena.getSchemPos())));
+
+		try {
+			PbArena newArena = arenaHandler.createArena(oldArena, newName, player.getLocation());
+			sender.sendMessage(String.format("Copied new arena '%s' to %s", newName, GameUtil.humanBlockPos(newArena.getSchemPos())));
+		}catch (IllegalArgumentException e) {
+			sender.sendMessage(e.getMessage());
+			return;
+		}
 	}
 }

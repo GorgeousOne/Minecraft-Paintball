@@ -3,6 +3,7 @@ package me.gorgeousone.superpaintball.game;
 import me.gorgeousone.superpaintball.util.version.VersionUtil;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 
@@ -39,5 +40,13 @@ public class GameUtil {
 
 	public static String humanBlockPos(Location location) {
 		return String.format("x:%d, y:%d, z:%d", location.getBlockX(), location.getBlockY(), location.getBlockZ());
+	}
+
+	public static int getWorldMinY(World world) {
+		try {
+			return world.getMinHeight();
+		} catch (NoSuchMethodError e) {
+			return 0;
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball.game;
 
+import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.team.PbTeam;
@@ -34,20 +35,34 @@ public class PbLobbyHandler {
 
 	public PbLobby createLobby(String name, Location spawn) {
 		if (lobbies.containsKey(name)) {
-			throw new IllegalArgumentException(String.format("Lobby with name '%s' already exists."));
+			throw new IllegalArgumentException(String.format("Lobby with name '%s' already exists.", name));
 		}
 		PbLobby lobby = new PbLobby(name, spawn, plugin, this, kitHandler);
 		lobbies.put(lobby.getName(), lobby);
+		saveLobby(lobby);
 		return lobby;
 	}
 
-	public void registerLobby(PbLobby lobby) {
-		if (lobbies.containsKey(lobby.getName())) {
-			throw new IllegalArgumentException(String.format("Lobby with name '%s' already exists."));
+	private void registerLobby(PbLobby lobby) {
+		String name = lobby.getName();
+
+		if (lobbies.containsKey(name)) {
+			throw new IllegalArgumentException(String.format("Lobby with name '%s' already exists.", name));
 		}
-		lobbies.put(lobby.getName(), lobby);
+		lobbies.put(name, lobby);
+	}
+
+	public void deleteLobby(PbLobby lobby) {
+		String name = lobby.getName();
+
+		if (!lobbies.containsKey(name)) {
+			return;
+		}
+		lobby.kickPlayers();
+		lobbies.remove(name);
+
 		ConfigurationSection lobbiesSection = backupConfig.getConfigurationSection("lobbies");
-		lobby.toYml(lobbiesSection);
+		lobbiesSection.set(name, null);
 		ConfigUtil.saveConfig(backupConfig, "lobbies", plugin);
 	}
 
@@ -97,6 +112,26 @@ public class PbLobbyHandler {
 		return null;
 	}
 
+	public void linkArena(PbLobby lobby, PbArena arena) {
+		for (PbLobby other : lobbies.values()) {
+			if (other.getArenas().contains(arena)) {
+				throw new IllegalArgumentException(String.format("Arena '%s' already linked to lobby '%s'", arena.getName(), lobby.getName()));
+			}
+		}
+		lobby.linkArena(arena);
+		saveLobby(lobby);
+	}
+
+	public void unlinkArena(PbLobby lobby, PbArena arena) {
+		lobby.unlinkArena(arena);
+		saveLobby(lobby);
+	}
+
+	public Location getExitSpawn() {
+		//TODO idk get config spawn pos
+		return lobbies.values().iterator().next().getSpawnPos().getWorld().getSpawnLocation();
+	}
+
 	public void saveLobbies() {
 		Logger logger = Bukkit.getLogger();
 		logger.log(Level.INFO, "  Saving lobbies:");
@@ -108,6 +143,15 @@ public class PbLobbyHandler {
 		lobbies.values().forEach(l -> l.toYml(lobbiesSection));
 		ConfigUtil.saveConfig(backupConfig, "lobbies", plugin);
 		logger.log(Level.INFO, String.format("  Saved %d lobbies", lobbies.size()));
+	}
+
+	private void saveLobby(PbLobby lobby) {
+		if (!backupConfig.contains("lobbies")) {
+			backupConfig.createSection("lobbies");
+		}
+		ConfigurationSection lobbiesSection = backupConfig.getConfigurationSection("lobbies");
+		lobby.toYml(lobbiesSection);
+		ConfigUtil.saveConfig(backupConfig, "lobbies", plugin);
 	}
 
 	public void loadLobbies(PbArenaHandler arenaHandler) {

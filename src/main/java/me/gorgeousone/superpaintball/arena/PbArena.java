@@ -1,4 +1,4 @@
-package me.gorgeousone.superpaintball.game;
+package me.gorgeousone.superpaintball.arena;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -13,6 +13,7 @@ import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.World;
+import me.gorgeousone.superpaintball.game.GameUtil;
 import me.gorgeousone.superpaintball.team.TeamType;
 import me.gorgeousone.superpaintball.util.ConfigUtil;
 import org.bukkit.Bukkit;
@@ -29,12 +30,14 @@ import java.util.stream.Collectors;
 
 public class PbArena {
 
+	private final PbArenaHandler arenaHandler;
 	private final String name;
 	private File schemFile;
 	private Location schemPos;
 	private final Map<TeamType, List<Location>> teamSpawns;
 
-	public PbArena(String name, File schemFile, Location schemPos) {
+	public PbArena(String name, File schemFile, Location schemPos, PbArenaHandler arenaHandler) {
+		this.arenaHandler = arenaHandler;
 		this.name = name;
 		this.schemFile = schemFile;
 		this.schemPos = GameUtil.cleanSpawn(schemPos);
@@ -43,9 +46,14 @@ public class PbArena {
 		schemPos.setX(schemPos.getBlockX());
 		schemPos.setY(schemPos.getBlockY());
 		schemPos.setZ(schemPos.getBlockZ());
+
+		for (TeamType teamType : TeamType.values()) {
+			teamSpawns.put(teamType, new LinkedList<>());
+		}
 	}
 
 	public PbArena(PbArena other, String name, Location schemPos) {
+		this.arenaHandler = other.arenaHandler;
 		this.name = name;
 		this.schemFile = other.schemFile;
 		this.schemPos = GameUtil.cleanSpawn(schemPos);
@@ -68,6 +76,7 @@ public class PbArena {
 		GameUtil.cleanSpawn(spawnPos);
 		teamSpawns.computeIfAbsent(teamType, v -> new ArrayList<>());
 		teamSpawns.get(teamType).add(spawnPos);
+		arenaHandler.saveArena(this);
 	}
 
 	public void reset() {
@@ -127,7 +136,7 @@ public class PbArena {
 		}
 	}
 
-	public static PbArena fromYml(String name, ConfigurationSection parentSection, String schemFolder) {
+	public static PbArena fromYml(String name, ConfigurationSection parentSection, String schemFolder, PbArenaHandler arenaHandler) {
 		ConfigurationSection section = parentSection.getConfigurationSection(name);
 		PbArena arena;
 		try {
@@ -136,7 +145,7 @@ public class PbArena {
 			ConfigUtil.assertKeyExists(section, "spawns");
 			File schemFile = ConfigUtil.schemFileFromYml(section.getString("schematic"), schemFolder);
 			Location schemPos = ConfigUtil.blockPosFromYmlString(section.getString("position"));
-			arena = new PbArena(name, schemFile, schemPos);
+			arena = new PbArena(name, schemFile, schemPos, arenaHandler);
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException(String.format("Could not load arena '%s': %s", name, e.getMessage()));
 		}
@@ -162,5 +171,14 @@ public class PbArena {
 		}
 		Bukkit.getLogger().log(Level.INFO, String.format("'%s' loaded", name));
 		return arena;
+	}
+
+	public void assertIsPlayable() {
+		for (TeamType teamType : TeamType.values()) {
+			if (!teamSpawns.containsKey(teamType) || teamSpawns.get(teamType).isEmpty()) {
+				throw new IllegalArgumentException(String.format(
+						"Arena '%s' does not have any spawn points for team %s. /pb arena add-spawn %s", name, teamType.displayName, teamType.name().toLowerCase()));
+			}
+		}
 	}
 }

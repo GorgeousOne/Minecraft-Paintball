@@ -24,7 +24,7 @@ public enum TeamType {
 	         Class<? extends Projectile> projectileType,
 	         Color garmentColor,
 	         ChatColor prefixColor) {
-		this.displayName = "" + prefixColor + ChatColor.BOLD + displayName;
+		this.displayName = "" + prefixColor + ChatColor.BOLD + displayName + ChatColor.RESET;
 		this.projectileType = projectileType;
 		this.armorColor = garmentColor;
 		this.prefixColor = prefixColor;
@@ -34,7 +34,7 @@ public enum TeamType {
 	 * call setup after BlockType is setup for server version (legacy)
 	 */
 	public static void setup() {
-		EMBER.blockColor = BlockType.get("minecraft:light_blue_terracotta", "stained_clay:14");
-		ICE.blockColor = BlockType.get("minecraft:red_terracotta", "stained_clay:3");
+		EMBER.blockColor = BlockType.get("minecraft:red_terracotta", "stained_clay:14");
+		ICE.blockColor = BlockType.get("minecraft:light_blue_terracotta", "stained_clay:3");
 	}
 }
