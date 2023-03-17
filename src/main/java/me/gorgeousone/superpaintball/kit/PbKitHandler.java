@@ -1,7 +1,10 @@
 package me.gorgeousone.superpaintball.kit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,9 +19,9 @@ public class PbKitHandler {
 	
 	private static Map<KitType, AbstractKit> KITS;
 	private static ItemStack WATER_BOMBS;
-	
+
 	private final Map<UUID, KitType> playerKits;
-	
+
 	public PbKitHandler() {
 		this.playerKits = new HashMap<>();
 	}
@@ -56,5 +59,25 @@ public class PbKitHandler {
 		meta.setBasePotionData(new PotionData(PotionType.AWKWARD));
 		waterBombs.setItemMeta(meta);
 		return waterBombs;
+	}
+
+	public static void openKitSelector(Player player) {
+		Inventory selector = Bukkit.createInventory(null, 27, "Select a kit");
+		int itemSlot = 11;
+
+		for (KitType kitType : KitType.values()) {
+			ItemStack gunItem = kitType.getGun();
+			selector.setItem(itemSlot, gunItem);
+			++itemSlot;
+		}
+		player.openInventory(selector);
+	}
+
+	private void setKitItemSelected(ItemStack item, Inventory selector) {
+
+	}
+
+	private static void setName(String displayName, ItemStack item) {
+
 	}
 }

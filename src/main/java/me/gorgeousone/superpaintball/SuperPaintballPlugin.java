@@ -9,15 +9,12 @@ import me.gorgeousone.superpaintball.command.lobby.*;
 import me.gorgeousone.superpaintball.event.*;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.game.GameUtil;
-import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.team.TeamType;
 import me.gorgeousone.superpaintball.util.blocktype.BlockType;
 import me.gorgeousone.superpaintball.util.version.VersionUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -103,7 +100,9 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	private void registerListeners() {
 		PluginManager manager = Bukkit.getPluginManager();
 		manager.registerEvents(new PlayerListener(lobbyHandler), this);
-		manager.registerEvents(new ShootListener(lobbyHandler), this);
+		manager.registerEvents(new ItemUseListener(lobbyHandler, kitHandler), this);
+		manager.registerEvents(new InventoryListener(lobbyHandler, kitHandler), this);
+
 		manager.registerEvents(new ProjectileListener(lobbyHandler), this);
 		manager.registerEvents(new SkellyInteractListener(lobbyHandler), this);
 	}
@@ -115,12 +114,12 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 
 		try {
 			arenaHandler.loadArenas(schemFolder);
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
 			Bukkit.getLogger().log(Level.WARNING, e.getMessage());
 		}
 		try {
 			lobbyHandler.loadLobbies(arenaHandler);
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
 			Bukkit.getLogger().log(Level.WARNING, e.getMessage());
 		}
 	}

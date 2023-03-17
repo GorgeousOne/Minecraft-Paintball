@@ -38,7 +38,7 @@ public class LobbyJoinCommand extends ArgCommand {
 		}
 		try {
 			lobby.joinPlayer(player, TeamType.EMBER);
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
 			player.sendMessage(e.getMessage());
 		}
 	}

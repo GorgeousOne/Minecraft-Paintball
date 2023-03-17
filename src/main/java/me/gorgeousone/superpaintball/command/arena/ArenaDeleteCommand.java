@@ -28,7 +28,7 @@ public class ArenaDeleteCommand extends ArgCommand {
 		try {
 			arenaHandler.removeArena(arenaName);
 			sender.sendMessage(String.format("Removed new arena '%s'.", arenaName));
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
 			sender.sendMessage(e.getMessage());
 		}
 	}

@@ -255,6 +255,7 @@ public class PbTeam {
 
 	private void equipPlayers(Player player) {
 		PlayerInventory inv = player.getInventory();
+		inv.clear();
 		AbstractKit kit = kitHandler.getKit(player.getUniqueId());
 		inv.setItem(0, kit.getType().getGun());
 		inv.setItem(1, PbKitHandler.getWaterBombs());

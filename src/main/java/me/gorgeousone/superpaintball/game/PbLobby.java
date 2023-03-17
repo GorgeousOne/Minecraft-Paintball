@@ -7,11 +7,15 @@ import me.gorgeousone.superpaintball.kit.AbstractKit;
 import me.gorgeousone.superpaintball.team.PbTeam;
 import me.gorgeousone.superpaintball.team.TeamType;
 import me.gorgeousone.superpaintball.util.ConfigUtil;
+import me.gorgeousone.superpaintball.util.ItemUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -28,35 +32,43 @@ public class PbLobby {
 
 	private final JavaPlugin plugin;
 	private final PbLobbyHandler lobbyHandler;
+	private final PbKitHandler kitHandler;
 	private final String name;
 	private Location spawnPos;
 	private final List<PbArena> arenas;
 	private final Map<TeamType, PbTeam> teams;
 	private final Set<UUID> players;
 	private GameState state;
-
 	private final Map<UUID, Long> shootCooldowns;
 	private BukkitRunnable cooldownTimer;
 
 	private Scoreboard gameBoard;
-	private Objective aliveObj;
-	private Map<TeamType, String> aliveEntries;
+	private Objective gameBoardObj;
+	private Map<TeamType, String> gameBoardEntries;
+
+	private Map<Integer, ItemStack> lobbyItems;
 
 	public PbLobby(String name, Location spawnPos, JavaPlugin plugin, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
+		this.lobbyHandler = lobbyHandler;
+		this.kitHandler = kitHandler;
+		this.plugin = plugin;
+
 		this.name = name;
 		this.spawnPos = GameUtil.cleanSpawn(spawnPos);
-		this.plugin = plugin;
-		this.lobbyHandler = lobbyHandler;
 
 		this.arenas = new LinkedList<>();
 		this.teams = new HashMap<>();
 		this.players = new HashSet<>();
 		this.shootCooldowns = new HashMap<>();
-		this.aliveEntries = new HashMap<>();
+		this.gameBoardEntries = new HashMap<>();
+
+		this.state = GameState.LOBBYING;
+		this.lobbyItems = createLobbyItems();
 
 		for (TeamType teamType : TeamType.values()) {
 			teams.put(teamType, new PbTeam(teamType, this, lobbyHandler, kitHandler));
 		}
+
 	}
 
 	public String getName() {
@@ -78,7 +90,6 @@ public class PbLobby {
 		for (PbTeam team : teams.values()) {
 			team.start(arenaToPlay.getSpawns(team.getType()));
 		}
-
 		startCooldownTimer();
 		createScoreboard();
 		state = GameState.RUNNING;
@@ -125,6 +136,42 @@ public class PbLobby {
 
 		players.add(playerId);
 		teams.get(teamType).addPlayer(player);
+		equipLobbyItems(player);
+	}
+
+	private void equipLobbyItems(Player player) {
+		PlayerInventory inv = player.getInventory();
+		//TODO save inventory temporarily
+		inv.clear();
+
+		for (int slot : lobbyItems.keySet()) {
+			inv.setItem(slot, lobbyItems.get(slot));
+		}
+		ItemStack kitSelector = getKitSelector(player.getUniqueId());
+		inv.setItem(7, kitSelector);
+	}
+
+	private ItemStack getKitSelector(UUID playerId) {
+		AbstractKit kit = kitHandler.getKit(playerId);
+		ItemStack selector = kit.getType().getGun();
+		ItemMeta meta = selector.getItemMeta();
+		meta.setDisplayName(ChatColor.WHITE + "Kit " + meta.getDisplayName() + ChatColor.GRAY + " (Right Click)");
+		selector.setItemMeta(meta);
+		return selector;
+	}
+
+	private Map<Integer, ItemStack> createLobbyItems() {
+		Map<Integer, ItemStack> lobbyItems = new HashMap<>();
+		int i = 0;
+
+		for (TeamType teamType : TeamType.values()) {
+			ItemStack teamItem = teamType.getJoinItem();
+			String tag = ChatColor.WHITE + "Team " + teamType.displayName + ChatColor.GRAY + " (Right Click)";
+			ItemUtil.setItemName(tag, teamItem);
+			lobbyItems.put(i, teamType.getJoinItem());
+			++i;
+		}
+		return lobbyItems;
 	}
 
 	public void removePlayer(Player player) {
@@ -133,9 +180,9 @@ public class PbLobby {
 		if (!players.contains(playerId)) {
 			throw new IllegalArgumentException("Can't remove player with id: " + playerId + ". They are not in this game");
 		}
+		players.remove(playerId);
 		PbTeam team = getTeam(playerId);
 		team.removePlayer(playerId);
-		players.remove(playerId);
 		updateAliveScores();
 
 		player.teleport(lobbyHandler.getExitSpawn());
@@ -224,11 +271,11 @@ public class PbLobby {
 
 	private void createScoreboard() {
 		gameBoard = Bukkit.getScoreboardManager().getNewScoreboard();
-		aliveObj = gameBoard.registerNewObjective("alive", "dummy");
-		aliveObj.setDisplaySlot(DisplaySlot.SIDEBAR);
-		aliveObj.setDisplayName("" + ChatColor.GOLD + ChatColor.BOLD + "SUPER PAINTBALL");
+		gameBoardObj = gameBoard.registerNewObjective("alive", "dummy");
+		gameBoardObj.setDisplaySlot(DisplaySlot.SIDEBAR);
+		gameBoardObj.setDisplayName("" + ChatColor.GOLD + ChatColor.BOLD + "SUPER PAINTBALL");
 
-		Score blank = aliveObj.getScore("");
+		Score blank = gameBoardObj.getScore("");
 		blank.setScore(1);
 		int i = 2;
 
@@ -243,10 +290,10 @@ public class PbLobby {
 				Player player = Bukkit.getPlayer(playerId);
 				boardTeam.addEntry(player.getName());
 			}
-			Score teamScore = aliveObj.getScore("" + ChatColor.BOLD + team.getAlivePlayers().size() + " Alive" + pad(' ', i));
-			Score teamName = aliveObj.getScore(teamType.displayName);
-			blank = aliveObj.getScore(pad(' ', i));
-			aliveEntries.put(teamType, teamScore.getEntry());
+			Score teamScore = gameBoardObj.getScore("" + ChatColor.BOLD + team.getAlivePlayers().size() + " Alive" + pad(' ', i));
+			Score teamName = gameBoardObj.getScore(teamType.displayName);
+			blank = gameBoardObj.getScore(pad(' ', i));
+			gameBoardEntries.put(teamType, teamScore.getEntry());
 
 			teamScore.setScore(i);
 			teamName.setScore(i + 1);
@@ -264,10 +311,10 @@ public class PbLobby {
 
 		for (TeamType teamType : teams.keySet()) {
 			PbTeam team = teams.get(teamType);
-			gameBoard.resetScores(aliveEntries.get(teamType));
-			Score teamScore = aliveObj.getScore("" + ChatColor.BOLD + team.getAlivePlayers().size() + " Alive" + pad(' ', i));
+			gameBoard.resetScores(gameBoardEntries.get(teamType));
+			Score teamScore = gameBoardObj.getScore("" + ChatColor.BOLD + team.getAlivePlayers().size() + " Alive" + pad(' ', i));
 			teamScore.setScore(i);
-			aliveEntries.put(teamType, teamScore.getEntry());
+			gameBoardEntries.put(teamType, teamScore.getEntry());
 			i += 3;
 		}
 	}
@@ -333,6 +380,7 @@ public class PbLobby {
 			PbArenaHandler arenaHandler,
 			PbKitHandler kitHandler) {
 		ConfigurationSection section = parentSection.getConfigurationSection(name);
+
 		try {
 			ConfigUtil.assertKeyExists(section, "spawn");
 			ConfigUtil.assertKeyExists(section, "arenas");

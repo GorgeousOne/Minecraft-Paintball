@@ -2,7 +2,6 @@ package me.gorgeousone.superpaintball.event;
 
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
-import me.gorgeousone.superpaintball.game.GameState;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.kit.KitType;
 import org.bukkit.Material;
@@ -16,12 +15,14 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
-public class ShootListener implements Listener {
+public class ItemUseListener implements Listener {
 	
 	private final PbLobbyHandler lobbyHandler;
+	private final PbKitHandler kitHandler;
 	
-	public ShootListener(PbLobbyHandler lobbyHandler) {
+	public ItemUseListener(PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
 		this.lobbyHandler = lobbyHandler;
+		this.kitHandler = kitHandler;
 	}
 	
 	@EventHandler
@@ -37,20 +38,44 @@ public class ShootListener implements Listener {
 			return;
 		}
 		ItemStack heldItem = getHeldItem(player);
-		boolean canPlayerInteract = lobby.getState() == GameState.RUNNING && lobby.getTeam(playerId).getAlivePlayers().contains(playerId);
-		
-		if (!canPlayerInteract) {
+		System.out.println(lobby.getState());
+		switch (lobby.getState()) {
+			case LOBBYING:
+				onLobbyItemInteract(player, heldItem, event, lobby);
+				break;
+			case RUNNING:
+				onArenaItemInteract(player, heldItem, event, lobby);
+				break;
+			case COUNTING_DOWN:
+			case OVER:
+				event.setCancelled(true);
+				break;
+		}
+	}
+
+	private void onLobbyItemInteract(Player player, ItemStack item, PlayerInteractEvent event, PbLobby lobby) {
+		KitType kitType = getKitType(item.getType());
+
+		if (kitType != null) {
+			PbKitHandler.openKitSelector(player);
+		}
+	}
+
+	private void onArenaItemInteract(Player player, ItemStack item, PlayerInteractEvent event, PbLobby lobby) {
+		UUID playerId = player.getUniqueId();
+
+		if (!lobby.getTeam(playerId).getAlivePlayers().contains(playerId)) {
 			event.setCancelled(true);
 			return;
 		}
-		KitType kitType = getKitType(heldItem.getType());
-		
+		KitType kitType = getKitType(item.getType());
+
 		if (kitType == null) {
 			return;
 		}
 		lobby.launchShot(player, PbKitHandler.getKit(kitType));
 	}
-	
+
 	KitType getKitType(Material mat) {
 		for (KitType kitType : KitType.values()) {
 			if (kitType.gunMaterial == mat) {
