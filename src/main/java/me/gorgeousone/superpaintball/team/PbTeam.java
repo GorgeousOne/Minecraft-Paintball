@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball.team;
 
+import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.game.PbLobby;
@@ -178,7 +179,7 @@ public class PbTeam {
 		alivePlayers.remove(player.getUniqueId());
 		setSpectator(player, true);
 
-		ArmorStand skelly = TeamUtil.createSkelly(TeamUtil.DEATH_ARMOR_SET, player, teamType, kitHandler.getKit(playerId).getType());
+		ArmorStand skelly = TeamUtil.createSkelly(TeamUtil.DEATH_ARMOR_SET, player, teamType, kitHandler.getKitType(playerId));
 		reviveSkellies.put(skelly.getUniqueId(), playerId);
 		lobby.updateAliveScores();
 
@@ -256,12 +257,12 @@ public class PbTeam {
 	private void equipPlayers(Player player) {
 		PlayerInventory inv = player.getInventory();
 		inv.clear();
-		AbstractKit kit = kitHandler.getKit(player.getUniqueId());
-		inv.setItem(0, kit.getType().getGun());
+		KitType kitType = kitHandler.getKitType(player.getUniqueId());
+		inv.setItem(0, kitType.getGun());
 		inv.setItem(1, PbKitHandler.getWaterBombs());
 	}
 	//TODO make this nicer block patterns :(
-	//TODO add water/snoball & lava particles to painted blocks
+	//TODO add water/snowball & lava particles to painted blocks
 
 	private void paintBlot(Block block, int blockCount, int range) {
 		World world = block.getWorld();

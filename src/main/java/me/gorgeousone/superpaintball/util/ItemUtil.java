@@ -8,7 +8,7 @@ public abstract class ItemUtil {
 
 	private ItemUtil() {}
 
-	public static void setItemName(String displayName, ItemStack item) {
+	public static void setItemName(ItemStack item, String displayName) {
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(displayName);
 		item.setItemMeta(meta);

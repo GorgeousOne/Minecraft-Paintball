@@ -39,9 +39,9 @@ public class PbKitHandler {
 		return KITS.get(kitType);
 	}
 	
-	public AbstractKit getKit(UUID playerId) {
+	public KitType getKitType(UUID playerId) {
 		playerKits.putIfAbsent(playerId, KitType.RIFLE);
-		return getKit(playerKits.get(playerId));
+		return playerKits.get(playerId);
 	}
 	
 	public void setKit(UUID playerId, KitType kitType) {

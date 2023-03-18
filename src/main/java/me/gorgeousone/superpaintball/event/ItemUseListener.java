@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball.event;
 
+import me.gorgeousone.superpaintball.equipment.SlotClickEvent;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.game.PbLobby;
@@ -38,19 +39,24 @@ public class ItemUseListener implements Listener {
 			return;
 		}
 		ItemStack heldItem = getHeldItem(player);
-		System.out.println(lobby.getState());
-		switch (lobby.getState()) {
-			case LOBBYING:
-				onLobbyItemInteract(player, heldItem, event, lobby);
-				break;
-			case RUNNING:
-				onArenaItemInteract(player, heldItem, event, lobby);
-				break;
-			case COUNTING_DOWN:
-			case OVER:
-				event.setCancelled(true);
-				break;
+		int slot = player.getInventory().getHeldItemSlot();
+		SlotClickEvent clickEvent = lobby.getEquip().onClickSlot(player, slot);
+
+		if (clickEvent != null && clickEvent.isCancelled()) {
+			event.setCancelled(true);
 		}
+//		switch (lobby.getState()) {
+//			case LOBBYING:
+//				onLobbyItemInteract(player, heldItem, event, lobby);
+//				break;
+//			case RUNNING:
+//				onArenaItemInteract(player, heldItem, event, lobby);
+//				break;
+//			case COUNTING_DOWN:
+//			case OVER:
+//				event.setCancelled(true);
+//				break;
+//		}
 	}
 
 	private void onLobbyItemInteract(Player player, ItemStack item, PlayerInteractEvent event, PbLobby lobby) {

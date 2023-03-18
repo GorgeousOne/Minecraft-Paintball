@@ -2,20 +2,19 @@ package me.gorgeousone.superpaintball.game;
 
 import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
+import me.gorgeousone.superpaintball.equipment.Equipment;
+import me.gorgeousone.superpaintball.equipment.LobbyEquipment;
+import me.gorgeousone.superpaintball.equipment.SlotClickEvent;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.kit.AbstractKit;
 import me.gorgeousone.superpaintball.team.PbTeam;
 import me.gorgeousone.superpaintball.team.TeamType;
 import me.gorgeousone.superpaintball.util.ConfigUtil;
-import me.gorgeousone.superpaintball.util.ItemUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -46,7 +45,7 @@ public class PbLobby {
 	private Objective gameBoardObj;
 	private Map<TeamType, String> gameBoardEntries;
 
-	private Map<Integer, ItemStack> lobbyItems;
+	private final Map<GameState, Equipment> equips;
 
 	public PbLobby(String name, Location spawnPos, JavaPlugin plugin, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
 		this.lobbyHandler = lobbyHandler;
@@ -63,12 +62,13 @@ public class PbLobby {
 		this.gameBoardEntries = new HashMap<>();
 
 		this.state = GameState.LOBBYING;
-		this.lobbyItems = createLobbyItems();
+		this.equips = new HashMap<>();
 
 		for (TeamType teamType : TeamType.values()) {
 			teams.put(teamType, new PbTeam(teamType, this, lobbyHandler, kitHandler));
 		}
 
+		equips.put(GameState.LOBBYING, new LobbyEquipment(this::onChooseTeam, this::onSelectKit, kitHandler));
 	}
 
 	public String getName() {
@@ -124,56 +124,6 @@ public class PbLobby {
 		cooldownTimer.runTaskTimer(plugin, 0, 1);
 	}
 
-	public void joinPlayer(Player player, TeamType teamType) {
-		UUID playerId = player.getUniqueId();
-
-		if (players.contains(playerId)) {
-			throw new IllegalArgumentException(String.format("You already are in lobby '%s'.", name));
-		}
-		//TODO if game started, join as spectator if not full?
-		player.teleport(spawnPos);
-		player.sendMessage(String.format("Joined lobby '%s'.", name));
-
-		players.add(playerId);
-		teams.get(teamType).addPlayer(player);
-		equipLobbyItems(player);
-	}
-
-	private void equipLobbyItems(Player player) {
-		PlayerInventory inv = player.getInventory();
-		//TODO save inventory temporarily
-		inv.clear();
-
-		for (int slot : lobbyItems.keySet()) {
-			inv.setItem(slot, lobbyItems.get(slot));
-		}
-		ItemStack kitSelector = getKitSelector(player.getUniqueId());
-		inv.setItem(7, kitSelector);
-	}
-
-	private ItemStack getKitSelector(UUID playerId) {
-		AbstractKit kit = kitHandler.getKit(playerId);
-		ItemStack selector = kit.getType().getGun();
-		ItemMeta meta = selector.getItemMeta();
-		meta.setDisplayName(ChatColor.WHITE + "Kit " + meta.getDisplayName() + ChatColor.GRAY + " (Right Click)");
-		selector.setItemMeta(meta);
-		return selector;
-	}
-
-	private Map<Integer, ItemStack> createLobbyItems() {
-		Map<Integer, ItemStack> lobbyItems = new HashMap<>();
-		int i = 0;
-
-		for (TeamType teamType : TeamType.values()) {
-			ItemStack teamItem = teamType.getJoinItem();
-			String tag = ChatColor.WHITE + "Team " + teamType.displayName + ChatColor.GRAY + " (Right Click)";
-			ItemUtil.setItemName(tag, teamItem);
-			lobbyItems.put(i, teamType.getJoinItem());
-			++i;
-		}
-		return lobbyItems;
-	}
-
 	public void removePlayer(Player player) {
 		UUID playerId = player.getUniqueId();
 
@@ -222,6 +172,46 @@ public class PbLobby {
 
 	public Collection<PbTeam> getTeams() {
 		return teams.values();
+	}
+
+	public Equipment getEquip() {
+		return equips.get(state);
+	}
+
+	public void joinPlayer(Player player, TeamType teamType) {
+		UUID playerId = player.getUniqueId();
+
+		if (players.contains(playerId)) {
+			throw new IllegalArgumentException(String.format("You already are in lobby '%s'.", name));
+		}
+		//TODO if game started, join as spectator if not full?
+		//TODO heal and nourish
+		player.teleport(spawnPos);
+		player.sendMessage(String.format("Joined lobby '%s'.", name));
+
+		players.add(playerId);
+		teams.get(teamType).addPlayer(player);
+		equips.get(GameState.LOBBYING).equip(player);
+	}
+
+	private void onChooseTeam(SlotClickEvent event) {
+		int slot = event.getClickedSlot();
+		TeamType newTeamType = TeamType.values()[slot];
+		Player player = event.getPlayer();
+		UUID playerId = player.getUniqueId();
+		PbTeam team = getTeam(playerId);
+
+		//if is full
+		if (team.getType() == newTeamType) {
+			player.sendMessage(String.format("You already are in team %s.", newTeamType.displayName));
+		} else {
+			team.removePlayer(playerId);
+			teams.get(newTeamType).addPlayer(player);
+		}
+	}
+
+	private void onSelectKit(SlotClickEvent event) {
+		PbKitHandler.openKitSelector(event.getPlayer());
 	}
 
 	public void linkArena(PbArena arena) {
@@ -320,6 +310,9 @@ public class PbLobby {
 	}
 
 	public void onTeamKill(PbTeam killedTeam) {
+		if (state != GameState.RUNNING) {
+			return;
+		}
 		TeamType leftTeam = null;
 
 		for (PbTeam team : teams.values()) {
