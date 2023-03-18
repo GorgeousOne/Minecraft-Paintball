@@ -1,9 +1,10 @@
 package me.gorgeousone.superpaintball.event;
 
-import me.gorgeousone.superpaintball.game.GameState;
+import me.gorgeousone.superpaintball.equipment.Equipment;
+import me.gorgeousone.superpaintball.equipment.IngameEquipment;
+import me.gorgeousone.superpaintball.equipment.SlotClickEvent;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
-import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
@@ -36,20 +37,30 @@ public class SkellyInteractListener implements Listener {
 			return;
 		}
 		event.setCancelled(true);
-		boolean canPlayerInteract = lobby.getState() == GameState.RUNNING && lobby.getTeam(playerId).getAlivePlayers().contains(playerId);
-		
-		if (!canPlayerInteract) {
+		Equipment equip = lobby.getEquip();
+
+		if (equip == null) {
 			return;
 		}
 		PlayerInventory inv = player.getInventory();
-		ItemStack heldItem = inv.getItemInMainHand();
-		
-		if (!PbKitHandler.getWaterBombs().isSimilar(heldItem)) {
+		int slot = inv.getHeldItemSlot();
+
+		//TODO i dont think this is good at all
+		if (slot != IngameEquipment.WATER_BOMB_SLOT) {
 			return;
 		}
-		ThrownPotion waterBomb = player.launchProjectile(ThrownPotion.class);
+		SlotClickEvent clickEvent = equip.onClickSlot(player, slot);
+
+		if (!clickEvent.isCancelled()) {
+			throwPotion(inv, slot);
+		}
+	}
+
+	private void throwPotion(PlayerInventory inv, int slot) {
+		ItemStack heldItem = inv.getItem(slot);
+		ThrownPotion waterBomb = inv.getHolder().launchProjectile(ThrownPotion.class);
 		waterBomb.setItem(heldItem);
 		heldItem.setAmount(heldItem.getAmount() - 1);
-		inv.setItemInMainHand(heldItem);
+		inv.setItem(slot, heldItem);
 	}
 }

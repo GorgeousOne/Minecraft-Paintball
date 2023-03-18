@@ -100,7 +100,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	private void registerListeners() {
 		PluginManager manager = Bukkit.getPluginManager();
 		manager.registerEvents(new PlayerListener(lobbyHandler), this);
-		manager.registerEvents(new ItemUseListener(lobbyHandler, kitHandler), this);
+		manager.registerEvents(new ItemUseListener(lobbyHandler), this);
 		manager.registerEvents(new InventoryListener(lobbyHandler, kitHandler), this);
 
 		manager.registerEvents(new ProjectileListener(lobbyHandler), this);

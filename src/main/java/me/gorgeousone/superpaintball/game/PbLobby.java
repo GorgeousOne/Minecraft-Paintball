@@ -2,9 +2,8 @@ package me.gorgeousone.superpaintball.game;
 
 import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
-import me.gorgeousone.superpaintball.equipment.Equipment;
-import me.gorgeousone.superpaintball.equipment.LobbyEquipment;
-import me.gorgeousone.superpaintball.equipment.SlotClickEvent;
+import me.gorgeousone.superpaintball.equipment.*;
+import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.kit.AbstractKit;
 import me.gorgeousone.superpaintball.team.PbTeam;
@@ -15,6 +14,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -23,7 +23,14 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -67,8 +74,8 @@ public class PbLobby {
 		for (TeamType teamType : TeamType.values()) {
 			teams.put(teamType, new PbTeam(teamType, this, lobbyHandler, kitHandler));
 		}
-
 		equips.put(GameState.LOBBYING, new LobbyEquipment(this::onChooseTeam, this::onSelectKit, kitHandler));
+		equips.put(GameState.RUNNING, new IngameEquipment(this::onShoot, this::onThrowWaterBomb, kitHandler));
 	}
 
 	public String getName() {
@@ -81,6 +88,10 @@ public class PbLobby {
 
 	public GameState getState() {
 		return state;
+	}
+
+	public Equipment getEquip() {
+		return equips.getOrDefault(state, null);
 	}
 
 	public void start() {
@@ -174,10 +185,6 @@ public class PbLobby {
 		return teams.values();
 	}
 
-	public Equipment getEquip() {
-		return equips.get(state);
-	}
-
 	public void joinPlayer(Player player, TeamType teamType) {
 		UUID playerId = player.getUniqueId();
 
@@ -232,16 +239,31 @@ public class PbLobby {
 		return arenas;
 	}
 
-	public void launchShot(Player player, AbstractKit kit) {
+	public void onShoot(SlotClickEvent event) {
+		Player player = event.getPlayer();
 		UUID playerId = player.getUniqueId();
 
+		if (!getTeam(playerId).isAlive(playerId)) {
+			return;
+		}
 		if (shootCooldowns.getOrDefault(playerId, 0L) > System.currentTimeMillis()) {
 			return;
 		}
+		ItemStack gun = event.getClickedItem();
+		KitType kitType = KitType.valueOf(gun);
+		AbstractKit kit = PbKitHandler.getKit(kitType);
 		long cooldownTicks = kit.launchShot(player, getTeam(playerId));
 
 		if (cooldownTicks > 0) {
 			shootCooldowns.put(playerId, System.currentTimeMillis() + cooldownTicks * 50);
+		}
+	}
+
+	private void onThrowWaterBomb(SlotClickEvent event) {
+		UUID playerId = event.getPlayer().getUniqueId();
+
+		if (!getTeam(playerId).isAlive(playerId)) {
+			event.setCancelled(true);
 		}
 	}
 
@@ -297,6 +319,9 @@ public class PbLobby {
 	}
 
 	public void updateAliveScores() {
+		if (state == GameState.LOBBYING) {
+			return;
+		}
 		int i = 2;
 
 		for (TeamType teamType : teams.keySet()) {

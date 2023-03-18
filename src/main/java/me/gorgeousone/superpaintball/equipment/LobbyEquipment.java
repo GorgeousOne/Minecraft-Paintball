@@ -13,11 +13,11 @@ import java.util.function.Consumer;
 
 public class LobbyEquipment extends Equipment {
 
-	private static final String kitItemName = ChatColor.WHITE + "Kit %s" + ChatColor.GRAY + " (Right Click)";
-	private static final String teamItemName = ChatColor.WHITE + "Team %s" + ChatColor.GRAY + " (Right Click)";
+	private static final String KIT_ITEM_NAME = ChatColor.WHITE + "Kit %s" + ChatColor.GRAY + " (Right Click)";
+	private static final String TEAM_ITEM_NAME = ChatColor.WHITE + "Team %s" + ChatColor.GRAY + " (Right Click)";
 	private final PbKitHandler kitHandler;
 
-	private static final int kitSlot = 8;
+	private static final int KIT_SLOT = 8;
 
 	public LobbyEquipment(
 			Consumer<SlotClickEvent> onTeamSelect,
@@ -28,12 +28,12 @@ public class LobbyEquipment extends Equipment {
 
 		for (TeamType teamType : TeamType.values()) {
 			ItemStack teamItem = teamType.getJoinItem();
-			ItemUtil.setItemName(teamItem, String.format(teamItemName, teamType.displayName));
+			ItemUtil.setItemName(teamItem, String.format(TEAM_ITEM_NAME, teamType.displayName));
 
 			setItem(i, teamItem, onTeamSelect);
 			++i;
 		}
-		setItem(kitSlot, KitType.RIFLE.getGun(), onKitSelect);
+		setItem(KIT_SLOT, KitType.RIFLE.getGun(), onKitSelect);
 	}
 
 	@Override
@@ -44,9 +44,9 @@ public class LobbyEquipment extends Equipment {
 
 	public void changeKit(Player player, KitType newKit) {
 		ItemStack kitItem = newKit.getGun();
-		ItemUtil.setItemName(kitItem, String.format(kitItemName, newKit.gunName));
+		ItemUtil.setItemName(kitItem, String.format(KIT_ITEM_NAME, newKit.gunName));
 
 		PlayerInventory inv = player.getInventory();
-		inv.setItem(kitSlot, kitItem);
+		inv.setItem(KIT_SLOT, kitItem);
 	}
 }
