@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball.game;
 
+import me.gorgeousone.superpaintball.GameBoard;
 import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
 import me.gorgeousone.superpaintball.equipment.*;
@@ -9,6 +10,7 @@ import me.gorgeousone.superpaintball.kit.AbstractKit;
 import me.gorgeousone.superpaintball.team.PbTeam;
 import me.gorgeousone.superpaintball.team.TeamType;
 import me.gorgeousone.superpaintball.util.ConfigUtil;
+import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -17,10 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Collection;
@@ -38,7 +36,6 @@ public class PbLobby {
 
 	private final JavaPlugin plugin;
 	private final PbLobbyHandler lobbyHandler;
-	private final PbKitHandler kitHandler;
 	private final String name;
 	private Location spawnPos;
 	private final List<PbArena> arenas;
@@ -47,16 +44,12 @@ public class PbLobby {
 	private GameState state;
 	private final Map<UUID, Long> shootCooldowns;
 	private BukkitRunnable cooldownTimer;
-
-	private Scoreboard gameBoard;
-	private Objective gameBoardObj;
-	private Map<TeamType, String> gameBoardEntries;
+	private GameBoard gameBoard;
 
 	private final Map<GameState, Equipment> equips;
 
 	public PbLobby(String name, Location spawnPos, JavaPlugin plugin, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
 		this.lobbyHandler = lobbyHandler;
-		this.kitHandler = kitHandler;
 		this.plugin = plugin;
 
 		this.name = name;
@@ -66,7 +59,6 @@ public class PbLobby {
 		this.teams = new HashMap<>();
 		this.players = new HashSet<>();
 		this.shootCooldowns = new HashMap<>();
-		this.gameBoardEntries = new HashMap<>();
 
 		this.state = GameState.LOBBYING;
 		this.equips = new HashMap<>();
@@ -282,19 +274,13 @@ public class PbLobby {
 	}
 
 	private void createScoreboard() {
-		gameBoard = Bukkit.getScoreboardManager().getNewScoreboard();
-		gameBoardObj = gameBoard.registerNewObjective("alive", "dummy");
-		gameBoardObj.setDisplaySlot(DisplaySlot.SIDEBAR);
-		gameBoardObj.setDisplayName("" + ChatColor.GOLD + ChatColor.BOLD + "SUPER PAINTBALL");
-
-		Score blank = gameBoardObj.getScore("");
-		blank.setScore(1);
+		gameBoard = new GameBoard("alive", 3 * teams.size() + 1);
+		gameBoard.setTitle("" + ChatColor.GOLD + ChatColor.BOLD + "SUPER PAINTBALL");
 		int i = 2;
 
 		for (TeamType teamType : teams.keySet()) {
 			PbTeam team = teams.get(teamType);
-			Team boardTeam = gameBoard.registerNewTeam(teamType.name());
-			boardTeam.setPrefix(team.getType().prefixColor + "");
+			Team boardTeam = gameBoard.addTeam(teamType.name(), team.getType().prefixColor + "");
 			boardTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OTHER_TEAMS);
 			boardTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
 
@@ -302,19 +288,12 @@ public class PbLobby {
 				Player player = Bukkit.getPlayer(playerId);
 				boardTeam.addEntry(player.getName());
 			}
-			Score teamScore = gameBoardObj.getScore("" + ChatColor.BOLD + team.getAlivePlayers().size() + " Alive" + pad(' ', i));
-			Score teamName = gameBoardObj.getScore(teamType.displayName);
-			blank = gameBoardObj.getScore(pad(' ', i));
-			gameBoardEntries.put(teamType, teamScore.getEntry());
-
-			teamScore.setScore(i);
-			teamName.setScore(i + 1);
-			blank.setScore(i + 2);
+			gameBoard.setLine(i, "" + ChatColor.BOLD + team.getAlivePlayers().size() + " Alive" + StringUtil.pad(i));
+			gameBoard.setLine(i + 1, teamType.displayName);
 			i += 3;
 		}
 		for (UUID playerId : players) {
-			Player player = Bukkit.getPlayer(playerId);
-			player.setScoreboard(gameBoard);
+			gameBoard.addPlayer(Bukkit.getPlayer(playerId));
 		}
 	}
 
@@ -326,10 +305,7 @@ public class PbLobby {
 
 		for (TeamType teamType : teams.keySet()) {
 			PbTeam team = teams.get(teamType);
-			gameBoard.resetScores(gameBoardEntries.get(teamType));
-			Score teamScore = gameBoardObj.getScore("" + ChatColor.BOLD + team.getAlivePlayers().size() + " Alive" + pad(' ', i));
-			teamScore.setScore(i);
-			gameBoardEntries.put(teamType, teamScore.getEntry());
+			gameBoard.setLine(i, "" + ChatColor.BOLD + team.getAlivePlayers().size() + " Alive" + StringUtil.pad(i));
 			i += 3;
 		}
 	}
@@ -377,10 +353,6 @@ public class PbLobby {
 			Player player = Bukkit.getPlayer(playerId);
 			player.sendTitle(text, "");
 		}
-	}
-
-	private String pad(char c, int n) {
-		return new String(new char[n]).replace('\0', c);
 	}
 
 	public void toYml(ConfigurationSection parentSection) {
