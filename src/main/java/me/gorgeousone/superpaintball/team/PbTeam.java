@@ -1,11 +1,10 @@
 package me.gorgeousone.superpaintball.team;
 
+import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.game.PbLobby;
-import me.gorgeousone.superpaintball.kit.AbstractKit;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -60,7 +59,6 @@ public class PbTeam {
 
 		for (UUID playerId : alivePlayers) {
 			Player player = Bukkit.getPlayer(playerId);
-			player.setGameMode(GameMode.ADVENTURE);
 			player.teleport(spawns.get(i % spawns.size()));
 			healPlayer(player);
 			equipPlayers(player);
@@ -75,15 +73,23 @@ public class PbTeam {
 	public PbLobby getGame() {
 		return lobby;
 	}
-	
+
 	public Set<UUID> getPlayers() {
 		return new HashSet<>(players);
 	}
-	
+
+	public boolean hasPlayer(UUID playerId) {
+		return players.contains(playerId);
+	}
+
 	public Set<UUID> getAlivePlayers() {
 		return new HashSet<>(alivePlayers);
 	}
-	
+
+	public boolean isAlive(UUID playerId) {
+		return alivePlayers.contains(playerId);
+	}
+
 	public void addPlayer(Player player) {
 		UUID playerId = player.getUniqueId();
 		players.add(playerId);
@@ -119,10 +125,6 @@ public class PbTeam {
 		playerHealth.clear();
 		uncoloredArmorSlots.clear();
 		reviveSkellies.clear();
-	}
-
-	public boolean hasPlayer(UUID playerId) {
-		return players.contains(playerId);
 	}
 
 	public void paintBlock(Block shotBlock) {
@@ -178,7 +180,7 @@ public class PbTeam {
 		alivePlayers.remove(player.getUniqueId());
 		setSpectator(player, true);
 
-		ArmorStand skelly = TeamUtil.createSkelly(TeamUtil.DEATH_ARMOR_SET, player, teamType, kitHandler.getKit(playerId).getType());
+		ArmorStand skelly = TeamUtil.createSkelly(TeamUtil.DEATH_ARMOR_SET, player, teamType, kitHandler.getKitType(playerId));
 		reviveSkellies.put(skelly.getUniqueId(), playerId);
 		lobby.updateAliveScores();
 
@@ -252,15 +254,16 @@ public class PbTeam {
 		playerHealth.put(player.getUniqueId(), TeamUtil.DMG_POINTS);
 		uncoloredArmorSlots.put(playerId, new ArrayList<>(Arrays.asList(0, 1, 2, 3)));
 	}
-
 	private void equipPlayers(Player player) {
 		PlayerInventory inv = player.getInventory();
-		AbstractKit kit = kitHandler.getKit(player.getUniqueId());
-		inv.setItem(0, kit.getType().getGun());
+		inv.clear();
+		KitType kitType = kitHandler.getKitType(player.getUniqueId());
+		inv.setItem(0, kitType.getGun());
 		inv.setItem(1, PbKitHandler.getWaterBombs());
 	}
 	//TODO make this nicer block patterns :(
-	//TODO add water/snoball & lava particles to painted blocks
+
+	//TODO add water/snowball & lava particles to painted blocks
 
 	private void paintBlot(Block block, int blockCount, int range) {
 		World world = block.getWorld();

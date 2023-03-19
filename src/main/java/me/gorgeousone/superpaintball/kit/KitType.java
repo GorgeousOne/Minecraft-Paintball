@@ -38,4 +38,13 @@ public enum KitType {
 		MACHINE_GUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("DIAMOND_BARDING") : Material.valueOf("DIAMOND_HORSE_ARMOR"));
 		SNIPER.setGunMaterial(Material.DIAMOND_HOE);
 	}
+
+	public static KitType valueOf(ItemStack itemStack) {
+		for (KitType kitType : values()) {
+			if (kitType.gunItem.isSimilar(itemStack)) {
+				return kitType;
+			}
+		}
+		return null;
+	}
 }

@@ -6,7 +6,6 @@ import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
-import me.gorgeousone.superpaintball.team.TeamType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -19,7 +18,7 @@ public class LobbyStartCommand extends ArgCommand {
 
 	public LobbyStartCommand(PbLobbyHandler lobbyHandler) {
 		super("start");
-		this.addArg(new Argument("lobby name", ArgType.STRING));
+		this.addArg(new Argument("lobby name", ArgType.STRING).setDefault("~"));
 		
 		this.lobbyHandler = lobbyHandler;
 	}
@@ -27,15 +26,27 @@ public class LobbyStartCommand extends ArgCommand {
 	@Override
 	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
 		String lobbyName = argValues.get(0).get();
-		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
+		PbLobby lobby;
 
-		if (lobby == null) {
-			sender.sendMessage(String.format("Lobby '%s' does not exits!", lobbyName));
-			return;
+		if (lobbyName.equals("~")) {
+			Player player = (Player) sender;
+			lobby = lobbyHandler.getLobby(player.getUniqueId());
+
+			if (lobby == null) {
+				sender.sendMessage("You are not in a lobby right now. Join a lobby or specify which lobby to start.");
+				return;
+			}
+		} else {
+			lobby = lobbyHandler.getLobby(lobbyName);
+
+			if (lobby == null) {
+				sender.sendMessage(String.format("Lobby '%s' does not exits!", lobbyName));
+				return;
+			}
 		}
 		try {
 			lobby.start();
-		} catch (Exception e) {
+		} catch (IllegalStateException e) {
 			sender.sendMessage(e.getMessage());
 		}
 	}

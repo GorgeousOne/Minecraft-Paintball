@@ -10,7 +10,8 @@ import org.bukkit.util.Vector;
 public class GameUtil {
 	
 	public static Sound RELOAD_SOUND;
-	
+	public static Sound GAME_START_SOUND;
+
 	private static final BlockFace[] CARDINAL_FACES = {
 			BlockFace.NORTH,
 			BlockFace.EAST,
@@ -27,6 +28,7 @@ public class GameUtil {
 
 	public static void setup() {
 		RELOAD_SOUND = Sound.valueOf(VersionUtil.IS_LEGACY_SERVER ? "BLOCK_NOTE_HAT" : "BLOCK_NOTE_BLOCK_HAT");
+		GAME_START_SOUND = Sound.valueOf(VersionUtil.IS_LEGACY_SERVER ? "BLOCK_NOTE_HARP" : "BLOCK_NOTE_BLOCK_HARP");
 	}
 
 	public static Location cleanSpawn(Location spawn) {
