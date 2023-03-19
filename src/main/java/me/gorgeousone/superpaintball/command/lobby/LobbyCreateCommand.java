@@ -4,7 +4,7 @@ import me.gorgeousone.superpaintball.cmdframework.argument.ArgType;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
-import me.gorgeousone.superpaintball.game.GameUtil;
+import me.gorgeousone.superpaintball.util.LocationUtil;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import org.bukkit.command.CommandSender;
@@ -30,7 +30,7 @@ public class LobbyCreateCommand extends ArgCommand {
 		String lobbyName = argValues.get(0).get();
 		try {
 			PbLobby lobby = lobbyHandler.createLobby(lobbyName, player.getLocation());
-			sender.sendMessage(String.format("Created new lobby '%s' at %s", lobbyName, GameUtil.humanBlockPos(lobby.getSpawnPos())));
+			sender.sendMessage(String.format("Created new lobby '%s' at %s", lobbyName, LocationUtil.humanBlockPos(lobby.getSpawnPos())));
 		} catch (Exception e) {
 			sender.sendMessage(e.getMessage());
 		}

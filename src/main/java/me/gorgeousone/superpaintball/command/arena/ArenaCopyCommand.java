@@ -1,7 +1,7 @@
 package me.gorgeousone.superpaintball.command.arena;
 
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
-import me.gorgeousone.superpaintball.game.GameUtil;
+import me.gorgeousone.superpaintball.util.LocationUtil;
 import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgType;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
@@ -44,7 +44,7 @@ public class ArenaCopyCommand extends ArgCommand {
 
 		try {
 			PbArena newArena = arenaHandler.createArena(oldArena, newName, player.getLocation());
-			sender.sendMessage(String.format("Copied new arena '%s' to %s", newName, GameUtil.humanBlockPos(newArena.getSchemPos())));
+			sender.sendMessage(String.format("Copied new arena '%s' to %s", newName, LocationUtil.humanBlockPos(newArena.getSchemPos())));
 		}catch (IllegalArgumentException e) {
 			sender.sendMessage(e.getMessage());
 			return;

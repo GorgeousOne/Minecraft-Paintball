@@ -1,4 +1,4 @@
-package me.gorgeousone.superpaintball.game;
+package me.gorgeousone.superpaintball.util;
 
 import me.gorgeousone.superpaintball.util.version.VersionUtil;
 import org.bukkit.Location;
@@ -7,7 +7,7 @@ import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 
-public class GameUtil {
+public class LocationUtil {
 	
 	public static Sound RELOAD_SOUND;
 	public static Sound GAME_START_SOUND;
@@ -17,18 +17,18 @@ public class GameUtil {
 			BlockFace.EAST,
 			BlockFace.SOUTH,
 			BlockFace.WEST};
-	
+
+	public static void setup() {
+		RELOAD_SOUND = Sound.valueOf(VersionUtil.IS_LEGACY_SERVER ? "BLOCK_NOTE_HAT" : "BLOCK_NOTE_BLOCK_HAT");
+		GAME_START_SOUND = Sound.valueOf(VersionUtil.IS_LEGACY_SERVER ? "BLOCK_NOTE_HARP" : "BLOCK_NOTE_BLOCK_HARP");
+	}
+
 	public static BlockFace yawToFace(float yaw) {
 		return CARDINAL_FACES[Math.round(yaw / 90f) & 0x3].getOppositeFace();
 	}
 
 	public static Vector faceToDirection(BlockFace face) {
 		return new Vector(face.getModX(), face.getModY(), face.getModZ());
-	}
-
-	public static void setup() {
-		RELOAD_SOUND = Sound.valueOf(VersionUtil.IS_LEGACY_SERVER ? "BLOCK_NOTE_HAT" : "BLOCK_NOTE_BLOCK_HAT");
-		GAME_START_SOUND = Sound.valueOf(VersionUtil.IS_LEGACY_SERVER ? "BLOCK_NOTE_HARP" : "BLOCK_NOTE_BLOCK_HARP");
 	}
 
 	public static Location cleanSpawn(Location spawn) {

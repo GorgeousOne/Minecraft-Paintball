@@ -1,6 +1,5 @@
 package me.gorgeousone.superpaintball.util;
 
-import me.gorgeousone.superpaintball.game.GameUtil;
 import me.gorgeousone.superpaintball.team.TeamType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,7 +21,7 @@ public final class ConfigUtil {
 	private ConfigUtil() {}
 	
 	public static YamlConfiguration loadConfig(String configName, JavaPlugin plugin) {
-		File configFile = new File(plugin.getDataFolder() + File.separator + configName + ".yml");
+		File configFile = new File(plugin.getDataFolder() + "/" + configName + ".yml");
 		YamlConfiguration defConfig = loadDefaultConfig(configName, plugin);
 		
 		if (!configFile.exists()) {
@@ -45,7 +44,7 @@ public final class ConfigUtil {
 
 	public static void saveConfig(YamlConfiguration config, String configName, JavaPlugin plugin) {
 		try {
-			config.save(plugin.getDataFolder() + File.separator + configName + ".yml");
+			config.save(plugin.getDataFolder() + "/" + configName + ".yml");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -71,7 +70,7 @@ public final class ConfigUtil {
 	}
 
 	public static String spawnToYmlString(Location spawn) {
-		return String.format("world=%s x=%d y=%d z=%d facing=%s", spawn.getWorld().getName(), spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ(), GameUtil.yawToFace(spawn.getYaw()).name().toLowerCase());
+		return String.format("world=%s x=%d y=%d z=%d facing=%s", spawn.getWorld().getName(), spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ(), LocationUtil.yawToFace(spawn.getYaw()).name().toLowerCase());
 	}
 
 	public static Location spawnFromYmlString(String ymlBlockPos) {
@@ -84,7 +83,7 @@ public final class ConfigUtil {
 			double y = parseInt(dataMap, "y") + .5;
 			double z = parseInt(dataMap, "z") + .5;
 			BlockFace facing = parseBlockFace(dataMap, "facing");
-			return new Location(world, x, y, z).setDirection(GameUtil.faceToDirection(facing));
+			return new Location(world, x, y, z).setDirection(LocationUtil.faceToDirection(facing));
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException(String.format("Could not load spawn '%s': %s", ymlBlockPos, e.getMessage()));
 		}
@@ -155,7 +154,7 @@ public final class ConfigUtil {
 	}
 
 	public static File schemFileFromYml(String fileName, String schemFolder) {
-		File file = new File(schemFolder + File.separator + fileName);
+		File file = new File(schemFolder + "/" + fileName);
 
 		if (!file.exists()) {
 			throw new IllegalArgumentException(String.format("Could not find schematic '%s' in schematics folder.", fileName));

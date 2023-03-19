@@ -8,7 +8,7 @@ import me.gorgeousone.superpaintball.command.arena.*;
 import me.gorgeousone.superpaintball.command.lobby.*;
 import me.gorgeousone.superpaintball.event.*;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
-import me.gorgeousone.superpaintball.game.GameUtil;
+import me.gorgeousone.superpaintball.util.LocationUtil;
 import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.team.TeamType;
@@ -50,7 +50,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		BlockType.setup(VersionUtil.IS_LEGACY_SERVER);
 		KitType.setup();
 		TeamType.setup();
-		GameUtil.setup();
+		LocationUtil.setup();
 		
 		//IDK this is just creating kits? not actually version dependent
 		PbKitHandler.setupKits(this);
@@ -88,7 +88,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	
 	private void registerListeners() {
 		PluginManager manager = Bukkit.getPluginManager();
-		manager.registerEvents(new PlayerListener(lobbyHandler), this);
+		manager.registerEvents(new PlayerListener(this, lobbyHandler), this);
 		manager.registerEvents(new ItemUseListener(lobbyHandler), this);
 		manager.registerEvents(new InventoryListener(lobbyHandler, kitHandler), this);
 		manager.registerEvents(new MovementListener(lobbyHandler), this);

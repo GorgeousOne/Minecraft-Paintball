@@ -13,13 +13,12 @@ import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.World;
-import me.gorgeousone.superpaintball.game.GameUtil;
+import me.gorgeousone.superpaintball.util.LocationUtil;
 import me.gorgeousone.superpaintball.team.TeamType;
 import me.gorgeousone.superpaintball.util.ConfigUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +39,7 @@ public class PbArena {
 		this.arenaHandler = arenaHandler;
 		this.name = name;
 		this.schemFile = schemFile;
-		this.schemPos = GameUtil.cleanSpawn(schemPos);
+		this.schemPos = LocationUtil.cleanSpawn(schemPos);
 		this.teamSpawns = new HashMap<>();
 
 		schemPos.setX(schemPos.getBlockX());
@@ -56,7 +55,7 @@ public class PbArena {
 		this.arenaHandler = other.arenaHandler;
 		this.name = name;
 		this.schemFile = other.schemFile;
-		this.schemPos = GameUtil.cleanSpawn(schemPos);
+		this.schemPos = LocationUtil.cleanSpawn(schemPos);
 		this.teamSpawns = new HashMap<>();
 
 		for (TeamType teamType : other.teamSpawns.keySet()) {
@@ -73,7 +72,7 @@ public class PbArena {
 	}
 
 	public void addSpawn(TeamType teamType, Location spawnPos) {
-		GameUtil.cleanSpawn(spawnPos);
+		LocationUtil.cleanSpawn(spawnPos);
 		teamSpawns.computeIfAbsent(teamType, v -> new ArrayList<>());
 		teamSpawns.get(teamType).add(spawnPos);
 		arenaHandler.saveArena(this);
