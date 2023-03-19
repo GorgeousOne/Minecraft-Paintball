@@ -56,17 +56,6 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		PbKitHandler.setupKits(this);
 	}
 	
-//	private boolean randomize;
-//	private void setupTest() {
-//		PbLobby lobby = lobbyHandler.createLobby("lobby", new Location(Bukkit.getWorld("world"), 0, 128, 0));
-//
-//		for (Player player : Bukkit.getOnlinePlayers()) {
-//			lobby.joinPlayer(player, Math.random() >= .5 ? TeamType.EMBER : TeamType.ICE);
-//			randomize = !randomize;
-//		}
-//		lobby.start();
-//	}
-	
 	private void registerCommands() {
 		ParentCommand pbCmd = new ParentCommand("paintball");
 		pbCmd.addAlias("pb");
@@ -102,6 +91,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		manager.registerEvents(new PlayerListener(lobbyHandler), this);
 		manager.registerEvents(new ItemUseListener(lobbyHandler), this);
 		manager.registerEvents(new InventoryListener(lobbyHandler, kitHandler), this);
+		manager.registerEvents(new MovementListener(lobbyHandler), this);
 
 		manager.registerEvents(new ProjectileListener(lobbyHandler), this);
 		manager.registerEvents(new SkellyInteractListener(lobbyHandler), this);

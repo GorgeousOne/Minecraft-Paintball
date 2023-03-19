@@ -14,6 +14,7 @@ import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -43,7 +45,6 @@ public class PbLobby {
 	private final Set<UUID> players;
 	private GameState state;
 	private final Map<UUID, Long> shootCooldowns;
-	private BukkitRunnable cooldownTimer;
 	private GameBoard gameBoard;
 
 	private final Map<GameState, Equipment> equips;
@@ -93,9 +94,32 @@ public class PbLobby {
 		for (PbTeam team : teams.values()) {
 			team.start(arenaToPlay.getSpawns(team.getType()));
 		}
-		startCooldownTimer();
+		state = GameState.COUNTING_DOWN;
 		createScoreboard();
-		state = GameState.RUNNING;
+		startCountdown();
+	}
+
+	private void startCountdown() {
+		allPlayers(p -> p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, .5f, 1f));
+		BukkitRunnable countdown = new BukkitRunnable() {
+			int time = 2 * 10;
+
+			@Override
+			public void run() {
+				time -= 1;
+
+				if (time <= 0) {
+					allPlayers(p -> p.playSound(p.getLocation(), GameUtil.GAME_START_SOUND, 1.5f, 2f));
+					state = GameState.RUNNING;
+					this.cancel();
+					return;
+				}
+				if (time % 10 == 0) {
+					allPlayers(p -> p.playSound(p.getLocation(), GameUtil.RELOAD_SOUND, .5f, 1f));
+				}
+			}
+		};
+		countdown.runTaskTimer(plugin, 0, 2);
 	}
 
 	private PbArena pickArena() {
@@ -105,26 +129,6 @@ public class PbLobby {
 		}
 		//TODO take in account votes and/or pick different arena than last time
 		return arenas.get((int) (Math.random() * arenas.size()));
-	}
-
-	private void startCooldownTimer() {
-		cooldownTimer = new BukkitRunnable() {
-			@Override
-			public void run() {
-				long currentMillis = System.currentTimeMillis();
-
-				for (UUID playerId : new HashSet<>(shootCooldowns.keySet())) {
-					long cooldown = shootCooldowns.get(playerId);
-
-					if (cooldown < currentMillis) {
-						shootCooldowns.remove(playerId);
-						Player player = Bukkit.getPlayer(playerId);
-						player.playSound(player.getLocation(), GameUtil.RELOAD_SOUND, .2f, 1f);
-					}
-				}
-			}
-		};
-		cooldownTimer.runTaskTimer(plugin, 0, 1);
 	}
 
 	public void removePlayer(Player player) {
@@ -149,13 +153,12 @@ public class PbLobby {
 			team.kickPlayers();
 		}
 		Location exitSpawn = lobbyHandler.getExitSpawn();
-		for (UUID playerId : players) {
-			Player player = Bukkit.getPlayer(playerId);
-			player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-			player.teleport(exitSpawn);
-			player.sendMessage(String.format("Lobby '%s' closed.", name));
+		allPlayers(p -> {
+			p.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+			p.teleport(exitSpawn);
+			p.sendMessage(String.format("Lobby '%s' closed.", name));
 			//TODO reset invnetory and gamemode
-		}
+		});
 		players.clear();
 		state = GameState.LOBBYING;
 	}
@@ -260,17 +263,11 @@ public class PbLobby {
 	}
 
 	public void hidePlayer(Player player) {
-		for (UUID playerId : players) {
-			Player otherPlayer = Bukkit.getPlayer(playerId);
-			otherPlayer.hidePlayer(plugin, player);
-		}
+		allPlayers(p -> p.hidePlayer(player));
 	}
 
 	public void showPlayer(Player player) {
-		for (UUID playerId : players) {
-			Player otherPlayer = Bukkit.getPlayer(playerId);
-			otherPlayer.showPlayer(plugin, player);
-		}
+		allPlayers(p -> p.showPlayer(player));
 	}
 
 	private void createScoreboard() {
@@ -292,9 +289,7 @@ public class PbLobby {
 			gameBoard.setLine(i + 1, teamType.displayName);
 			i += 3;
 		}
-		for (UUID playerId : players) {
-			gameBoard.addPlayer(Bukkit.getPlayer(playerId));
-		}
+		allPlayers(p -> gameBoard.addPlayer(p));
 	}
 
 	public void updateAliveScores() {
@@ -331,27 +326,35 @@ public class PbLobby {
 		state = GameState.OVER;
 
 		if (winningTeam != null) {
-			sendTitle(winningTeam.displayName + " won!");
+			allPlayers(p -> p.sendTitle(winningTeam.displayName + " won!", ""));
 		} else {
-			sendTitle("It's a draw?");
+			allPlayers(p -> p.sendTitle("It's a draw?", ""));
 		}
+
+		BukkitRunnable restartTimer = new BukkitRunnable() {
+			@Override
+			public void run() {
+				state = GameState.LOBBYING;
+				allPlayers(p -> {
+					p.teleport(spawnPos);
+					getEquip().equip(p);
+					//TODO cancel spectator states
+				});
+			}
+		};
+		restartTimer.runTaskLater(plugin, 4*20);
 	}
 
 	public void broadcastKill(Player target, Player shooter) {
 		TeamType targetTeam = getTeam(target.getUniqueId()).getType();
 		TeamType shooterTeam = getTeam(shooter.getUniqueId()).getType();
 		String message = targetTeam.prefixColor + target.getDisplayName() + ChatColor.RESET + " was painted by " + shooterTeam.prefixColor + shooter.getDisplayName();
-
-		for (UUID playerId : players) {
-			Player player = Bukkit.getPlayer(playerId);
-			player.sendMessage(message);
-		}
+		allPlayers(p -> p.sendMessage(message));
 	}
 
-	private void sendTitle(String text) {
+	private void allPlayers(Consumer<Player> consumer) {
 		for (UUID playerId : players) {
-			Player player = Bukkit.getPlayer(playerId);
-			player.sendTitle(text, "");
+			consumer.accept(Bukkit.getPlayer(playerId));
 		}
 	}
 
