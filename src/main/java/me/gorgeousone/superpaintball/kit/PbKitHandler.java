@@ -1,8 +1,10 @@
 package me.gorgeousone.superpaintball.kit;
 
+import me.gorgeousone.superpaintball.util.ItemUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -16,7 +18,9 @@ import java.util.Map;
 import java.util.UUID;
 
 public class PbKitHandler {
-	
+
+	public static final String KIT_SELECTOR_TITLE = "Select a kit";
+	private static final int KITS_START_SLOT = 11;
 	private static Map<KitType, AbstractKit> KITS;
 	private static ItemStack WATER_BOMBS;
 
@@ -61,23 +65,44 @@ public class PbKitHandler {
 		return waterBombs;
 	}
 
-	public static void openKitSelector(Player player) {
-		Inventory selector = Bukkit.createInventory(null, 27, "Select a kit");
-		int itemSlot = 11;
+	public void openKitSelector(Player player) {
+		Inventory selector = Bukkit.createInventory(null, 3*9, KIT_SELECTOR_TITLE);
+		int itemSlot = KITS_START_SLOT;
 
 		for (KitType kitType : KitType.values()) {
 			ItemStack gunItem = kitType.getGun();
 			selector.setItem(itemSlot, gunItem);
 			++itemSlot;
 		}
+		highlightKit(selector, null, getKitType(player.getUniqueId()));
 		player.openInventory(selector);
 	}
 
-	private void setKitItemSelected(ItemStack item, Inventory selector) {
+	public boolean onSelectKit(Player player, Inventory inv, int slot) {
+		int kitIndex = slot - KITS_START_SLOT;
 
+		if (kitIndex < 0 || kitIndex >= KitType.values().length) {
+			return false;
+		}
+		UUID playerId = player.getUniqueId();
+		KitType oldKitType = getKitType(playerId);
+		KitType newKitType = KitType.values()[kitIndex];
+		player.playSound(player.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 2f);
+
+		if (newKitType == oldKitType) {
+			return false;
+		}
+		setKit(playerId, newKitType);
+		highlightKit(inv, oldKitType, newKitType);
+		return true;
 	}
 
-	private static void setName(String displayName, ItemStack item) {
-
+	private static void highlightKit(Inventory inv, KitType oldKit, KitType newKit) {
+		if (oldKit != null) {
+			int oldSlot = KITS_START_SLOT + oldKit.ordinal();
+			ItemUtil.removeMagicGlow(inv.getItem(oldSlot));
+		}
+		int newSlot = KITS_START_SLOT + newKit.ordinal();
+		ItemUtil.addMagicGlow(inv.getItem(newSlot));
 	}
 }

@@ -13,6 +13,7 @@ import me.gorgeousone.superpaintball.util.ConfigUtil;
 import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -38,6 +39,7 @@ public class PbLobby {
 
 	private final JavaPlugin plugin;
 	private final PbLobbyHandler lobbyHandler;
+	private final PbKitHandler kitHandler;
 	private final String name;
 	private Location spawnPos;
 	private final List<PbArena> arenas;
@@ -51,6 +53,7 @@ public class PbLobby {
 
 	public PbLobby(String name, Location spawnPos, JavaPlugin plugin, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
 		this.lobbyHandler = lobbyHandler;
+		this.kitHandler = kitHandler;
 		this.plugin = plugin;
 
 		this.name = name;
@@ -88,6 +91,9 @@ public class PbLobby {
 	}
 
 	public void start() {
+		if (state != GameState.LOBBYING) {
+			throw new IllegalStateException("The game is already running");
+		}
 		PbArena arenaToPlay = pickArena();
 		arenaToPlay.assertIsPlayable();
 
@@ -188,6 +194,7 @@ public class PbLobby {
 		}
 		//TODO if game started, join as spectator if not full?
 		//TODO heal and nourish
+		player.setGameMode(GameMode.ADVENTURE);
 		player.teleport(spawnPos);
 		player.sendMessage(String.format("Joined lobby '%s'.", name));
 
@@ -213,7 +220,7 @@ public class PbLobby {
 	}
 
 	private void onSelectKit(SlotClickEvent event) {
-		PbKitHandler.openKitSelector(event.getPlayer());
+		kitHandler.openKitSelector(event.getPlayer());
 	}
 
 	public void linkArena(PbArena arena) {

@@ -5,7 +5,6 @@ import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -60,7 +59,6 @@ public class PbTeam {
 
 		for (UUID playerId : alivePlayers) {
 			Player player = Bukkit.getPlayer(playerId);
-			player.setGameMode(GameMode.ADVENTURE);
 			player.teleport(spawns.get(i % spawns.size()));
 			healPlayer(player);
 			equipPlayers(player);
