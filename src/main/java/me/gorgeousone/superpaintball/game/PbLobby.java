@@ -1,6 +1,7 @@
 package me.gorgeousone.superpaintball.game;
 
 import me.gorgeousone.superpaintball.GameBoard;
+import me.gorgeousone.superpaintball.util.InventoryUtil;
 import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
 import me.gorgeousone.superpaintball.equipment.*;
@@ -10,6 +11,7 @@ import me.gorgeousone.superpaintball.kit.AbstractKit;
 import me.gorgeousone.superpaintball.team.PbTeam;
 import me.gorgeousone.superpaintball.team.TeamType;
 import me.gorgeousone.superpaintball.util.ConfigUtil;
+import me.gorgeousone.superpaintball.util.LocationUtil;
 import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -57,7 +59,7 @@ public class PbLobby {
 		this.plugin = plugin;
 
 		this.name = name;
-		this.spawnPos = GameUtil.cleanSpawn(spawnPos);
+		this.spawnPos = LocationUtil.cleanSpawn(spawnPos);
 
 		this.arenas = new LinkedList<>();
 		this.teams = new HashMap<>();
@@ -115,13 +117,13 @@ public class PbLobby {
 				time -= 1;
 
 				if (time <= 0) {
-					allPlayers(p -> p.playSound(p.getLocation(), GameUtil.GAME_START_SOUND, 1.5f, 2f));
+					allPlayers(p -> p.playSound(p.getLocation(), LocationUtil.GAME_START_SOUND, 1.5f, 2f));
 					state = GameState.RUNNING;
 					this.cancel();
 					return;
 				}
 				if (time % 10 == 0) {
-					allPlayers(p -> p.playSound(p.getLocation(), GameUtil.RELOAD_SOUND, .5f, 1f));
+					allPlayers(p -> p.playSound(p.getLocation(), LocationUtil.RELOAD_SOUND, .5f, 1f));
 				}
 			}
 		};
@@ -137,6 +139,24 @@ public class PbLobby {
 		return arenas.get((int) (Math.random() * arenas.size()));
 	}
 
+	public void joinPlayer(Player player, TeamType teamType) {
+		UUID playerId = player.getUniqueId();
+
+		if (players.contains(playerId)) {
+			throw new IllegalArgumentException(String.format("You already are in lobby '%s'.", name));
+		}
+		//TODO if game started, join as spectator if not full?
+		//TODO heal and nourish
+		InventoryUtil.backupInv(player, plugin);
+		player.setGameMode(GameMode.ADVENTURE);
+		player.teleport(spawnPos);
+		player.sendMessage(String.format("Joined lobby '%s'.", name));
+
+		players.add(playerId);
+		teams.get(teamType).addPlayer(player);
+		equips.get(GameState.LOBBYING).equip(player);
+	}
+
 	public void removePlayer(Player player) {
 		UUID playerId = player.getUniqueId();
 
@@ -148,22 +168,27 @@ public class PbLobby {
 		team.removePlayer(playerId);
 		updateAliveScores();
 
+		if (gameBoard != null) {
+			gameBoard.removePlayer(player);
+		}
 		player.teleport(lobbyHandler.getExitSpawn());
-		player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+		InventoryUtil.loadInv(player, plugin);
+		//TODO reset gamemode
 		player.sendMessage(String.format("You left lobby '%s'.", name));
-		//TODO reset inventory & gamemode
 	}
 
 	public void kickPlayers() {
 		for (PbTeam team : teams.values()) {
 			team.kickPlayers();
 		}
-		Location exitSpawn = lobbyHandler.getExitSpawn();
 		allPlayers(p -> {
-			p.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-			p.teleport(exitSpawn);
+			if (gameBoard != null) {
+				gameBoard.removePlayer(p);
+			}
+			p.teleport(lobbyHandler.getExitSpawn());
+			InventoryUtil.loadInv(p, plugin);
+			//TODO reset gamemode
 			p.sendMessage(String.format("Lobby '%s' closed.", name));
-			//TODO reset invnetory and gamemode
 		});
 		players.clear();
 		state = GameState.LOBBYING;
@@ -184,23 +209,6 @@ public class PbLobby {
 
 	public Collection<PbTeam> getTeams() {
 		return teams.values();
-	}
-
-	public void joinPlayer(Player player, TeamType teamType) {
-		UUID playerId = player.getUniqueId();
-
-		if (players.contains(playerId)) {
-			throw new IllegalArgumentException(String.format("You already are in lobby '%s'.", name));
-		}
-		//TODO if game started, join as spectator if not full?
-		//TODO heal and nourish
-		player.setGameMode(GameMode.ADVENTURE);
-		player.teleport(spawnPos);
-		player.sendMessage(String.format("Joined lobby '%s'.", name));
-
-		players.add(playerId);
-		teams.get(teamType).addPlayer(player);
-		equips.get(GameState.LOBBYING).equip(player);
 	}
 
 	private void onChooseTeam(SlotClickEvent event) {

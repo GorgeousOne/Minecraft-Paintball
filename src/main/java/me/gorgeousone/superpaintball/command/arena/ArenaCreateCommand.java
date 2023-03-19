@@ -1,7 +1,7 @@
 package me.gorgeousone.superpaintball.command.arena;
 
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
-import me.gorgeousone.superpaintball.game.GameUtil;
+import me.gorgeousone.superpaintball.util.LocationUtil;
 import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgType;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
@@ -49,7 +49,7 @@ public class ArenaCreateCommand extends ArgCommand {
 		}
 		try {
 			PbArena arena = arenaHandler.createArena(arenaName, schemFile, player.getLocation());
-			sender.sendMessage(String.format("Created new arena '%s' at %s", arenaName, GameUtil.humanBlockPos(arena.getSchemPos())));
+			sender.sendMessage(String.format("Created new arena '%s' at %s", arenaName, LocationUtil.humanBlockPos(arena.getSchemPos())));
 		}catch (IllegalArgumentException e) {
 			sender.sendMessage(e.getMessage());
 			return;

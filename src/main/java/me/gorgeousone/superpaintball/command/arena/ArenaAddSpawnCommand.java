@@ -6,9 +6,8 @@ import me.gorgeousone.superpaintball.cmdframework.argument.ArgType;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
-import me.gorgeousone.superpaintball.game.GameUtil;
+import me.gorgeousone.superpaintball.util.LocationUtil;
 import me.gorgeousone.superpaintball.team.TeamType;
-import me.gorgeousone.superpaintball.util.ConfigUtil;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -49,6 +48,6 @@ public class ArenaAddSpawnCommand extends ArgCommand {
 		PbArena arena = arenaHandler.getArena(arenaName);
 		Location spawnPos = player.getLocation();
 		arena.addSpawn(teamType, spawnPos);
-		sender.sendMessage(String.format("Added spawn %s in arena '%s' for team %s.", GameUtil.humanBlockPos(spawnPos), arenaName, teamType.displayName));
+		sender.sendMessage(String.format("Added spawn %s in arena '%s' for team %s.", LocationUtil.humanBlockPos(spawnPos), arenaName, teamType.displayName));
 	}
 }

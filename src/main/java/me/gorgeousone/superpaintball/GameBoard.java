@@ -40,6 +40,10 @@ public class GameBoard {
 		player.setScoreboard(board);
 	}
 
+	public void removePlayer(Player player) {
+		player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+	}
+
 	public Team addTeam(String name, String prefix) {
 		Team team = board.registerNewTeam(name);
 		team.setPrefix(prefix);

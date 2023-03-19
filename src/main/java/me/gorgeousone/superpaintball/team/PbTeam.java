@@ -28,7 +28,6 @@ import java.util.UUID;
 public class PbTeam {
 	
 	private final TeamType teamType;
-	private final PbLobbyHandler lobbyHandler;
 	private final PbKitHandler kitHandler;
 	private final PbLobby lobby;
 	private final ItemStack[] teamArmorSet;
@@ -44,7 +43,6 @@ public class PbTeam {
 	public PbTeam(TeamType teamType, PbLobby lobby, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
 		this.teamType = teamType;
 		this.lobby = lobby;
-		this.lobbyHandler = lobbyHandler;
 		this.kitHandler = kitHandler;
 		this.players = new HashSet<>();
 		this.alivePlayers = new HashSet<>();
