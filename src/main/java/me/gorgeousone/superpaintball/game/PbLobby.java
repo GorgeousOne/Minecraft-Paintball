@@ -1,7 +1,7 @@
 package me.gorgeousone.superpaintball.game;
 
 import me.gorgeousone.superpaintball.GameBoard;
-import me.gorgeousone.superpaintball.util.InventoryUtil;
+import me.gorgeousone.superpaintball.util.BackupUtil;
 import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
 import me.gorgeousone.superpaintball.equipment.*;
@@ -146,8 +146,7 @@ public class PbLobby {
 			throw new IllegalArgumentException(String.format("You already are in lobby '%s'.", name));
 		}
 		//TODO if game started, join as spectator if not full?
-		//TODO heal and nourish
-		InventoryUtil.backupInv(player, plugin);
+		BackupUtil.saveBackup(player, lobbyHandler.getExitSpawn(), plugin);
 		player.setGameMode(GameMode.ADVENTURE);
 		player.teleport(spawnPos);
 		player.sendMessage(String.format("Joined lobby '%s'.", name));
@@ -171,9 +170,7 @@ public class PbLobby {
 		if (gameBoard != null) {
 			gameBoard.removePlayer(player);
 		}
-		player.teleport(lobbyHandler.getExitSpawn());
-		InventoryUtil.loadInv(player, plugin);
-		//TODO reset gamemode
+		BackupUtil.loadBackup(player, plugin);
 		player.sendMessage(String.format("You left lobby '%s'.", name));
 	}
 
@@ -186,8 +183,7 @@ public class PbLobby {
 				gameBoard.removePlayer(p);
 			}
 			p.teleport(lobbyHandler.getExitSpawn());
-			InventoryUtil.loadInv(p, plugin);
-			//TODO reset gamemode
+			BackupUtil.loadBackup(p, plugin);
 			p.sendMessage(String.format("Lobby '%s' closed.", name));
 		});
 		players.clear();

@@ -1,6 +1,6 @@
 package me.gorgeousone.superpaintball.event;
 
-import me.gorgeousone.superpaintball.util.InventoryUtil;
+import me.gorgeousone.superpaintball.util.BackupUtil;
 import me.gorgeousone.superpaintball.util.LocationUtil;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.game.PbLobby;
@@ -71,9 +71,10 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		//TODO restore inventory & teleport if player joins after server crash
-		InventoryUtil.loadInv(event.getPlayer(), plugin);
+		//TODO check if file searching is expensive
+		BackupUtil.loadBackup(event.getPlayer(), plugin);
 	}
+
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();

@@ -1,6 +1,7 @@
 package me.gorgeousone.superpaintball.util;
 
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -10,13 +11,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 
-public class InventoryUtil {
+public class BackupUtil {
 
-	public static void backupInv(Player player, JavaPlugin plugin) {
+	public static void saveBackup(Player player, Location spawn, JavaPlugin plugin) {
 		YamlConfiguration backup = new YamlConfiguration();
 		backup.set("gamemode", player.getGameMode().name());
 		backup.set("health", player.getHealth());
 		backup.set("food", player.getFoodLevel());
+		backup.set("xp", player.getExp());
+		backup.set("spawn", spawn);
 
 		ConfigurationSection itemSection = backup.createSection("items");
 		PlayerInventory inv = player.getInventory();
@@ -26,7 +29,7 @@ public class InventoryUtil {
 			ItemStack item = contents[i];
 
 			if (item != null) {
-				itemSection.set("" + i, contents[i].serialize());
+				itemSection.set("" + i, contents[i]);
 			}
 		}
 		String backupPath = "backups/" + player.getName() + player.getUniqueId();
@@ -34,9 +37,10 @@ public class InventoryUtil {
 		inv.clear();
 		player.setHealth(20);
 		player.setFoodLevel(20);
+		player.setExp(0);
 	}
 
-	public static boolean loadInv(Player player, JavaPlugin plugin) {
+	public static boolean loadBackup(Player player, JavaPlugin plugin) {
 		File backupFolder = new File(plugin.getDataFolder() + "/backups");
 		String playerId = player.getUniqueId().toString();
 		File[] backups = backupFolder.listFiles((dir, name) -> name.contains(playerId));
@@ -48,14 +52,15 @@ public class InventoryUtil {
 		player.setGameMode(GameMode.valueOf(backup.getString("gamemode")));
 		player.setHealth(backup.getDouble("health"));
 		player.setFoodLevel(backup.getInt("food"));
+		player.setExp(backup.getInt("xp"));
+		player.teleport((Location) backup.get("spawn"));
 
 		ConfigurationSection itemSection = backup.getConfigurationSection("items");
 		PlayerInventory inv = player.getInventory();
 		inv.clear();
 
 		for (String slot : itemSection.getKeys(false)) {
-			ItemStack item = ItemStack.deserialize(itemSection.getConfigurationSection(slot).getValues(false));
-			inv.setItem(Integer.valueOf(slot), item);
+			inv.setItem(Integer.valueOf(slot), (ItemStack) itemSection.get(slot));
 		}
 		backups[0].delete();
 		return true;
