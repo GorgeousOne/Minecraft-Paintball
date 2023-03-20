@@ -7,7 +7,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.util.Vector;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 public abstract class AbstractKit {
 	
@@ -18,9 +22,12 @@ public abstract class AbstractKit {
 	protected final float bulletSpread;
 	protected final long fireRate;
 	protected final Sound gunshotSound;
-	protected final float gunshotPitch;
+	protected final float gunshotPitchHigh;
+	protected final float gunshotPitchLow;
 	protected final Random rnd = new Random();
-	
+
+	private final Map<UUID, Long> shootCooldowns;
+
 	protected AbstractKit(KitType kitType,
 	                      int bulletDmg,
 	                      int bulletCount,
@@ -28,7 +35,7 @@ public abstract class AbstractKit {
 	                      float bulletSpread,
 	                      long fireRate,
 	                      Sound gunshotSound,
-	                      float gunshotPitch) {
+	                      float gunshotPitchHigh, float gunshotPitchLow) {
 		this.kitType = kitType;
 		this.bulletDmg = bulletDmg;
 		this.bulletCount = bulletCount;
@@ -36,14 +43,21 @@ public abstract class AbstractKit {
 		this.bulletSpread = bulletSpread;
 		this.fireRate = fireRate;
 		this.gunshotSound = gunshotSound;
-		this.gunshotPitch = gunshotPitch;
+		this.gunshotPitchHigh = gunshotPitchHigh;
+		this.gunshotPitchLow = gunshotPitchLow;
+		this.shootCooldowns = new HashMap<>();
 	}
 	
 	public KitType getType() {
 		return kitType;
 	}
 	
-	public long launchShot(Player player, PbTeam team) {
+	public void launchShot(Player player, PbTeam team, Collection<Player> coplayers) {
+		UUID playerId = player.getUniqueId();
+
+		if (shootCooldowns.getOrDefault(playerId, 0L) > System.currentTimeMillis()) {
+			return;
+		}
 		Vector facing = player.getLocation().getDirection();
 		
 		for (int i = 0; i < bulletCount; ++i) {
@@ -52,14 +66,25 @@ public abstract class AbstractKit {
 			bullet.setVelocity(createVelocity(facing, bulletSpeed, bulletSpread));
 			bullet.setCustomName("" + bulletDmg);
 		}
-		playGunshotSound(player.getEyeLocation());
-		return fireRate;
+		playGunshotSound(player, coplayers, gunshotPitchLow, gunshotPitchHigh);
+
+		if (fireRate > 0) {
+			shootCooldowns.put(playerId, System.currentTimeMillis() + fireRate * 50);
+		}
 	}
 	
 	//TODO make own gunshots sound high pitched
 	//TODO lower pitch? seems loud
-	protected void playGunshotSound(Location location) {
-		location.getWorld().playSound(location, gunshotSound, .5f, gunshotPitch);
+	protected void playGunshotSound(Player player, Collection<Player> coplayers, float pitchLow, float pitchHigh) {
+		Location location = player.getEyeLocation();
+
+		for (Player other : coplayers) {
+			if (other == player) {
+				other.playSound(location, gunshotSound, .5f, pitchHigh);
+			} else {
+				other.playSound(location, gunshotSound, .5f, pitchLow);
+			}
+		}
 	}
 	
 	public Vector createVelocity(Vector facing, float speed, float spread) {
@@ -69,5 +94,9 @@ public abstract class AbstractKit {
 				rnd.nextFloat() * spread,
 				rnd.nextFloat() * spread));
 		return velocity.multiply(speed);
+	}
+
+	public void removePlayer(UUID playerId) {
+		shootCooldowns.remove(playerId);
 	}
 }

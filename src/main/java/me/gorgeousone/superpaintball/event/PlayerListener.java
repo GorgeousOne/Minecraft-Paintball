@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball.event;
 
+import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.util.BackupUtil;
 import me.gorgeousone.superpaintball.util.LocationUtil;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
@@ -20,10 +21,12 @@ public class PlayerListener implements Listener {
 
 	private final JavaPlugin plugin;
 	private final PbLobbyHandler lobbyHandler;
-	
-	public PlayerListener(JavaPlugin plugin, PbLobbyHandler lobbyHandler) {
+	private final PbKitHandler kitHandler;
+
+	public PlayerListener(JavaPlugin plugin, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
 		this.plugin = plugin;
 		this.lobbyHandler = lobbyHandler;
+		this.kitHandler = kitHandler;
 	}
 	
 	@EventHandler
@@ -80,7 +83,8 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		UUID playerId = player.getUniqueId();
 		PbLobby lobby = lobbyHandler.getLobby(playerId);
-		
+		kitHandler.removePlayer(playerId);
+
 		if (lobby != null) {
 			lobby.removePlayer(player);
 		}

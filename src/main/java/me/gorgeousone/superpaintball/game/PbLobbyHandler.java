@@ -170,4 +170,8 @@ public class PbLobbyHandler {
 		}
 		logger.log(Level.INFO, String.format("  Loaded %d lobbies", lobbies.size()));
 	}
+
+	public void kickPlayers() {
+		lobbies.values().forEach(PbLobby::kickPlayers);
+	}
 }

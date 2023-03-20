@@ -7,6 +7,7 @@ import me.gorgeousone.superpaintball.command.*;
 import me.gorgeousone.superpaintball.command.arena.*;
 import me.gorgeousone.superpaintball.command.lobby.*;
 import me.gorgeousone.superpaintball.event.*;
+import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.util.LocationUtil;
 import me.gorgeousone.superpaintball.kit.KitType;
@@ -31,7 +32,6 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	public void onEnable() {
 		setupVersioning();
 		this.kitHandler = new PbKitHandler();
-
 		this.arenaHandler = new PbArenaHandler(this);
 		this.lobbyHandler = new PbLobbyHandler(this, kitHandler);
 
@@ -42,7 +42,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-//		saveBackup();
+		lobbyHandler.kickPlayers();
 	}
 
 	private void setupVersioning() {
@@ -87,7 +87,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	
 	private void registerListeners() {
 		PluginManager manager = Bukkit.getPluginManager();
-		manager.registerEvents(new PlayerListener(this, lobbyHandler), this);
+		manager.registerEvents(new PlayerListener(this, lobbyHandler, kitHandler), this);
 		manager.registerEvents(new ItemUseListener(lobbyHandler), this);
 		manager.registerEvents(new InventoryListener(lobbyHandler, kitHandler), this);
 		manager.registerEvents(new MovementListener(lobbyHandler), this);
