@@ -316,6 +316,7 @@ public class PbLobby {
 			}
 		}
 		announceWinners(leftTeam);
+		scheduleRestart();
 	}
 
 	private void announceWinners(TeamType winningTeam) {
@@ -326,17 +327,21 @@ public class PbLobby {
 		} else {
 			allPlayers(p -> p.sendTitle("It's a draw?", ""));
 		}
+	}
 
+	private void scheduleRestart() {
 		BukkitRunnable restartTimer = new BukkitRunnable() {
 			@Override
 			public void run() {
 				state = GameState.LOBBYING;
+				teams.values().forEach(PbTeam::restart);
 				allPlayers(p -> {
+					gameBoard.removePlayer(p);
 					p.teleport(spawnPos);
-					showPlayer(p);
 					getEquip().equip(p);
 					//TODO cancel spectator states
 				});
+				//TODO shuffle teams
 			}
 		};
 		restartTimer.runTaskLater(plugin, 3*20);

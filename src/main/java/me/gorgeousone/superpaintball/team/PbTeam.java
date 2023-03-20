@@ -55,11 +55,12 @@ public class PbTeam {
 	public void start(List<Location> spawns) {
 		int i = 0;
 
-		for (UUID playerId : alivePlayers) {
+		for (UUID playerId : players) {
 			Player player = Bukkit.getPlayer(playerId);
 			player.teleport(spawns.get(i % spawns.size()));
+			alivePlayers.add(playerId);
 			healPlayer(player);
-			equipPlayers(player);
+			equipPlayer(player);
 			++i;
 		}
 	}
@@ -91,7 +92,6 @@ public class PbTeam {
 	public void addPlayer(Player player) {
 		UUID playerId = player.getUniqueId();
 		players.add(playerId);
-		alivePlayers.add(playerId);
 		player.sendMessage(String.format("You are now team %s.", teamType.displayName));
 	}
 
@@ -115,14 +115,17 @@ public class PbTeam {
 	}
 
 	public void kickPlayers() {
-		for (UUID skellyId : reviveSkellies.keySet()) {
-			Bukkit.getEntity(skellyId).remove();
-		}
+		restart();
 		players.clear();
-		alivePlayers.clear();
-		playerHealth.clear();
-		uncoloredArmorSlots.clear();
+	}
+
+	public void restart() {
+		reviveSkellies.keySet().forEach(id -> Bukkit.getEntity(id).remove());
 		reviveSkellies.clear();
+		players.forEach(id -> setSpectator(Bukkit.getPlayer(id), false));
+		playerHealth.clear();
+		alivePlayers.clear();
+		uncoloredArmorSlots.clear();
 	}
 
 	public void paintBlock(Block shotBlock) {
@@ -242,7 +245,6 @@ public class PbTeam {
 		alivePlayers.add(playerId);
 		lobby.updateAliveScores();
 	}
-
 	public void healPlayer(Player player) {
 		player.setFoodLevel(20);
 		player.setHealth(TeamUtil.DMG_POINTS * TeamUtil.HEARTS_PER_DMG_POINT);
@@ -252,17 +254,16 @@ public class PbTeam {
 		playerHealth.put(player.getUniqueId(), TeamUtil.DMG_POINTS);
 		uncoloredArmorSlots.put(playerId, new ArrayList<>(Arrays.asList(0, 1, 2, 3)));
 	}
-	private void equipPlayers(Player player) {
+	private void equipPlayer(Player player) {
 		PlayerInventory inv = player.getInventory();
 		inv.clear();
 		KitType kitType = kitHandler.getKitType(player.getUniqueId());
 		inv.setItem(0, kitType.getGun());
 		inv.setItem(1, PbKitHandler.getWaterBombs());
 	}
+
 	//TODO make this nicer block patterns :(
-
 	//TODO add water/snowball & lava particles to painted blocks
-
 	private void paintBlot(Block block, int blockCount, int range) {
 		World world = block.getWorld();
 

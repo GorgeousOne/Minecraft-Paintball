@@ -58,5 +58,6 @@ public class GameBoard {
 		board.resetScores(oldText);
 		Score line = objective.getScore(text);
 		line.setScore(lineIdx);
+		lines.put(lineIdx, text);
 	}
 }
