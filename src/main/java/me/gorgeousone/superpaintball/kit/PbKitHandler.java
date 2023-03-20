@@ -34,7 +34,7 @@ public class PbKitHandler {
 		KITS = new HashMap<>();
 		KITS.put(KitType.RIFLE, new RifleKit());
 		KITS.put(KitType.SHOTGUN, new ShotgunKit(plugin));
-		KITS.put(KitType.MACHINE_GUN, new MachineGunKit());
+		KITS.put(KitType.MACHINE_GUN, new MachineGunKit(plugin));
 		KITS.put(KitType.SNIPER, new SniperKit());
 		WATER_BOMBS = createWaterBombs();
 	}
@@ -49,9 +49,18 @@ public class PbKitHandler {
 	}
 	
 	public void setKit(UUID playerId, KitType kitType) {
+		removePlayer(playerId);
 		playerKits.put(playerId, kitType);
 	}
-	
+
+	public void removePlayer(UUID playerId) {
+		if (!playerKits.containsKey(playerId)) {
+			return;
+		}
+		getKit(playerKits.get(playerId)).removePlayer(playerId);
+		playerKits.remove(playerId);
+	}
+
 	public static ItemStack getWaterBombs() {
 		return WATER_BOMBS.clone();
 	}

@@ -35,7 +35,6 @@ public class Equipment {
 	}
 
 	public SlotClickEvent onClickSlot(Player player, int slot) {
-
 		if (!items.containsKey(slot)) {
 			return null;
 		}

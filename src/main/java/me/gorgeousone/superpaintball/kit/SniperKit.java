@@ -4,15 +4,16 @@ import me.gorgeousone.superpaintball.team.PbTeam;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
+
 public class SniperKit extends AbstractKit {
 	
 	public SniperKit() {
-		super(KitType.SNIPER, 4, 0, 0, 0, 60, Sound.ENTITY_ARROW_HIT, 1);
+		super(KitType.SNIPER, 4, 0, 0, 0, 60, Sound.ENTITY_ARROW_HIT, 1, .5f);
 	}
-	
+
 	@Override
-	public long launchShot(Player player, PbTeam team) {
+	public void launchShot(Player player, PbTeam team, Collection<Player> coplayers) {
 		//TODO complicated stuff
-		return fireRate;
 	}
 }

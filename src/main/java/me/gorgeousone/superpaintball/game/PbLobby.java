@@ -48,7 +48,6 @@ public class PbLobby {
 	private final Map<TeamType, PbTeam> teams;
 	private final Set<UUID> players;
 	private GameState state;
-	private final Map<UUID, Long> shootCooldowns;
 	private GameBoard gameBoard;
 
 	private final Map<GameState, Equipment> equips;
@@ -64,7 +63,6 @@ public class PbLobby {
 		this.arenas = new LinkedList<>();
 		this.teams = new HashMap<>();
 		this.players = new HashSet<>();
-		this.shootCooldowns = new HashMap<>();
 
 		this.state = GameState.LOBBYING;
 		this.equips = new HashMap<>();
@@ -163,8 +161,7 @@ public class PbLobby {
 			throw new IllegalArgumentException("Can't remove player with id: " + playerId + ". They are not in this game");
 		}
 		players.remove(playerId);
-		PbTeam team = getTeam(playerId);
-		team.removePlayer(playerId);
+		getTeam(playerId).removePlayer(playerId);
 		updateAliveScores();
 
 		if (gameBoard != null) {
@@ -175,14 +172,11 @@ public class PbLobby {
 	}
 
 	public void kickPlayers() {
-		for (PbTeam team : teams.values()) {
-			team.kickPlayers();
-		}
+		teams.values().forEach(PbTeam::kickPlayers);
 		allPlayers(p -> {
 			if (gameBoard != null) {
 				gameBoard.removePlayer(p);
 			}
-			p.teleport(lobbyHandler.getExitSpawn());
 			BackupUtil.loadBackup(p, plugin);
 			p.sendMessage(String.format("Lobby '%s' closed.", name));
 		});
@@ -252,17 +246,8 @@ public class PbLobby {
 		if (!getTeam(playerId).isAlive(playerId)) {
 			return;
 		}
-		if (shootCooldowns.getOrDefault(playerId, 0L) > System.currentTimeMillis()) {
-			return;
-		}
-		ItemStack gun = event.getClickedItem();
-		KitType kitType = KitType.valueOf(gun);
-		AbstractKit kit = PbKitHandler.getKit(kitType);
-		long cooldownTicks = kit.launchShot(player, getTeam(playerId));
-
-		if (cooldownTicks > 0) {
-			shootCooldowns.put(playerId, System.currentTimeMillis() + cooldownTicks * 50);
-		}
+		KitType kitType = kitHandler.getKitType(playerId);
+		PbKitHandler.getKit(kitType).launchShot(player, getTeam(playerId), players.stream().map(Bukkit::getPlayer).collect(Collectors.toList()));
 	}
 
 	private void onThrowWaterBomb(SlotClickEvent event) {
@@ -348,12 +333,13 @@ public class PbLobby {
 				state = GameState.LOBBYING;
 				allPlayers(p -> {
 					p.teleport(spawnPos);
+					showPlayer(p);
 					getEquip().equip(p);
 					//TODO cancel spectator states
 				});
 			}
 		};
-		restartTimer.runTaskLater(plugin, 4*20);
+		restartTimer.runTaskLater(plugin, 3*20);
 	}
 
 	public void broadcastKill(Player target, Player shooter) {

@@ -69,7 +69,7 @@ public class BackupUtil {
 		String playerId = player.getUniqueId().toString();
 		File[] backups = backupFolder.listFiles((dir, name) -> name.contains(playerId));
 
-		if (backups != null) {
+		if (backups != null && backups.length > 0) {
 			return backups[0];
 		}
 		return null;
