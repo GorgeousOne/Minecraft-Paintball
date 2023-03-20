@@ -1,6 +1,7 @@
 package me.gorgeousone.superpaintball.command.arena;
 
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
+import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.util.LocationUtil;
 import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgType;
@@ -10,8 +11,10 @@ import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ArenaCopyCommand extends ArgCommand {
 
@@ -47,7 +50,14 @@ public class ArenaCopyCommand extends ArgCommand {
 			sender.sendMessage(String.format("Copied new arena '%s' to %s", newName, LocationUtil.humanBlockPos(newArena.getSchemPos())));
 		}catch (IllegalArgumentException e) {
 			sender.sendMessage(e.getMessage());
-			return;
 		}
+	}
+
+	@Override
+	public List<String> getTabList(String[] stringArgs) {
+		if (stringArgs.length == 1) {
+			return arenaHandler.getArenas().stream().map(PbArena::getName).collect(Collectors.toList());
+		}
+		return new LinkedList<>();
 	}
 }

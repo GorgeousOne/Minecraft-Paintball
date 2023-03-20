@@ -8,8 +8,10 @@ import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import org.bukkit.command.CommandSender;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class LobbyDeleteCommand extends ArgCommand {
 	
@@ -32,5 +34,13 @@ public class LobbyDeleteCommand extends ArgCommand {
 			return;
 		}
 		lobbyHandler.deleteLobby(lobby);
+	}
+
+	@Override
+	public List<String> getTabList(String[] stringArgs) {
+		if (stringArgs.length == 1) {
+			return lobbyHandler.getLobbies().stream().map(PbLobby::getName).collect(Collectors.toList());
+		}
+		return new LinkedList<>();
 	}
 }

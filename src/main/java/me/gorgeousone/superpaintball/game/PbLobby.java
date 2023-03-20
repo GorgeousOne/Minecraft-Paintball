@@ -139,7 +139,7 @@ public class PbLobby {
 		return arenas.get((int) (Math.random() * arenas.size()));
 	}
 
-	public void joinPlayer(Player player, TeamType teamType) {
+	public void joinPlayer(Player player) {
 		UUID playerId = player.getUniqueId();
 
 		if (players.contains(playerId)) {
@@ -152,7 +152,7 @@ public class PbLobby {
 		player.sendMessage(String.format("Joined lobby '%s'.", name));
 
 		players.add(playerId);
-		teams.get(teamType).addPlayer(player);
+		teams.get(TeamType.EMBER).addPlayer(player);
 		equips.get(GameState.LOBBYING).equip(player);
 	}
 

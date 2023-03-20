@@ -9,8 +9,10 @@ import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class LobbyStartCommand extends ArgCommand {
 
@@ -49,5 +51,13 @@ public class LobbyStartCommand extends ArgCommand {
 		} catch (IllegalStateException e) {
 			sender.sendMessage(e.getMessage());
 		}
+	}
+
+	@Override
+	public List<String> getTabList(String[] stringArgs) {
+		if (stringArgs.length == 1) {
+			return lobbyHandler.getLobbies().stream().map(PbLobby::getName).collect(Collectors.toList());
+		}
+		return new LinkedList<>();
 	}
 }

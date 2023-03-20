@@ -74,7 +74,6 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 
 		pbCmd.addChild(arenaCmd);
 		pbCmd.addChild(lobbyCmd);
-		pbCmd.addChild(new KitCommand());
 		pbCmd.addChild(new LobbyJoinCommand(lobbyHandler));
 		pbCmd.addChild(new LobbyStartCommand(lobbyHandler));
 		pbCmd.addChild(new LobbyLeaveCommand(lobbyHandler));

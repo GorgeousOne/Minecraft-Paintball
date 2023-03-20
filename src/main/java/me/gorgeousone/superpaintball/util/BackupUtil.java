@@ -41,14 +41,12 @@ public class BackupUtil {
 	}
 
 	public static boolean loadBackup(Player player, JavaPlugin plugin) {
-		File backupFolder = new File(plugin.getDataFolder() + "/backups");
-		String playerId = player.getUniqueId().toString();
-		File[] backups = backupFolder.listFiles((dir, name) -> name.contains(playerId));
+		File backupFile = findBackup(player, plugin);
 
-		if (backups == null) {
+		if (backupFile == null) {
 			return false;
 		}
-		YamlConfiguration backup = YamlConfiguration.loadConfiguration(backups[0]);
+		YamlConfiguration backup = YamlConfiguration.loadConfiguration(backupFile);
 		player.setGameMode(GameMode.valueOf(backup.getString("gamemode")));
 		player.setHealth(backup.getDouble("health"));
 		player.setFoodLevel(backup.getInt("food"));
@@ -62,7 +60,18 @@ public class BackupUtil {
 		for (String slot : itemSection.getKeys(false)) {
 			inv.setItem(Integer.valueOf(slot), (ItemStack) itemSection.get(slot));
 		}
-		backups[0].delete();
+		backupFile.delete();
 		return true;
+	}
+
+	private static File findBackup(Player player, JavaPlugin plugin) {
+		File backupFolder = new File(plugin.getDataFolder() + "/backups");
+		String playerId = player.getUniqueId().toString();
+		File[] backups = backupFolder.listFiles((dir, name) -> name.contains(playerId));
+
+		if (backups != null) {
+			return backups[0];
+		}
+		return null;
 	}
 }

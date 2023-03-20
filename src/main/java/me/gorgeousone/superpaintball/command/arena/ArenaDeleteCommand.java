@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball.command.arena;
 
+import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgType;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
@@ -7,8 +8,10 @@ import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
 import org.bukkit.command.CommandSender;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ArenaDeleteCommand extends ArgCommand {
 
@@ -31,5 +34,13 @@ public class ArenaDeleteCommand extends ArgCommand {
 		} catch (IllegalArgumentException e) {
 			sender.sendMessage(e.getMessage());
 		}
+	}
+
+	@Override
+	public List<String> getTabList(String[] stringArgs) {
+		if (stringArgs.length == 1) {
+			return arenaHandler.getArenas().stream().map(PbArena::getName).collect(Collectors.toList());
+		}
+		return new LinkedList<>();
 	}
 }

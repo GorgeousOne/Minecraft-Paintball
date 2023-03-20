@@ -12,8 +12,10 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ArenaAddSpawnCommand extends ArgCommand {
 	
@@ -49,5 +51,13 @@ public class ArenaAddSpawnCommand extends ArgCommand {
 		Location spawnPos = player.getLocation();
 		arena.addSpawn(teamType, spawnPos);
 		sender.sendMessage(String.format("Added spawn %s in arena '%s' for team %s.", LocationUtil.humanBlockPos(spawnPos), arenaName, teamType.displayName));
+	}
+
+	@Override
+	public List<String> getTabList(String[] stringArgs) {
+		if (stringArgs.length == 1) {
+			return arenaHandler.getArenas().stream().map(PbArena::getName).collect(Collectors.toList());
+		}
+		return new LinkedList<>();
 	}
 }
