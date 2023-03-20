@@ -58,7 +58,7 @@ public class PbLobbyHandler {
 		if (!lobbies.containsKey(name)) {
 			return;
 		}
-		lobby.kickPlayers();
+		lobby.reset();
 		lobbies.remove(name);
 
 		ConfigurationSection lobbiesSection = backupConfig.getConfigurationSection("lobbies");
@@ -171,7 +171,7 @@ public class PbLobbyHandler {
 		logger.log(Level.INFO, String.format("  Loaded %d lobbies", lobbies.size()));
 	}
 
-	public void kickPlayers() {
-		lobbies.values().forEach(PbLobby::kickPlayers);
+	public void closeLobbies() {
+		lobbies.values().forEach(PbLobby::reset);
 	}
 }

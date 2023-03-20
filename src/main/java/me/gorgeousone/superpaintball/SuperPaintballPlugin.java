@@ -7,7 +7,6 @@ import me.gorgeousone.superpaintball.command.*;
 import me.gorgeousone.superpaintball.command.arena.*;
 import me.gorgeousone.superpaintball.command.lobby.*;
 import me.gorgeousone.superpaintball.event.*;
-import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.util.LocationUtil;
 import me.gorgeousone.superpaintball.kit.KitType;
@@ -42,7 +41,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		lobbyHandler.kickPlayers();
+		lobbyHandler.closeLobbies();
 	}
 
 	private void setupVersioning() {

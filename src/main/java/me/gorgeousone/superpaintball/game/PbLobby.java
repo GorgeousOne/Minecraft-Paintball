@@ -7,10 +7,10 @@ import me.gorgeousone.superpaintball.arena.PbArenaHandler;
 import me.gorgeousone.superpaintball.equipment.*;
 import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
-import me.gorgeousone.superpaintball.kit.AbstractKit;
 import me.gorgeousone.superpaintball.team.PbTeam;
 import me.gorgeousone.superpaintball.team.TeamType;
 import me.gorgeousone.superpaintball.util.ConfigUtil;
+import me.gorgeousone.superpaintball.util.ItemUtil;
 import me.gorgeousone.superpaintball.util.LocationUtil;
 import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.Bukkit;
@@ -20,12 +20,13 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -39,6 +40,9 @@ import java.util.stream.Collectors;
 
 public class PbLobby {
 
+	private static final int MIN_PLAYERS = 2;
+	private static final int MAX_PLAYERS = 16;
+
 	private final JavaPlugin plugin;
 	private final PbLobbyHandler lobbyHandler;
 	private final PbKitHandler kitHandler;
@@ -46,6 +50,7 @@ public class PbLobby {
 	private Location spawnPos;
 	private final List<PbArena> arenas;
 	private final Map<TeamType, PbTeam> teams;
+	private final Map<UUID, TeamType> teamQueues;
 	private final Set<UUID> players;
 	private GameState state;
 	private GameBoard gameBoard;
@@ -61,8 +66,9 @@ public class PbLobby {
 		this.spawnPos = LocationUtil.cleanSpawn(spawnPos);
 
 		this.arenas = new LinkedList<>();
-		this.teams = new HashMap<>();
 		this.players = new HashSet<>();
+		this.teams = new HashMap<>();
+		this.teamQueues = new HashMap<>();
 
 		this.state = GameState.LOBBYING;
 		this.equips = new HashMap<>();
@@ -70,7 +76,7 @@ public class PbLobby {
 		for (TeamType teamType : TeamType.values()) {
 			teams.put(teamType, new PbTeam(teamType, this, lobbyHandler, kitHandler));
 		}
-		equips.put(GameState.LOBBYING, new LobbyEquipment(this::onChooseTeam, this::onSelectKit, kitHandler));
+		equips.put(GameState.LOBBYING, new LobbyEquipment(this::onQueueForTeam, this::onSelectKit, kitHandler));
 		equips.put(GameState.RUNNING, new IngameEquipment(this::onShoot, this::onThrowWaterBomb, kitHandler));
 	}
 
@@ -90,19 +96,44 @@ public class PbLobby {
 		return equips.getOrDefault(state, null);
 	}
 
-	public void start() {
+	public void startGame() {
 		if (state != GameState.LOBBYING) {
-			throw new IllegalStateException("The game is already running");
+			throw new IllegalStateException("The game is already running.");
 		}
 		PbArena arenaToPlay = pickArena();
 		arenaToPlay.assertIsPlayable();
+		arenaToPlay.reset();
+		assignTeams();
 
-		for (PbTeam team : teams.values()) {
-			team.start(arenaToPlay.getSpawns(team.getType()));
-		}
+		teams.values().forEach(t -> t.startGame(arenaToPlay.getSpawns(t.getType())));
 		state = GameState.COUNTING_DOWN;
 		createScoreboard();
 		startCountdown();
+	}
+
+	private void assignTeams() {
+		List<UUID> unassignedPlayers = new LinkedList<>(players);
+		List<UUID> queuedPlayers = new LinkedList<>(teamQueues.keySet());
+		Collections.shuffle(queuedPlayers);
+
+		for (UUID playerId : queuedPlayers) {
+			PbTeam team = teams.get(teamQueues.get(playerId));
+
+			if (team.size() < MAX_PLAYERS / 2) {
+				team.addPlayer(Bukkit.getPlayer(playerId));
+				unassignedPlayers.remove(playerId);
+			}
+		}
+		Collections.shuffle(unassignedPlayers);
+
+		for (UUID playerId : unassignedPlayers) {
+			for (PbTeam team : teams.values()) {
+				if (team.size() < MAX_PLAYERS / 2) {
+					team.addPlayer(Bukkit.getPlayer(playerId));
+					break;
+				}
+			}
+		}
 	}
 
 	private void startCountdown() {
@@ -150,7 +181,6 @@ public class PbLobby {
 		player.sendMessage(String.format("Joined lobby '%s'.", name));
 
 		players.add(playerId);
-		teams.get(TeamType.EMBER).addPlayer(player);
 		equips.get(GameState.LOBBYING).equip(player);
 	}
 
@@ -171,8 +201,8 @@ public class PbLobby {
 		player.sendMessage(String.format("You left lobby '%s'.", name));
 	}
 
-	public void kickPlayers() {
-		teams.values().forEach(PbTeam::kickPlayers);
+	public void reset() {
+		teams.values().forEach(PbTeam::reset);
 		allPlayers(p -> {
 			if (gameBoard != null) {
 				gameBoard.removePlayer(p);
@@ -201,20 +231,31 @@ public class PbLobby {
 		return teams.values();
 	}
 
-	private void onChooseTeam(SlotClickEvent event) {
-		int slot = event.getClickedSlot();
-		TeamType newTeamType = TeamType.values()[slot];
+	private void onQueueForTeam(SlotClickEvent event) {
 		Player player = event.getPlayer();
 		UUID playerId = player.getUniqueId();
-		PbTeam team = getTeam(playerId);
 
-		//if is full
-		if (team.getType() == newTeamType) {
-			player.sendMessage(String.format("You already are in team %s.", newTeamType.displayName));
-		} else {
-			team.removePlayer(playerId);
-			teams.get(newTeamType).addPlayer(player);
+		int slot = event.getClickedSlot();
+		TeamType newTeam = TeamType.values()[slot];
+		TeamType queuedTeam = teamQueues.getOrDefault(playerId, null);
+
+		if (newTeam == queuedTeam) { //I hope it's not possible to queue for team null :D
+			player.sendMessage(String.format("You already queued for team %s.", newTeam.displayName));
+			return;
 		}
+		changeQueuedTeam(player, queuedTeam, newTeam);
+		player.sendMessage(String.format("You queued for team %s.", newTeam.displayName));
+	}
+
+	private void changeQueuedTeam(Player player, TeamType oldTeam, TeamType newTeam) {
+		UUID playerId = player.getUniqueId();
+		Inventory inv = player.getInventory();
+
+		if (oldTeam != null) {
+			ItemUtil.removeMagicGlow(inv.getItem(oldTeam.ordinal()));
+		}
+		ItemUtil.addMagicGlow(inv.getItem(newTeam.ordinal()));
+		teamQueues.put(playerId, newTeam);
 	}
 
 	private void onSelectKit(SlotClickEvent event) {
@@ -334,7 +375,7 @@ public class PbLobby {
 			@Override
 			public void run() {
 				state = GameState.LOBBYING;
-				teams.values().forEach(PbTeam::restart);
+				teams.values().forEach(PbTeam::reset);
 				allPlayers(p -> {
 					gameBoard.removePlayer(p);
 					p.teleport(spawnPos);

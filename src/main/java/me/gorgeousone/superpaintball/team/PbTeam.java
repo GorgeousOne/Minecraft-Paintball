@@ -52,7 +52,7 @@ public class PbTeam {
 		this.teamArmorSet = TeamUtil.createColoredArmoSet(teamType.armorColor);
 	}
 	
-	public void start(List<Location> spawns) {
+	public void startGame(List<Location> spawns) {
 		int i = 0;
 
 		for (UUID playerId : players) {
@@ -75,6 +75,10 @@ public class PbTeam {
 
 	public Set<UUID> getPlayers() {
 		return new HashSet<>(players);
+	}
+
+	public int size() {
+		return players.size();
 	}
 
 	public boolean hasPlayer(UUID playerId) {
@@ -114,18 +118,14 @@ public class PbTeam {
 		}
 	}
 
-	public void kickPlayers() {
-		restart();
-		players.clear();
-	}
-
-	public void restart() {
+	public void reset() {
 		reviveSkellies.keySet().forEach(id -> Bukkit.getEntity(id).remove());
 		reviveSkellies.clear();
 		players.forEach(id -> setSpectator(Bukkit.getPlayer(id), false));
 		playerHealth.clear();
 		alivePlayers.clear();
 		uncoloredArmorSlots.clear();
+		players.clear();
 	}
 
 	public void paintBlock(Block shotBlock) {
