@@ -47,7 +47,7 @@ public class LobbyStartCommand extends ArgCommand {
 			}
 		}
 		try {
-			lobby.start();
+			lobby.startGame();
 		} catch (IllegalStateException e) {
 			sender.sendMessage(e.getMessage());
 		}

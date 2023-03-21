@@ -58,7 +58,7 @@ public class PbLobbyHandler {
 		if (!lobbies.containsKey(name)) {
 			return;
 		}
-		lobby.kickPlayers();
+		lobby.reset();
 		lobbies.remove(name);
 
 		ConfigurationSection lobbiesSection = backupConfig.getConfigurationSection("lobbies");
@@ -78,11 +78,16 @@ public class PbLobbyHandler {
 		}
 		return null;
 	}
-
+	
+	public PbGame getGame(UUID playerId) {
+		PbLobby lobby = getLobby(playerId);
+		return lobby == null ? null : lobby.getGame();
+	}
+	
 	public Collection<PbLobby> getLobbies() {
 		return lobbies.values();
 	}
-
+	
 	public boolean isPlaying(UUID playerId) {
 		for (PbLobby lobby : lobbies.values()) {
 			if (lobby.hasPlayer(playerId)) {
@@ -91,7 +96,7 @@ public class PbLobbyHandler {
 		}
 		return false;
 	}
-
+	
 	public PbTeam getTeam(UUID playerId) {
 		PbLobby lobby = getLobby(playerId);
 
@@ -100,10 +105,10 @@ public class PbLobbyHandler {
 		}
 		return null;
 	}
-
+	
 	public PbTeam getTeam(ArmorStand reviveSkelly) {
 		for (PbLobby lobby : lobbies.values()) {
-			for (PbTeam team : lobby.getTeams()) {
+			for (PbTeam team : lobby.getGame().getTeams()) {
 				if (team.hasReviveSkelly(reviveSkelly)) {
 					return team;
 				}
@@ -111,7 +116,7 @@ public class PbLobbyHandler {
 		}
 		return null;
 	}
-
+	
 	public void linkArena(PbLobby lobby, PbArena arena) {
 		for (PbLobby other : lobbies.values()) {
 			if (other.getArenas().contains(arena)) {
@@ -121,17 +126,17 @@ public class PbLobbyHandler {
 		lobby.linkArena(arena);
 		saveLobby(lobby);
 	}
-
+	
 	public void unlinkArena(PbLobby lobby, PbArena arena) {
 		lobby.unlinkArena(arena);
 		saveLobby(lobby);
 	}
-
+	
 	public Location getExitSpawn() {
 		//TODO idk get config spawn pos
 		return lobbies.values().iterator().next().getSpawnPos().getWorld().getSpawnLocation();
 	}
-
+	
 	public void saveLobbies() {
 		Logger logger = Bukkit.getLogger();
 		logger.log(Level.INFO, "  Saving lobbies:");
@@ -144,7 +149,7 @@ public class PbLobbyHandler {
 		ConfigUtil.saveConfig(backupConfig, "lobbies", plugin);
 		logger.log(Level.INFO, String.format("  Saved %d lobbies", lobbies.size()));
 	}
-
+	
 	private void saveLobby(PbLobby lobby) {
 		if (!backupConfig.contains("lobbies")) {
 			backupConfig.createSection("lobbies");
@@ -153,7 +158,7 @@ public class PbLobbyHandler {
 		lobby.toYml(lobbiesSection);
 		ConfigUtil.saveConfig(backupConfig, "lobbies", plugin);
 	}
-
+	
 	public void loadLobbies(PbArenaHandler arenaHandler) {
 		Logger logger = Bukkit.getLogger();
 		logger.log(Level.INFO, "  Loading lobbies:");
@@ -170,8 +175,8 @@ public class PbLobbyHandler {
 		}
 		logger.log(Level.INFO, String.format("  Loaded %d lobbies", lobbies.size()));
 	}
-
-	public void kickPlayers() {
-		lobbies.values().forEach(PbLobby::kickPlayers);
+	
+	public void closeLobbies() {
+		lobbies.values().forEach(PbLobby::reset);
 	}
 }
