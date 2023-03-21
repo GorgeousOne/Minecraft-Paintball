@@ -114,9 +114,13 @@ public class PbTeam {
 	}
 
 	public void reset() {
+		for (UUID playerId : players) {
+			Player player = Bukkit.getPlayer(playerId);
+			setSpectator(player, false);
+			player.getInventory().setArmorContents(null);
+		}
 		reviveSkellies.keySet().forEach(id -> Bukkit.getEntity(id).remove());
 		reviveSkellies.clear();
-		players.forEach(id -> setSpectator(Bukkit.getPlayer(id), false));
 		playerHealth.clear();
 		alivePlayers.clear();
 		uncoloredArmorSlots.clear();
@@ -256,6 +260,7 @@ public class PbTeam {
 		KitType kitType = kitHandler.getKitType(player.getUniqueId());
 		inv.setItem(0, kitType.getGun());
 		inv.setItem(1, PbKitHandler.getWaterBombs());
+		inv.setArmorContents(teamArmorSet);
 	}
 
 	//TODO make this nicer block patterns :(

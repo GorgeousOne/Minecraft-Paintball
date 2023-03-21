@@ -37,7 +37,6 @@ public class PbGame {
 	private final Map<TeamType, PbTeam> teams;
 	private GameBoard gameBoard;
 	private final Runnable onGameEnd;
-	
 	private final Equipment equipment;
 	
 	public PbGame(JavaPlugin plugin, PbKitHandler kitHandler, Runnable onGameEnd) {
@@ -69,16 +68,20 @@ public class PbGame {
 	
 	public void joinPlayer(UUID playerId) {
 		players.add(playerId);
+		String playerName = Bukkit.getPlayer(playerId).getDisplayName();
+		allPlayers(p -> p.sendMessage(playerName + " joined"));
 	}
 	
-	public void removePlayer(Player player) {
-		UUID playerId = player.getUniqueId();
-		
+	public void removePlayer(UUID playerId) {
 		if (!players.contains(playerId)) {
 			return;
 		}
-		getTeam(playerId).removePlayer(playerId);
-		updateAliveScores();
+		players.remove(playerId);
+
+		if (isRunning()) {
+			getTeam(playerId).removePlayer(playerId);
+			updateAliveScores();
+		}
 	}
 	
 	public GameState getState() {
@@ -163,7 +166,7 @@ public class PbGame {
 		Player player = event.getPlayer();
 		UUID playerId = player.getUniqueId();
 		
-		if (!getTeam(playerId).isAlive(playerId)) {
+		if (state != GameState.RUNNING || !getTeam(playerId).isAlive(playerId)) {
 			event.setCancelled(true);
 			return;
 		}
@@ -174,7 +177,7 @@ public class PbGame {
 	private void onThrowWaterBomb(SlotClickEvent event) {
 		UUID playerId = event.getPlayer().getUniqueId();
 		
-		if (!getTeam(playerId).isAlive(playerId)) {
+		if (state != GameState.RUNNING || !getTeam(playerId).isAlive(playerId)) {
 			event.setCancelled(true);
 		}
 	}

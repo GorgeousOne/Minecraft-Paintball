@@ -42,7 +42,7 @@ public class ItemUseListener implements Listener {
 		int slot = player.getInventory().getHeldItemSlot();
 		SlotClickEvent clickEvent = lobby.getEquip().onClickSlot(player, slot);
 
-		if (clickEvent == null || clickEvent.isCancelled()) {
+		if (clickEvent != null && clickEvent.isCancelled()) {
 			event.setCancelled(true);
 		}
 	}
