@@ -1,6 +1,7 @@
 package me.gorgeousone.superpaintball.event;
 
 import me.gorgeousone.superpaintball.game.GameState;
+import me.gorgeousone.superpaintball.game.PbGame;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import org.bukkit.Location;
@@ -20,9 +21,9 @@ public class MovementListener implements Listener {
 	@EventHandler
 	public void onMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
-		PbLobby lobby = lobbyHandler.getLobby(player.getUniqueId());
+		PbGame game = lobbyHandler.getGame(player.getUniqueId());
 
-		if (lobby == null || lobby.getState() != GameState.COUNTING_DOWN) {
+		if (game == null || game.getState() != GameState.COUNTING_DOWN) {
 			return;
 		}
 		Location from = event.getFrom();

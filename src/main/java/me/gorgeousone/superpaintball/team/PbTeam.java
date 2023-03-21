@@ -1,9 +1,8 @@
 package me.gorgeousone.superpaintball.team;
 
+import me.gorgeousone.superpaintball.game.PbGame;
 import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
-import me.gorgeousone.superpaintball.game.PbLobbyHandler;
-import me.gorgeousone.superpaintball.game.PbLobby;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -29,7 +28,7 @@ public class PbTeam {
 	
 	private final TeamType teamType;
 	private final PbKitHandler kitHandler;
-	private final PbLobby lobby;
+	private final PbGame game;
 	private final ItemStack[] teamArmorSet;
 	private final Set<UUID> players;
 	private final Set<UUID> alivePlayers;
@@ -40,9 +39,9 @@ public class PbTeam {
 	private final Random rng = new Random();
 	
 	
-	public PbTeam(TeamType teamType, PbLobby lobby, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
+	public PbTeam(TeamType teamType, PbGame game, PbKitHandler kitHandler) {
 		this.teamType = teamType;
-		this.lobby = lobby;
+		this.game = game;
 		this.kitHandler = kitHandler;
 		this.players = new HashSet<>();
 		this.alivePlayers = new HashSet<>();
@@ -69,10 +68,6 @@ public class PbTeam {
 		return teamType;
 	}
 	
-	public PbLobby getGame() {
-		return lobby;
-	}
-
 	public Set<UUID> getPlayers() {
 		return new HashSet<>(players);
 	}
@@ -114,7 +109,7 @@ public class PbTeam {
 			reviveSkellies.remove(skellyId);
 		}
 		if (alivePlayers.isEmpty()) {
-			lobby.onTeamKill(this);
+			game.onTeamKill(this);
 		}
 	}
 
@@ -144,7 +139,7 @@ public class PbTeam {
 		if (isAlive) {
 			paintArmor(playerId, bulletDmg);
 		} else {
-			lobby.broadcastKill(target, shooter);
+			game.broadcastKill(target, shooter);
 		}
 	}
 
@@ -183,10 +178,10 @@ public class PbTeam {
 
 		ArmorStand skelly = TeamUtil.createSkelly(TeamUtil.DEATH_ARMOR_SET, player, teamType, kitHandler.getKitType(playerId));
 		reviveSkellies.put(skelly.getUniqueId(), playerId);
-		lobby.updateAliveScores();
+		game.updateAliveScores();
 
 		if (alivePlayers.isEmpty()) {
-			lobby.onTeamKill(this);
+			game.onTeamKill(this);
 		}
 	}
 
@@ -199,9 +194,9 @@ public class PbTeam {
 			healPlayer(player);
 			player.teleport(player.getLocation().add(0, 1, 0));
 			player.addPotionEffect(TeamUtil.KNOCKOUT_BLINDNESS);
-			lobby.hidePlayer(player);
+			game.hidePlayer(player);
 		} else {
-			lobby.showPlayer(player);
+			game.showPlayer(player);
 		}
 	}
 
@@ -243,8 +238,9 @@ public class PbTeam {
 		reviveSkellies.remove(skellyId);
 		playerHealth.put(playerId, TeamUtil.DMG_POINTS);
 		alivePlayers.add(playerId);
-		lobby.updateAliveScores();
+		game.updateAliveScores();
 	}
+	
 	public void healPlayer(Player player) {
 		player.setFoodLevel(20);
 		player.setHealth(TeamUtil.DMG_POINTS * TeamUtil.HEARTS_PER_DMG_POINT);
