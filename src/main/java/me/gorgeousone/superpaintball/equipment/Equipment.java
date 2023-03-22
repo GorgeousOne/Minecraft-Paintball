@@ -22,7 +22,13 @@ public class Equipment {
 		PlayerInventory inv = player.getInventory();
 
 		for (int slot : items.keySet()) {
-			inv.setItem(slot, items.get(slot).clone());
+			ItemStack item = items.get(slot);
+			ItemStack oldItem = inv.getItem(slot);
+			
+			//this is a stupid workaround so equipping after changing kit won't replace team queuing enchantment glow
+			if (oldItem == null || oldItem.getType() != item.getType()) {
+				inv.setItem(slot, items.get(slot).clone());
+			}
 		}
 	}
 
