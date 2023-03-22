@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public class PbKitHandler {
 
-	public static final String KIT_SELECTOR_TITLE = "Select a kit";
+	public static final String KIT_SELECT_UI_TITLE = "Select a kit";
 	private static final int KITS_START_SLOT = 11;
 	private static Map<KitType, AbstractKit> KITS;
 	private static ItemStack WATER_BOMBS;
@@ -74,8 +74,8 @@ public class PbKitHandler {
 		return waterBombs;
 	}
 
-	public void openKitSelector(Player player) {
-		Inventory selector = Bukkit.createInventory(null, 3*9, KIT_SELECTOR_TITLE);
+	public void openKitSelectUI(Player player) {
+		Inventory selector = Bukkit.createInventory(null, 3*9, KIT_SELECT_UI_TITLE);
 		int itemSlot = KITS_START_SLOT;
 
 		for (KitType kitType : KitType.values()) {

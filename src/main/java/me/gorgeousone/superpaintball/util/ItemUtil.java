@@ -9,10 +9,11 @@ public abstract class ItemUtil {
 
 	private ItemUtil() {}
 
-	public static void setItemName(ItemStack item, String displayName) {
+	public static ItemStack nameItem(ItemStack item, String displayName) {
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(displayName);
 		item.setItemMeta(meta);
+		return item;
 	}
 
 	public static void addMagicGlow(ItemStack item) {

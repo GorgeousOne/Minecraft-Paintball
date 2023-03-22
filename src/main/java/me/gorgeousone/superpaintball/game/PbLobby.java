@@ -11,8 +11,10 @@ import me.gorgeousone.superpaintball.util.LocationUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.LinkedList;
@@ -35,6 +37,7 @@ public class PbLobby {
 	private final List<PbArena> arenas;
 	private final PbGame game;
 	private final TeamQueue teamQueue;
+	private final MapVoting mapVoting;
 	private final Equipment equipment;
 	private final PbCountdown countdown;
 	
@@ -48,20 +51,21 @@ public class PbLobby {
 
 		this.arenas = new LinkedList<>();
 		this.teamQueue = new TeamQueue();
+		this.mapVoting = new MapVoting();
 		this.game = new PbGame(plugin, kitHandler, this::returnToLobby);
 		
-		this.equipment = new LobbyEquipment(teamQueue::onQueueForTeam, this::onSelectKit, kitHandler);
+		this.equipment = new LobbyEquipment(teamQueue::onQueueForTeam, this::onMapVote, this::onSelectKit, this::onQuit, kitHandler);
 		this.countdown = new PbCountdown(COUNTDOWN_SECONDS, this::onAnnounceTime, this::onCountdownEnd, plugin);
 	}
-
+	
 	public String getName() {
 		return name;
 	}
-
+	
 	public Location getSpawnPos() {
 		return spawnPos;
 	}
-
+	
 	public Equipment getEquip() {
 		return game.isRunning() ? game.getEquip() : equipment;
 	}
@@ -97,6 +101,10 @@ public class PbLobby {
 		}
 	}
 	
+	private void onQuit(SlotClickEvent slotClickEvent) {
+		removePlayer(slotClickEvent.getPlayer());
+	}
+	
 	public void removePlayer(Player player) {
 		UUID playerId = player.getUniqueId();
 
@@ -118,11 +126,28 @@ public class PbLobby {
 	}
 	
 	private void onSelectKit(SlotClickEvent event) {
-		kitHandler.openKitSelector(event.getPlayer());
+		kitHandler.openKitSelectUI(event.getPlayer());
+	}
+	
+	private void onMapVote(SlotClickEvent slotClickEvent) {
+		Player player = slotClickEvent.getPlayer();
+		MapVoting.openMapVoteUI(player, getArenas(), arenas.indexOf(mapVoting.getVote(player.getUniqueId())));
+	}
+	
+	public void addMapVote(Player player, Inventory mapVoter, int arenaIdx) {
+		UUID playerId = player.getUniqueId();
+		
+		if (arenaIdx >= arenas.size()) {
+			return;
+		}
+		PbArena lastVote = mapVoting.getVote(playerId);
+		mapVoting.toggleVote(playerId, arenas.get(arenaIdx));
+		MapVoting.toggleMapVote(mapVoter, arenaIdx, arenas.indexOf(lastVote));
+		player.playSound(player.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 2f);
 	}
 	
 	public List<PbArena> getArenas() {
-		return arenas;
+		return new LinkedList<>(arenas);
 	}
 	
 	public void linkArena(PbArena arena) {
@@ -146,7 +171,7 @@ public class PbLobby {
 	private void onCountdownEnd() {
 		try {
 			startGame();
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException | IllegalStateException e) {
 			game.allPlayers(p -> p.sendMessage(e.getMessage()));
 		}
 	}
@@ -156,25 +181,22 @@ public class PbLobby {
 			throw new IllegalStateException("The game is already running.");
 		}
 		countdown.cancel();
-		PbArena arenaToPlay = pickArena();
+		
+		if (arenas.isEmpty()) {
+			countdown.start();
+			throw new IllegalStateException(String.format(
+					"Lobby '%s' cannot start a game because no arenas to play are linked to it. /pb link '%s' <arena name>", name, name));
+		}
+		PbArena arenaToPlay = mapVoting.pickArena(arenas);
 		arenaToPlay.assertIsPlayable();
 		arenaToPlay.reset();
 		game.start(arenaToPlay, teamQueue);
 	}
 	
-	private PbArena pickArena() {
-		if (arenas.isEmpty()) {
-			throw new IllegalStateException(String.format(
-					"Lobby '%s' cannot start a game because no arenas to play are linked to it. /pb link '%s' <arena name>", name, name));
-		}
-		//TODO take in account votes and/or pick different arena than last time
-		return arenas.get((int) (Math.random() * arenas.size()));
-	}
-	
 	public void returnToLobby() {
 		game.allPlayers(p -> {
 			p.teleport(spawnPos);
-			getEquip().equip(p);
+			equipment.equip(p);
 		});
 		if (game.size() >= MIN_PLAYERS) {
 			countdown.start();
