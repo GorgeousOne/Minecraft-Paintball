@@ -5,6 +5,7 @@ import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.team.TeamType;
 import me.gorgeousone.superpaintball.util.ItemUtil;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -13,27 +14,32 @@ import java.util.function.Consumer;
 
 public class LobbyEquipment extends Equipment {
 
-	private static final String KIT_ITEM_NAME = ChatColor.WHITE + "Kit %s" + ChatColor.GRAY + " (Right Click)";
-	private static final String TEAM_ITEM_NAME = ChatColor.WHITE + "Team %s" + ChatColor.GRAY + " (Right Click)";
+	private static final String LOBBY_ITEM_NAME = ChatColor.WHITE + "%s" + ChatColor.GRAY + " (Right Click)";
 	private final PbKitHandler kitHandler;
-
-	private static final int KIT_SLOT = 8;
+	
+	private static final int MAP_SLOT = 4;
+	private static final int KIT_SLOT = 5;
+	private static final int LEAVE_SLOT = 8;
 
 	public LobbyEquipment(
 			Consumer<SlotClickEvent> onTeamSelect,
+			Consumer<SlotClickEvent> onMapVote,
 			Consumer<SlotClickEvent> onKitSelect,
+			Consumer<SlotClickEvent> onLobbyLeave,
 			PbKitHandler kitHandler) {
 		this.kitHandler = kitHandler;
 		int i = 0;
 
 		for (TeamType teamType : TeamType.values()) {
 			ItemStack teamItem = teamType.getJoinItem();
-			ItemUtil.setItemName(teamItem, String.format(TEAM_ITEM_NAME, teamType.displayName));
+			ItemUtil.nameItem(teamItem, String.format(LOBBY_ITEM_NAME, "Team " + teamType.displayName));
 
 			setItem(i, teamItem, onTeamSelect);
 			++i;
 		}
+		setItem(MAP_SLOT, ItemUtil.nameItem(new ItemStack(Material.BOOK), String.format(LOBBY_ITEM_NAME, "Vote Map")), onMapVote);
 		setItem(KIT_SLOT, KitType.RIFLE.getGun(), onKitSelect);
+		setItem(LEAVE_SLOT, ItemUtil.nameItem(new ItemStack(Material.CLOCK), String.format(LOBBY_ITEM_NAME, "Quit")), onLobbyLeave);
 	}
 
 	@Override
@@ -44,7 +50,7 @@ public class LobbyEquipment extends Equipment {
 
 	public void changeKit(Player player, KitType newKit) {
 		ItemStack kitItem = newKit.getGun();
-		ItemUtil.setItemName(kitItem, String.format(KIT_ITEM_NAME, newKit.gunName));
+		ItemUtil.nameItem(kitItem, String.format(LOBBY_ITEM_NAME, "Kit " + newKit.gunName));
 
 		PlayerInventory inv = player.getInventory();
 		inv.setItem(KIT_SLOT, kitItem);

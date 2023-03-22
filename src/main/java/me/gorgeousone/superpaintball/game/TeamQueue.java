@@ -33,11 +33,12 @@ public class TeamQueue {
 		TeamType queuedTeam = teamQueues.getOrDefault(playerId, null);
 		
 		if (newTeam == queuedTeam) { //I hope it's not possible to queue for team null :D
-			player.sendMessage(String.format("You already queued for team %s.", newTeam.displayName));
-			return;
+			player.sendMessage(String.format("You un-queued from team %s.", newTeam.displayName));
+		} else {
+			player.sendMessage(String.format("You queued for team %s.", newTeam.displayName));
+			
 		}
 		changeQueuedTeam(player, queuedTeam, newTeam);
-		player.sendMessage(String.format("You queued for team %s.", newTeam.displayName));
 	}
 	
 	private void changeQueuedTeam(Player player, TeamType oldTeam, TeamType newTeam) {
@@ -46,9 +47,12 @@ public class TeamQueue {
 		
 		if (oldTeam != null) {
 			ItemUtil.removeMagicGlow(inv.getItem(oldTeam.ordinal()));
+			teamQueues.remove(playerId, oldTeam);
 		}
-		ItemUtil.addMagicGlow(inv.getItem(newTeam.ordinal()));
-		teamQueues.put(playerId, newTeam);
+		if (oldTeam != newTeam) {
+			teamQueues.put(playerId, newTeam);
+			ItemUtil.addMagicGlow(inv.getItem(newTeam.ordinal()));
+		}
 	}
 	
 	public void assignTeams(Collection<UUID> players, Map<TeamType, PbTeam> teams) {

@@ -157,7 +157,7 @@ public final class ConfigUtil {
 		File file = new File(schemFolder + "/" + fileName);
 
 		if (!file.exists()) {
-			throw new IllegalArgumentException(String.format("Could not find schematic '%s' in schematics folder.", fileName));
+			throw new IllegalArgumentException(String.format("Schematic '%s' does not exist.", fileName));
 		}
 		String[] nameParts = fileName.split("\\.");
 		String extension = nameParts[nameParts.length - 1];

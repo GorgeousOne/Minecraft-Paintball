@@ -1,9 +1,11 @@
 package me.gorgeousone.superpaintball.event;
 
+import me.gorgeousone.superpaintball.arena.PbArenaHandler;
+import me.gorgeousone.superpaintball.game.MapVoting;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
-import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -59,14 +61,20 @@ public class InventoryListener implements Listener {
 		}
 		event.setCancelled(true);
 		String title = event.getView().getTitle();
-
-		if (!title.equals(PbKitHandler.KIT_SELECTOR_TITLE)) {
-			return;
-		}
-		boolean changedKit = kitHandler.onSelectKit(player, event.getInventory(), event.getSlot());
-
-		if (changedKit) {
-			lobby.getEquip().equip(player);
+		Inventory inv = event.getInventory();
+		int clickedSlot = event.getSlot();
+		
+		switch (title) {
+			case PbKitHandler.KIT_SELECT_UI_TITLE:
+				boolean changedKit = kitHandler.onSelectKit(player, inv, clickedSlot);
+				
+				if (changedKit) {
+					lobby.getEquip().equip(player);
+				}
+				break;
+			case MapVoting.MAP_VOTE_UI_TITLE:
+				lobby.addMapVote(player, inv, clickedSlot);
+				break;
 		}
 	}
 }

@@ -38,7 +38,7 @@ public class ArenaCreateCommand extends ArgCommand {
 			sender.sendMessage("Arena '%s' already exists!");
 			return;
 		}
-		String schemFileName = argValues.get(1).get();
+		String schemFileName = argValues.get(1).get() + ".schem";
 		File schemFile;
 
 		try {
