@@ -163,6 +163,9 @@ public class PbArena {
 	}
 
 	public void assertIsPlayable() {
+		if (!schemFile.exists()) {
+			throw new IllegalArgumentException(String.format("Schematic '%s' for arena %s does not exist.", schemFile.getName(), name));
+		}
 		for (TeamType teamType : TeamType.values()) {
 			if (!teamSpawns.containsKey(teamType) || teamSpawns.get(teamType).isEmpty()) {
 				throw new IllegalArgumentException(String.format(

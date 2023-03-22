@@ -14,7 +14,6 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -52,7 +51,7 @@ public class PbLobby {
 		this.game = new PbGame(plugin, kitHandler, this::returnToLobby);
 		
 		this.equipment = new LobbyEquipment(teamQueue::onQueueForTeam, this::onSelectKit, kitHandler);
-		this.countdown = new PbCountdown(COUNTDOWN_SECONDS, this::onAnnounceTime, this::startGame, plugin);
+		this.countdown = new PbCountdown(COUNTDOWN_SECONDS, this::onAnnounceTime, this::onCountdownEnd, plugin);
 	}
 
 	public String getName() {
@@ -144,10 +143,19 @@ public class PbLobby {
 		game.allPlayers(p -> p.sendMessage(String.format("Game starts in %d seconds.", secondsLeft)));
 	}
 	
+	private void onCountdownEnd() {
+		try {
+			startGame();
+		} catch (IllegalArgumentException e) {
+			game.allPlayers(p -> p.sendMessage(e.getMessage()));
+		}
+	}
+	
 	public void startGame() {
 		if (game.getState() != GameState.IDLING) {
 			throw new IllegalStateException("The game is already running.");
 		}
+		countdown.cancel();
 		PbArena arenaToPlay = pickArena();
 		arenaToPlay.assertIsPlayable();
 		arenaToPlay.reset();
