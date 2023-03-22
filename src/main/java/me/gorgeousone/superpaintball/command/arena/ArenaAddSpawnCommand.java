@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -43,7 +44,7 @@ public class ArenaAddSpawnCommand extends ArgCommand {
 
 		try {
 			teamType = TeamType.valueOf(teamName.toUpperCase());
-		} catch (IllegalStateException e) {
+		} catch (IllegalArgumentException e) {
 			sender.sendMessage(String.format("Team '%s' does not exist!", teamName));
 			return;
 		}
@@ -55,8 +56,11 @@ public class ArenaAddSpawnCommand extends ArgCommand {
 
 	@Override
 	public List<String> getTabList(String[] stringArgs) {
-		if (stringArgs.length == 1) {
-			return arenaHandler.getArenas().stream().map(PbArena::getName).collect(Collectors.toList());
+		switch (stringArgs.length) {
+			case 1:
+				return arenaHandler.getArenas().stream().map(PbArena::getName).collect(Collectors.toList());
+			case 2:
+				return Arrays.stream(TeamType.values()).map(t -> t.name().toLowerCase()).collect(Collectors.toList());
 		}
 		return new LinkedList<>();
 	}

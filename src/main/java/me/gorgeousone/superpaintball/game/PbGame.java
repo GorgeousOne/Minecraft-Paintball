@@ -211,7 +211,7 @@ public class PbGame {
 		state = GameState.OVER;
 		
 		if (winningTeam != null) {
-			allPlayers(p -> p.sendTitle(winningTeam.displayName + " won!", ""));
+			allPlayers(p -> p.sendTitle(String.format("Team %s wins!", winningTeam.displayName), ""));
 		} else {
 			allPlayers(p -> p.sendTitle("It's a draw?", ""));
 		}
