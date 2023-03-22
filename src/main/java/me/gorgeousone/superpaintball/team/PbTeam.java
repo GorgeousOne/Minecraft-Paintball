@@ -133,7 +133,7 @@ public class PbTeam {
 
 	public void damagePlayer(Player target, Player shooter, int bulletDmg) {
 		UUID playerId = target.getUniqueId();
-
+		
 		if (!alivePlayers.contains(playerId)) {
 			return;
 		}
@@ -150,15 +150,18 @@ public class PbTeam {
 	private boolean updateHealth(UUID playerId, int damage) {
 		Player player = Bukkit.getPlayer(playerId);
 		int health = playerHealth.get(playerId);
-		health = Math.max(0, health - damage);
-		playerHealth.put(playerId, health);
-
-		if (health == 0) {
+		
+		if (damage >= health) {
+			player.damage(health * TeamUtil.HEARTS_PER_DMG_POINT - 1);
 			knockoutPlayer(player);
 			return false;
+		} else {
+			player.damage(damage * TeamUtil.HEARTS_PER_DMG_POINT);
+			health = Math.max(0, health - damage);
+			playerHealth.put(playerId, health);
+			player.setNoDamageTicks(0);
+			return true;
 		}
-		player.damage(damage * TeamUtil.HEARTS_PER_DMG_POINT);
-		return true;
 	}
 
 	private void paintArmor(UUID playerId, int damage) {
@@ -254,6 +257,7 @@ public class PbTeam {
 		playerHealth.put(player.getUniqueId(), TeamUtil.DMG_POINTS);
 		uncoloredArmorSlots.put(playerId, new ArrayList<>(Arrays.asList(0, 1, 2, 3)));
 	}
+	
 	private void equipPlayer(Player player) {
 		PlayerInventory inv = player.getInventory();
 		inv.clear();
