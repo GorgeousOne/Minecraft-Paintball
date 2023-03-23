@@ -26,7 +26,7 @@ public class LobbyJoinCommand extends ArgCommand {
 		this.addArg(new Argument("lobby name", ArgType.STRING));
 		this.addArg(new Argument("player", ArgType.STRING).setDefault("~"));
 		this.setPlayerRequired(false);
-
+	
 		this.lobbyHandler = lobbyHandler;
 	}
 	

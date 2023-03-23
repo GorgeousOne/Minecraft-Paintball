@@ -57,9 +57,11 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	
 	private void registerCommands() {
 		ParentCommand pbCmd = new ParentCommand("paintball");
+		pbCmd.setPlayerRequired(false);
 		pbCmd.addAlias("pb");
 
 		ParentCommand arenaCmd = new ParentCommand("arena");
+		arenaCmd.setPlayerRequired(false);
 		arenaCmd.addChild(new ArenaCreateCommand(arenaHandler, schemFolder));
 		arenaCmd.addChild(new ArenaDeleteCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaCopyCommand(arenaHandler));
@@ -68,6 +70,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		arenaCmd.addChild(new ArenaListSpawnsCommand(arenaHandler));
 
 		ParentCommand lobbyCmd = new ParentCommand("lobby");
+		lobbyCmd.setPlayerRequired(false);
 		lobbyCmd.addChild(new LobbyCreateCommand(lobbyHandler));
 		lobbyCmd.addChild(new LobbyDeleteCommand(lobbyHandler));
 		lobbyCmd.addChild(new LobbyLinkArenaCommand(lobbyHandler, arenaHandler));

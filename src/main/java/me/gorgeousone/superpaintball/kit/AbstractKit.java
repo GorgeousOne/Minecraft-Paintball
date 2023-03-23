@@ -48,10 +48,6 @@ public abstract class AbstractKit {
 		this.shootCooldowns = new HashMap<>();
 	}
 	
-	public KitType getType() {
-		return kitType;
-	}
-	
 	public void launchShot(Player player, PbTeam team, Collection<Player> coplayers) {
 		UUID playerId = player.getUniqueId();
 
@@ -90,9 +86,9 @@ public abstract class AbstractKit {
 	public Vector createVelocity(Vector facing, float speed, float spread) {
 		Vector velocity = facing.clone();
 		velocity.add(new Vector(
-				rnd.nextFloat() * spread,
-				rnd.nextFloat() * spread,
-				rnd.nextFloat() * spread));
+				(rnd.nextFloat() - .5) * spread,
+				(rnd.nextFloat() - .5) * spread,
+				(rnd.nextFloat() - .5) * spread));
 		return velocity.multiply(speed);
 	}
 

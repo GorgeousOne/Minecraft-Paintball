@@ -61,7 +61,7 @@ public class ArenaRemoveSpawnCommand extends ArgCommand {
 			sender.sendMessage(String.format("Spawn no. %d for does not exist! Team %s has spawn points 1 to %d in arena '%s'.", spawnIndex, teamType.displayName, spawns.size(), arenaName));
 			return;
 		}
-		Location spawnPos = spawns.remove(spawnIndex);
+		Location spawnPos = spawns.remove(spawnIndex - 1);
 		sender.sendMessage(String.format("Removed %d. spawn point of team %s in arena '%s' (was %s).", spawnIndex, teamType.displayName, arenaName, LocationUtil.humanBlockPos(spawnPos)));
 	}
 

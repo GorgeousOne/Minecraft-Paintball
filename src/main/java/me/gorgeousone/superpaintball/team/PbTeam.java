@@ -6,7 +6,6 @@ import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -128,7 +126,7 @@ public class PbTeam {
 	}
 
 	public void paintBlock(Block shotBlock) {
-		paintBlot(shotBlock, 5, 1);
+		TeamUtil.paintBlot(shotBlock, teamType, 5, 1);
 	}
 
 	public void damagePlayer(Player target, Player shooter, int bulletDmg) {
@@ -267,49 +265,5 @@ public class PbTeam {
 		inv.setArmorContents(teamArmorSet);
 	}
 
-	//TODO make this nicer block patterns :(
-	//TODO add water/snowball & lava particles to painted blocks
-	private void paintBlot(Block block, int blockCount, int range) {
-		World world = block.getWorld();
 
-		if (isTerracotta(block)) {
-			teamType.blockColor.updateBlock(block, false);
-			world.playSound(block.getLocation(), Sound.BLOCK_STONE_PLACE, .25f, .8f);
-		}
-		List<Block> neighbors = getNeighbors(block, range);
-
-		for (int i = 0; i < blockCount - 1; ++i) {
-			if (neighbors.isEmpty()) {
-				break;
-			}
-			int rndIdx = rng.nextInt(neighbors.size());
-			Block neighbor = neighbors.get(rndIdx);
-			teamType.blockColor.updateBlock(neighbor, false);
-			neighbors.remove(rndIdx);
-			world.playSound(block.getLocation(), Sound.BLOCK_STONE_PLACE, .05f, .8f);
-		}
-	}
-
-	private List<Block> getNeighbors(Block block, int range) {
-		List<Block> terracotta = new LinkedList<>();
-
-		for (int dz = -range; dz <= range; ++dz) {
-			for (int dy = -range; dy <= range; ++dy) {
-				for (int dx = -range; dx <= range; ++dx) {
-					Block neighbor = block.getRelative(dx, dy, dz);
-
-					if (isTerracotta(neighbor)) {
-						terracotta.add(neighbor);
-					}
-				}
-			}
-		}
-		terracotta.remove(block);
-		return terracotta;
-	}
-
-	private boolean isTerracotta(Block block) {
-		String matName = block.getType().name();
-		return matName.contains("STAINED_CLAY") || matName.contains("TERRACOTTA");
-	}
 }

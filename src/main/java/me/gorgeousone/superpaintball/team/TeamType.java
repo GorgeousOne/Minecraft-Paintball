@@ -5,16 +5,17 @@ import me.gorgeousone.superpaintball.util.version.VersionUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.entity.EnderPearl;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public enum TeamType {
 	
-	EMBER("Ember", EnderPearl.class, Color.RED, ChatColor.RED),
-	ICE("Ice", Snowball.class, Color.AQUA, ChatColor.AQUA);
+	EMBER("Ember", EnderPearl.class, Color.RED, ChatColor.RED, Particle.ITEM_CRACK, new ItemStack(Material.REDSTONE_BLOCK)),
+	ICE("Ice", Snowball.class, Color.AQUA, ChatColor.AQUA, Particle.SNOWBALL, null);
 	
 	public static final Color DEATH_COLOR = Color.PURPLE;
 
@@ -23,16 +24,21 @@ public enum TeamType {
 	public final Color armorColor;
 	public final ChatColor prefixColor;
 	public BlockType blockColor;
+	public final Particle blockParticle;
+	public final Object particleExtra;
 	private ItemStack joinItem;
 
 	TeamType(String displayName,
 	         Class<? extends Projectile> projectileType,
 	         Color garmentColor,
-	         ChatColor prefixColor) {
+	         ChatColor prefixColor,
+	         Particle blockParticle, Object particleExtra) {
+		this.particleExtra = particleExtra;
 		this.displayName = "" + prefixColor + ChatColor.BOLD + displayName + ChatColor.RESET;
 		this.projectileType = projectileType;
 		this.armorColor = garmentColor;
 		this.prefixColor = prefixColor;
+		this.blockParticle = blockParticle;
 	}
 
 	public ItemStack getJoinItem() {
