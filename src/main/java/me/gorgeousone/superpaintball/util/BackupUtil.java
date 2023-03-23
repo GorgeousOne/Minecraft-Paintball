@@ -18,7 +18,7 @@ public class BackupUtil {
 		backup.set("gamemode", player.getGameMode().name());
 		backup.set("health", player.getHealth());
 		backup.set("food", player.getFoodLevel());
-		backup.set("xp", player.getExp());
+		backup.set("xp", player.getLevel() + player.getExp());
 		backup.set("spawn", spawn);
 
 		ConfigurationSection itemSection = backup.createSection("items");
@@ -37,6 +37,7 @@ public class BackupUtil {
 		inv.clear();
 		player.setHealth(20);
 		player.setFoodLevel(20);
+		player.setLevel(0);
 		player.setExp(0);
 	}
 
@@ -50,7 +51,10 @@ public class BackupUtil {
 		player.setGameMode(GameMode.valueOf(backup.getString("gamemode")));
 		player.setHealth(backup.getDouble("health"));
 		player.setFoodLevel(backup.getInt("food"));
-		player.setExp(backup.getInt("xp"));
+		player.setLevel(backup.getInt("level"));
+		float xp = (float) backup.getDouble("xp");
+		player.setLevel((int) xp);
+		player.setExp(xp % 1);
 		player.teleport((Location) backup.get("spawn"));
 
 		ConfigurationSection itemSection = backup.getConfigurationSection("items");
