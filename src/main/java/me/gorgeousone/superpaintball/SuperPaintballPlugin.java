@@ -25,11 +25,13 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	private PbLobbyHandler lobbyHandler;
 	private PbKitHandler kitHandler;
 	private PbArenaHandler arenaHandler;
-	private String schemFolder;
 
 	@Override
 	public void onEnable() {
 		setupVersioning();
+		reloadConfigSettings();
+		PbKitHandler.setupKits(this);
+		
 		this.kitHandler = new PbKitHandler();
 		this.arenaHandler = new PbArenaHandler(this);
 		this.lobbyHandler = new PbLobbyHandler(this, kitHandler);
@@ -50,9 +52,6 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		KitType.setup();
 		TeamType.setup();
 		SoundUtil.setup();
-		
-		//IDK this is just creating kits? not actually version dependent
-		PbKitHandler.setupKits(this);
 	}
 	
 	private void registerCommands() {
@@ -62,7 +61,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 
 		ParentCommand arenaCmd = new ParentCommand("arena");
 		arenaCmd.setPlayerRequired(false);
-		arenaCmd.addChild(new ArenaCreateCommand(arenaHandler, schemFolder));
+		arenaCmd.addChild(new ArenaCreateCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaDeleteCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaCopyCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaAddSpawnCommand(arenaHandler));
@@ -101,13 +100,19 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		manager.registerEvents(new SkellyInteractListener(lobbyHandler), this);
 	}
 	
+	private void reloadConfigSettings() {
+		reloadConfig();
+		getConfig().options().copyDefaults(true);
+		saveConfig();
+		ConfigSettings.loadSettings(getConfig());
+	}
+	
 	private void loadBackup() {
 		this.saveDefaultConfig();
 		this.reloadConfig();
-		schemFolder = getConfig().getString("schematics-folder");
 
 		try {
-			arenaHandler.loadArenas(schemFolder);
+			arenaHandler.loadArenas(ConfigSettings.SCHEM_FOLDER);
 		} catch (IllegalArgumentException e) {
 			Bukkit.getLogger().log(Level.WARNING, e.getMessage());
 		}
@@ -116,10 +121,5 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		} catch (IllegalArgumentException e) {
 			Bukkit.getLogger().log(Level.WARNING, e.getMessage());
 		}
-	}
-
-	public void saveBackup() {
-		arenaHandler.saveArenas();
-		lobbyHandler.saveLobbies();
 	}
 }

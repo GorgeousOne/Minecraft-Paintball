@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball.game;
 
+import me.gorgeousone.superpaintball.ConfigSettings;
 import me.gorgeousone.superpaintball.util.BackupUtil;
 import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
@@ -25,10 +26,6 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class PbLobby {
-
-	private static final int MIN_PLAYERS = 2;
-	private static final int MAX_PLAYERS = 16;
-	private static final int COUNTDOWN_SECONDS = 10;
 
 	private final JavaPlugin plugin;
 	private final PbLobbyHandler lobbyHandler;
@@ -56,7 +53,7 @@ public class PbLobby {
 		this.game = new PbGame(plugin, kitHandler, this::returnToLobby);
 		
 		this.equipment = new LobbyEquipment(teamQueue::onQueueForTeam, this::onMapVote, this::onSelectKit, this::onQuit, kitHandler);
-		this.countdown = new PbCountdown(COUNTDOWN_SECONDS, this::onAnnounceTime, this::onCountdownEnd, plugin);
+		this.countdown = new PbCountdown(ConfigSettings.COUNTDOWN_SECS, this::onAnnounceTime, this::onCountdownEnd, plugin);
 	}
 	
 	public String getName() {
@@ -85,7 +82,7 @@ public class PbLobby {
 		if (game.hasPlayer(playerId)) {
 			throw new IllegalArgumentException(String.format("You already are in lobby '%s'.", name));
 		}
-		if (game.size() >= MAX_PLAYERS) {
+		if (game.size() >= ConfigSettings.MAX_PLAYERS) {
 			throw new IllegalStateException(String.format("Lobby '%s' is full!", name));
 		}
 		game.joinPlayer(playerId);
@@ -97,7 +94,7 @@ public class PbLobby {
 		player.teleport(spawnPos);
 		equipment.equip(player);
 		
-		if (game.size() == MIN_PLAYERS) {
+		if (game.size() == ConfigSettings.MIN_PLAYERS) {
 			countdown.start();
 		}
 	}
@@ -116,7 +113,7 @@ public class PbLobby {
 		BackupUtil.loadBackup(player, plugin);
 		player.sendMessage(String.format("You left lobby '%s'.", name));
 		
-		if (!game.isRunning() && game.size() < MIN_PLAYERS) {
+		if (!game.isRunning() && game.size() < ConfigSettings.MIN_PLAYERS) {
 			countdown.cancel();
 			game.allPlayers(p -> p.sendMessage("Not enough players to start the game."));
 		}
@@ -202,7 +199,7 @@ public class PbLobby {
 			p.teleport(spawnPos);
 			equipment.equip(p);
 		});
-		if (game.size() >= MIN_PLAYERS) {
+		if (game.size() >= ConfigSettings.MIN_PLAYERS) {
 			countdown.start();
 		}
 	}
