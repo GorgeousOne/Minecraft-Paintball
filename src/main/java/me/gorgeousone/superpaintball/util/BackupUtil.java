@@ -49,6 +49,10 @@ public class BackupUtil {
 		}
 		YamlConfiguration backup = YamlConfiguration.loadConfiguration(backupFile);
 		player.setGameMode(GameMode.valueOf(backup.getString("gamemode")));
+		
+		if (player.getGameMode() == GameMode.CREATIVE) {
+			player.setAllowFlight(true);
+		}
 		player.setHealth(backup.getDouble("health"));
 		player.setFoodLevel(backup.getInt("food"));
 		player.setLevel(backup.getInt("level"));

@@ -64,6 +64,11 @@ public class PbLobby {
 		return spawnPos;
 	}
 	
+	public void setSpawnPos(Location pos) {
+		this.spawnPos = LocationUtil.cleanSpawn(pos);
+		lobbyHandler.saveLobby(this);
+	}
+	
 	public Equipment getEquip() {
 		return game.isRunning() ? game.getEquip() : equipment;
 	}
@@ -160,6 +165,7 @@ public class PbLobby {
 			throw new IllegalArgumentException(String.format("Arena '%s' is not linked to this lobby!", arena.getName()));
 		}
 		arenas.remove(arena);
+		lobbyHandler.saveLobby(this);
 	}
 	
 	private void onAnnounceTime(int secondsLeft) {

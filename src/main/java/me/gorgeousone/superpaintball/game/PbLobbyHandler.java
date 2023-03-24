@@ -127,30 +127,12 @@ public class PbLobbyHandler {
 		saveLobby(lobby);
 	}
 	
-	public void unlinkArena(PbLobby lobby, PbArena arena) {
-		lobby.unlinkArena(arena);
-		saveLobby(lobby);
-	}
-	
 	public Location getExitSpawn() {
 		//TODO idk get config spawn pos
 		return lobbies.values().iterator().next().getSpawnPos().getWorld().getSpawnLocation();
 	}
 	
-	public void saveLobbies() {
-		Logger logger = Bukkit.getLogger();
-		logger.log(Level.INFO, "  Saving lobbies:");
-
-		if (!backupConfig.contains("lobbies")) {
-			backupConfig.createSection("lobbies");
-		}
-		ConfigurationSection lobbiesSection = backupConfig.getConfigurationSection("lobbies");
-		lobbies.values().forEach(l -> l.toYml(lobbiesSection));
-		ConfigUtil.saveConfig(backupConfig, "lobbies", plugin);
-		logger.log(Level.INFO, String.format("  Saved %d lobbies", lobbies.size()));
-	}
-	
-	private void saveLobby(PbLobby lobby) {
+	public void saveLobby(PbLobby lobby) {
 		if (!backupConfig.contains("lobbies")) {
 			backupConfig.createSection("lobbies");
 		}
