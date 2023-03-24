@@ -29,7 +29,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		setupVersioning();
-		reloadConfigSettings();
+		loadConfigSettings();
 		PbKitHandler.setupKits(this);
 		
 		this.kitHandler = new PbKitHandler();
@@ -45,7 +45,11 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	public void onDisable() {
 		lobbyHandler.closeLobbies();
 	}
-
+	
+	public void reload() {
+		loadConfigSettings();
+	}
+	
 	private void setupVersioning() {
 		VersionUtil.setup(this);
 		BlockType.setup(VersionUtil.IS_LEGACY_SERVER);
@@ -81,6 +85,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		pbCmd.addChild(new LobbyJoinCommand(lobbyHandler));
 		pbCmd.addChild(new LobbyStartCommand(lobbyHandler));
 		pbCmd.addChild(new LobbyLeaveCommand(lobbyHandler));
+		pbCmd.addChild(new ReloadCommand(this));
 
 		pbCmd.addChild(new DebugKillCommand(lobbyHandler));
 		pbCmd.addChild(new DebugReviveCommand(lobbyHandler));
@@ -100,7 +105,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		manager.registerEvents(new SkellyInteractListener(lobbyHandler), this);
 	}
 	
-	private void reloadConfigSettings() {
+	private void loadConfigSettings() {
 		reloadConfig();
 		getConfig().options().copyDefaults(true);
 		saveConfig();

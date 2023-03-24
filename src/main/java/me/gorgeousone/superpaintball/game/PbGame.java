@@ -105,13 +105,13 @@ public class PbGame {
 		return teams.values();
 	}
 	
-	public void start(PbArena arenaToPlay, TeamQueue teamQueue) {
+	public void start(PbArena arenaToPlay, TeamQueue teamQueue, int maxHealthPoints) {
 		if (state != GameState.IDLING) {
 			throw new IllegalStateException("The game is already running.");
 		}
 		teamQueue.assignTeams(players, teams);
 		
-		teams.values().forEach(t -> t.startGame(arenaToPlay.getSpawns(t.getType())));
+		teams.values().forEach(t -> t.startGame(arenaToPlay.getSpawns(t.getType()), maxHealthPoints));
 		state = GameState.COUNTING_DOWN;
 		createScoreboard();
 		startCountdown();

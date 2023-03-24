@@ -191,7 +191,8 @@ public class PbLobby {
 		PbArena arenaToPlay = mapVoting.pickArena(arenas);
 		arenaToPlay.assertIsPlayable();
 		arenaToPlay.reset();
-		game.start(arenaToPlay, teamQueue);
+		game.allPlayers(p -> p.sendMessage("" + ConfigSettings.PLAYER_HEALTH_POINTS));
+		game.start(arenaToPlay, teamQueue, ConfigSettings.PLAYER_HEALTH_POINTS);
 	}
 	
 	public void returnToLobby() {
