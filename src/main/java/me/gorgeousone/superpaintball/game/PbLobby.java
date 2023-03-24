@@ -8,6 +8,7 @@ import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.team.PbTeam;
 import me.gorgeousone.superpaintball.util.ConfigUtil;
 import me.gorgeousone.superpaintball.util.LocationUtil;
+import me.gorgeousone.superpaintball.util.SoundUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -165,7 +166,10 @@ public class PbLobby {
 	}
 	
 	private void onAnnounceTime(int secondsLeft) {
-		game.allPlayers(p -> p.sendMessage(String.format("Game starts in %d seconds.", secondsLeft)));
+		game.allPlayers(p -> {
+			p.sendMessage(String.format("Game starts in %d seconds.", secondsLeft));
+			p.playSound(p.getLocation(), SoundUtil.COUNTDOWN_SOUND, .5f, 1f);
+		});
 	}
 	
 	private void onCountdownEnd() {

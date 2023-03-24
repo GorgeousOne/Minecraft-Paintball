@@ -9,7 +9,7 @@ import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.team.PbTeam;
 import me.gorgeousone.superpaintball.team.TeamType;
-import me.gorgeousone.superpaintball.util.LocationUtil;
+import me.gorgeousone.superpaintball.util.SoundUtil;
 import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -149,13 +149,13 @@ public class PbGame {
 				time -= 1;
 				
 				if (time <= 0) {
-					allPlayers(p -> p.playSound(p.getLocation(), LocationUtil.GAME_START_SOUND, 1.5f, 2f));
+					allPlayers(p -> p.playSound(p.getLocation(), SoundUtil.GAME_START_SOUND, 1.5f, 2f));
 					state = GameState.RUNNING;
 					this.cancel();
 					return;
 				}
 				if (time % 10 == 0) {
-					allPlayers(p -> p.playSound(p.getLocation(), LocationUtil.RELOAD_SOUND, .5f, 1f));
+					allPlayers(p -> p.playSound(p.getLocation(), SoundUtil.RELOAD_SOUND, .5f, 1f));
 				}
 			}
 		};
@@ -203,6 +203,7 @@ public class PbGame {
 				leftTeam = team.getType();
 			}
 		}
+		allPlayers(p -> p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, .5f, 1f));
 		announceWinners(leftTeam);
 		scheduleRestart();
 	}
