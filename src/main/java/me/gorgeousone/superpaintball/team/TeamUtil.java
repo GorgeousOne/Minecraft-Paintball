@@ -26,10 +26,8 @@ public class TeamUtil {
 	
 	public static final ItemStack[] DEATH_ARMOR_SET = createColoredArmoSet(TeamType.DEATH_COLOR);
 	public static final PotionEffect KNOCKOUT_BLINDNESS = new PotionEffect(PotionEffectType.BLINDNESS, 30, 4);
-	public static final int HEARTS_PER_DMG_POINT = 5;
-	public static final int DMG_POINTS = 4;
 	
-	private static Random rng = new Random();
+	private static final Random rng = new Random();
 	
 	public static ItemStack[] createColoredArmoSet(Color color) {
 		ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
@@ -53,10 +51,6 @@ public class TeamUtil {
 				ChatColor.BOLD + ChatColor.MAGIC + "XX" + ChatColor.RESET +
 				ChatColor.BOLD + teamType.prefixColor + player.getName() + ChatColor.RESET +
 				ChatColor.BOLD + ChatColor.MAGIC + "XX";
-		
-//		deathLoc.setX((int) deathLoc.getX() + .5);
-//		deathLoc.setY((int) deathLoc.getY() + .5);
-//		deathLoc.setZ((int) deathLoc.getZ() + .5);
 		
 		ArmorStand stand = (ArmorStand) player.getWorld().spawnEntity(deathLoc, EntityType.ARMOR_STAND);
 		stand.getEquipment().setArmorContents(deathArmorSet);

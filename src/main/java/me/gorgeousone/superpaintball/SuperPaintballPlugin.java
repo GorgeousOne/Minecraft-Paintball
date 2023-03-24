@@ -25,11 +25,13 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	private PbLobbyHandler lobbyHandler;
 	private PbKitHandler kitHandler;
 	private PbArenaHandler arenaHandler;
-	private String schemFolder;
 
 	@Override
 	public void onEnable() {
 		setupVersioning();
+		loadConfigSettings();
+		PbKitHandler.setupKits(this);
+		
 		this.kitHandler = new PbKitHandler();
 		this.arenaHandler = new PbArenaHandler(this);
 		this.lobbyHandler = new PbLobbyHandler(this, kitHandler);
@@ -43,16 +45,17 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 	public void onDisable() {
 		lobbyHandler.closeLobbies();
 	}
-
+	
+	public void reload() {
+		loadConfigSettings();
+	}
+	
 	private void setupVersioning() {
 		VersionUtil.setup(this);
 		BlockType.setup(VersionUtil.IS_LEGACY_SERVER);
 		KitType.setup();
 		TeamType.setup();
 		SoundUtil.setup();
-		
-		//IDK this is just creating kits? not actually version dependent
-		PbKitHandler.setupKits(this);
 	}
 	
 	private void registerCommands() {
@@ -62,7 +65,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 
 		ParentCommand arenaCmd = new ParentCommand("arena");
 		arenaCmd.setPlayerRequired(false);
-		arenaCmd.addChild(new ArenaCreateCommand(arenaHandler, schemFolder));
+		arenaCmd.addChild(new ArenaCreateCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaDeleteCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaCopyCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaAddSpawnCommand(arenaHandler));
@@ -82,6 +85,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		pbCmd.addChild(new LobbyJoinCommand(lobbyHandler));
 		pbCmd.addChild(new LobbyStartCommand(lobbyHandler));
 		pbCmd.addChild(new LobbyLeaveCommand(lobbyHandler));
+		pbCmd.addChild(new ReloadCommand(this));
 
 		pbCmd.addChild(new DebugKillCommand(lobbyHandler));
 		pbCmd.addChild(new DebugReviveCommand(lobbyHandler));
@@ -101,13 +105,19 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		manager.registerEvents(new SkellyInteractListener(lobbyHandler), this);
 	}
 	
+	private void loadConfigSettings() {
+		reloadConfig();
+		getConfig().options().copyDefaults(true);
+		saveConfig();
+		ConfigSettings.loadSettings(getConfig());
+	}
+	
 	private void loadBackup() {
 		this.saveDefaultConfig();
 		this.reloadConfig();
-		schemFolder = getConfig().getString("schematics-folder");
 
 		try {
-			arenaHandler.loadArenas(schemFolder);
+			arenaHandler.loadArenas(ConfigSettings.SCHEM_FOLDER);
 		} catch (IllegalArgumentException e) {
 			Bukkit.getLogger().log(Level.WARNING, e.getMessage());
 		}
@@ -116,10 +126,5 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		} catch (IllegalArgumentException e) {
 			Bukkit.getLogger().log(Level.WARNING, e.getMessage());
 		}
-	}
-
-	public void saveBackup() {
-		arenaHandler.saveArenas();
-		lobbyHandler.saveLobbies();
 	}
 }

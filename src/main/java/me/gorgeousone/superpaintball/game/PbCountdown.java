@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 public class PbCountdown {
 	
-	private static final Set<Integer> ANNOUNCEMENTS = Set.of(60, 30, 20, 10, 3, 2, 1);
+	private static final Set<Integer> ANNOUNCEMENTS = Set.of(300, 240, 180, 120, 60, 30, 20, 10, 3, 2, 1);
 	private final JavaPlugin plugin;
 	private final int maxSeconds;
 	private int secondsLeft;
