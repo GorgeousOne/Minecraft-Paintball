@@ -20,7 +20,7 @@ import java.util.UUID;
 public class PbKitHandler {
 
 	public static final String KIT_SELECT_UI_TITLE = "Select a kit";
-	private static final int KITS_START_SLOT = 11;
+	private static final int KITS_START_SLOT = 12;
 	private static Map<KitType, AbstractKit> KITS;
 	private static ItemStack WATER_BOMBS;
 
@@ -35,7 +35,7 @@ public class PbKitHandler {
 		KITS.put(KitType.RIFLE, new RifleKit());
 		KITS.put(KitType.SHOTGUN, new ShotgunKit(plugin));
 		KITS.put(KitType.MACHINE_GUN, new MachineGunKit(plugin));
-		KITS.put(KitType.SNIPER, new SniperKit());
+//		KITS.put(KitType.SNIPER, new SniperKit());
 		WATER_BOMBS = createWaterBombs();
 	}
 	

@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class MachineGunKit extends AbstractKit {
+public class  MachineGunKit extends AbstractKit {
 
 	private final Map<UUID, Integer> magazines;
 	private final Map<UUID, Long> lastShots;
@@ -22,7 +22,7 @@ public class MachineGunKit extends AbstractKit {
 	private static final int RELOAD_RATE = 2;
 
 	public MachineGunKit(JavaPlugin plugin) {
-		super(KitType.MACHINE_GUN, 1, 1, 1.75f, .075f, 0, Sound.ENTITY_CHICKEN_EGG, 1.75f, 1f);
+		super(KitType.MACHINE_GUN, 1, 1, 1.75f, .075f, 0, Sound.ENTITY_CHICKEN_EGG, 2f, 1.75f);
 		this.magazines = new HashMap<>();
 		this.lastShots = new HashMap<>();
 		startReloadAnimator(plugin);

@@ -62,7 +62,7 @@ public class TeamUtil {
 		stand.setBasePlate(false);
 		
 		try {
-			stand.getEquipment().setItem(EquipmentSlot.HAND, kitType.getGun());
+			stand.setItemInHand(kitType.getGun());
 		} catch (NoSuchMethodError e) {
 			stand.setItemInHand(kitType.getGun());
 		}
