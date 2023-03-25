@@ -4,6 +4,7 @@ import me.gorgeousone.superpaintball.equipment.SlotClickEvent;
 import me.gorgeousone.superpaintball.team.PbTeam;
 import me.gorgeousone.superpaintball.team.TeamType;
 import me.gorgeousone.superpaintball.util.ItemUtil;
+import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -33,9 +34,9 @@ public class TeamQueue {
 		TeamType queuedTeam = teamQueues.getOrDefault(playerId, null);
 		
 		if (newTeam == queuedTeam) { //I hope it's not possible to queue for team null :D
-			player.sendMessage(String.format("You un-queued from team %s.", newTeam.displayName));
+			StringUtil.msg(player, "You un-queued from team %s.", newTeam.displayName);
 		} else {
-			player.sendMessage(String.format("You queued for team %s.", newTeam.displayName));
+			StringUtil.msg(player, "You queued for team %s.", newTeam.displayName);
 			
 		}
 		changeQueuedTeam(player, queuedTeam, newTeam);

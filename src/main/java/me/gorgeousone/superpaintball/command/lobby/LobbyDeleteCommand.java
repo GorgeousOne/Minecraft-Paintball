@@ -6,6 +6,7 @@ import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
+import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.command.CommandSender;
 
 import java.util.LinkedList;
@@ -30,7 +31,7 @@ public class LobbyDeleteCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
 
 		if (lobby == null) {
-			sender.sendMessage(String.format("Lobby '%s' does not exits!", lobbyName));
+			StringUtil.msg(sender, "Lobby '%s' does not exits!", lobbyName);
 			return;
 		}
 		lobbyHandler.deleteLobby(lobby);

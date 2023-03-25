@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball.team;
 
+import me.gorgeousone.superpaintball.util.StringUtil;
 import me.gorgeousone.superpaintball.util.blocktype.BlockType;
 import me.gorgeousone.superpaintball.util.version.VersionUtil;
 import org.bukkit.ChatColor;
@@ -7,7 +8,6 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.entity.EnderPearl;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.inventory.ItemStack;
@@ -34,7 +34,7 @@ public enum TeamType {
 	         ChatColor prefixColor,
 	         Particle blockParticle, Object particleExtra) {
 		this.particleExtra = particleExtra;
-		this.displayName = "" + prefixColor + ChatColor.BOLD + displayName + ChatColor.RESET;
+		this.displayName = "" + prefixColor + ChatColor.BOLD + displayName + StringUtil.MSG_COLOR;
 		this.projectileType = projectileType;
 		this.armorColor = garmentColor;
 		this.prefixColor = prefixColor;

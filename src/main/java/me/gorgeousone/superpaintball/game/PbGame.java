@@ -69,7 +69,7 @@ public class PbGame {
 	public void joinPlayer(UUID playerId) {
 		players.add(playerId);
 		String playerName = Bukkit.getPlayer(playerId).getDisplayName();
-		allPlayers(p -> p.sendMessage(playerName + " joined"));
+		allPlayers(p -> StringUtil.msg(p, playerName + " joined."));
 	}
 	
 	public void removePlayer(UUID playerId) {
@@ -203,8 +203,8 @@ public class PbGame {
 	public void broadcastKill(Player target, Player shooter) {
 		TeamType targetTeam = getTeam(target.getUniqueId()).getType();
 		TeamType shooterTeam = getTeam(shooter.getUniqueId()).getType();
-		String message = targetTeam.prefixColor + target.getDisplayName() + ChatColor.RESET + " was painted by " + shooterTeam.prefixColor + shooter.getDisplayName();
-		allPlayers(p -> p.sendMessage(message));
+		String message = targetTeam.prefixColor + target.getDisplayName() + StringUtil.MSG_COLOR + " was painted by " + shooterTeam.prefixColor + shooter.getDisplayName() + ".";
+		allPlayers(p -> StringUtil.msgPlain(p, message));
 	}
 	
 	public void onTeamKill(PbTeam killedTeam) {
@@ -230,7 +230,7 @@ public class PbGame {
 		state = GameState.OVER;
 		
 		if (winningTeam != null) {
-			allPlayers(p -> p.sendTitle(String.format("Team %s wins!", winningTeam.displayName), ""));
+			allPlayers(p -> p.sendTitle(String.format("Team %s wins!", winningTeam.displayName + ChatColor.WHITE), ""));
 		} else {
 			allPlayers(p -> p.sendTitle("It's a draw?", ""));
 		}

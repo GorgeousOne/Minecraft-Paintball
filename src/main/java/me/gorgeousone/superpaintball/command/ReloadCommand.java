@@ -3,6 +3,7 @@ package me.gorgeousone.superpaintball.command;
 import me.gorgeousone.superpaintball.SuperPaintballPlugin;
 import me.gorgeousone.superpaintball.cmdframework.command.BaseCommand;
 import me.gorgeousone.superpaintball.team.PbTeam;
+import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -22,6 +23,6 @@ public class ReloadCommand extends BaseCommand {
 	@Override
 	protected void onCommand(CommandSender sender, String[] args) {
 		plugin.reload();
-		sender.sendMessage("Reloaded config values.");
+		StringUtil.msg(sender, "Reloaded config values.");
 	}
 }

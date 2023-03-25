@@ -8,6 +8,7 @@ import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.superpaintball.team.TeamType;
 import me.gorgeousone.superpaintball.util.LocationUtil;
+import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 
@@ -33,17 +34,17 @@ public class ArenaListSpawnsCommand extends ArgCommand {
 		PbArena arena = arenaHandler.getArena(arenaName);
 		
 		if (arena == null) {
-			sender.sendMessage(String.format("Arena '%s' does not exits!", arenaName));
+			StringUtil.msg(sender, "Arena '%s' does not exits!", arenaName);
 			return;
 		}
-		sender.sendMessage(String.format("Spawn points of arena '%s':", arenaName));
+		StringUtil.msg(sender, "Spawn points of arena '%s':", arenaName);
 
 		for (TeamType teamType : TeamType.values()) {
-			sender.sendMessage(teamType.displayName + ":");
+			StringUtil.msgPlain(sender, teamType.displayName + ":");
 			int i = 1;
 			
 			for (Location location : arena.getSpawns(teamType)) {
-				sender.sendMessage(i + "  " + LocationUtil.humanBlockPos(location));
+				StringUtil.msgPlain(sender, i + "  " + LocationUtil.humanBlockPos(location));
 				++i;
 			}
 		}

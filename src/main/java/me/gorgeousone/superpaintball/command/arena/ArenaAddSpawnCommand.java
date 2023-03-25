@@ -8,6 +8,7 @@ import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.superpaintball.util.LocationUtil;
 import me.gorgeousone.superpaintball.team.TeamType;
+import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,7 +37,7 @@ public class ArenaAddSpawnCommand extends ArgCommand {
 		String arenaName = argValues.get(0).get();
 
 		if (!arenaHandler.containsArena(arenaName)) {
-			sender.sendMessage(String.format("Arena '%s' does not exist!", arenaName));
+			StringUtil.msg(sender, "Arena '%s' does not exist!", arenaName);
 			return;
 		}
 		TeamType teamType;
@@ -45,13 +46,13 @@ public class ArenaAddSpawnCommand extends ArgCommand {
 		try {
 			teamType = TeamType.valueOf(teamName.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			sender.sendMessage(String.format("Team '%s' does not exist!", teamName));
+			StringUtil.msg(sender, "Team '%s' does not exist!", teamName);
 			return;
 		}
 		PbArena arena = arenaHandler.getArena(arenaName);
 		Location spawnPos = player.getLocation();
 		arena.addSpawn(teamType, spawnPos);
-		sender.sendMessage(String.format("Added spawn %s in arena '%s' for team %s.", LocationUtil.humanBlockPos(spawnPos), arenaName, teamType.displayName));
+		StringUtil.msg(sender, "Added spawn %s in arena '%s' for team %s.", LocationUtil.humanBlockPos(spawnPos), arenaName, teamType.displayName);
 	}
 
 	@Override

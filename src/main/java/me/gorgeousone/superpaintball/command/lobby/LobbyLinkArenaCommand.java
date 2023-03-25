@@ -8,6 +8,7 @@ import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
+import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.command.CommandSender;
 
 import java.util.LinkedList;
@@ -35,7 +36,7 @@ public class LobbyLinkArenaCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
 
 		if (lobby == null) {
-			sender.sendMessage(String.format("Lobby '%s' does not exits!", lobbyName));
+			StringUtil.msg(sender, "Lobby '%s' does not exits!", lobbyName);
 			return;
 		}
 		for (int i = 1; i < argValues.size(); ++i) {
@@ -43,14 +44,14 @@ public class LobbyLinkArenaCommand extends ArgCommand {
 			PbArena arena = arenaHandler.getArena(arenaName);
 
 			if (arena == null) {
-				sender.sendMessage(String.format("Arena '%s' does not exits!", arenaName));
+				StringUtil.msg(sender, "Arena '%s' does not exits!", arenaName);
 				continue;
 			}
 			try {
 				lobbyHandler.linkArena(lobby, arena);
-				sender.sendMessage(String.format("Arena '%s' is now playable in lobby '%s'.", arenaName, lobbyName));
+				StringUtil.msg(sender, "Arena '%s' is now playable in lobby '%s'.", arenaName, lobbyName);
 			} catch (IllegalArgumentException e) {
-				sender.sendMessage(e.getMessage());
+				StringUtil.msg(sender, e.getMessage());
 			}
 		}
 	}

@@ -9,6 +9,7 @@ import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.superpaintball.util.ConfigUtil;
+import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -34,7 +35,7 @@ public class ArenaCreateCommand extends ArgCommand {
 		String arenaName = argValues.get(0).get();
 		
 		if (arenaHandler.containsArena(arenaName)) {
-			sender.sendMessage("Arena '%s' already exists!");
+			StringUtil.msg(sender, "Arena '%s' already exists!");
 			return;
 		}
 		String schemFileName = argValues.get(1).get() + ".schem";
@@ -43,15 +44,14 @@ public class ArenaCreateCommand extends ArgCommand {
 		try {
 			schemFile = ConfigUtil.schemFileFromYml(schemFileName, ConfigSettings.SCHEM_FOLDER);
 		}catch (IllegalArgumentException e) {
-			sender.sendMessage(e.getMessage());
+			StringUtil.msg(sender, e.getMessage());
 			return;
 		}
 		try {
 			PbArena arena = arenaHandler.createArena(arenaName, schemFile, player.getLocation());
-			sender.sendMessage(String.format("Created new arena '%s' at %s", arenaName, LocationUtil.humanBlockPos(arena.getSchemPos())));
+			StringUtil.msg(sender, "Created new arena '%s' at %s", arenaName, LocationUtil.humanBlockPos(arena.getSchemPos()));
 		}catch (IllegalArgumentException e) {
-			sender.sendMessage(e.getMessage());
-			return;
+			StringUtil.msg(sender, e.getMessage());
 		}
 	}
 }

@@ -7,6 +7,7 @@ import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.util.LocationUtil;
+import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -32,12 +33,12 @@ public class LobbySetSpawnCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
 		
 		if (lobby == null) {
-			sender.sendMessage(String.format("Lobby '%s' does not exits!", lobbyName));
+			StringUtil.msg(sender, "Lobby '%s' does not exits!", lobbyName);
 			return;
 		}
 		Player player = (Player) sender;
 		lobby.setJoinSpawn(player.getLocation());
-		sender.sendMessage(String.format("Set lobby '%s' spawn point to %s", lobby.getName(), LocationUtil.humanBlockPos(lobby.getJoinSpawn())));
+		StringUtil.msg(sender, "Set lobby '%s' spawn point to %s", lobby.getName(), LocationUtil.humanBlockPos(lobby.getJoinSpawn()));
 	}
 
 	@Override

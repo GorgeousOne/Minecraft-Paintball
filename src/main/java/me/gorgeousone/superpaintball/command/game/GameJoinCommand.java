@@ -6,6 +6,7 @@ import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
+import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -34,7 +35,7 @@ public class GameJoinCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
 
 		if (lobby == null) {
-			sender.sendMessage(String.format("Lobby '%s' does not exits!", lobbyName));
+			StringUtil.msg(sender, "Lobby '%s' does not exits!", lobbyName);
 			return;
 		}
 		String playerName = argValues.get(1).get();
@@ -46,14 +47,14 @@ public class GameJoinCommand extends ArgCommand {
 			player = Bukkit.getPlayer(playerName);
 
 			if (player == null) {
-				sender.sendMessage(String.format("Player %s is not online!", playerName));
+				StringUtil.msg(sender, "Player %s is not online!", playerName);
 				return;
 			}
 		}
 		try {
 			lobby.joinPlayer(player);
 		} catch (IllegalArgumentException e) {
-			player.sendMessage(e.getMessage());
+			StringUtil.msg(sender, e.getMessage());
 		}
 	}
 

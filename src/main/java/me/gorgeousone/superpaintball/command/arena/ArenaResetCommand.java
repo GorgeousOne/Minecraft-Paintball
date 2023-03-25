@@ -6,6 +6,7 @@ import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.superpaintball.arena.PbArena;
+import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.command.CommandSender;
 
 import java.util.LinkedList;
@@ -30,12 +31,12 @@ public class ArenaResetCommand extends ArgCommand {
 		String arenaName = argValues.get(0).get();
 
 		if (!arenaHandler.containsArena(arenaName)) {
-			sender.sendMessage(String.format("Arena '%s' does not exist!", arenaName));
+			StringUtil.msg(sender, "Arena '%s' does not exist!", arenaName);
 			return;
 		}
 		PbArena arena = arenaHandler.getArena(arenaName);
 		arena.reset();
-		sender.sendMessage(String.format("Reset arena '%s' for a new game.", arenaName));
+		StringUtil.msg(sender, "Reset arena '%s' for a new game.", arenaName);
 	}
 
 	@Override

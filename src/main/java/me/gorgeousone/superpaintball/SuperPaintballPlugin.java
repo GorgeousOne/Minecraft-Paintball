@@ -74,6 +74,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		arenaCmd.addChild(new ArenaAddSpawnCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaRemoveSpawnCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaListSpawnsCommand(arenaHandler));
+		arenaCmd.addChild(new ArenaResetCommand(arenaHandler));
 
 		ParentCommand lobbyCmd = new ParentCommand("lobby");
 		lobbyCmd.setPermission("paintball.configure");

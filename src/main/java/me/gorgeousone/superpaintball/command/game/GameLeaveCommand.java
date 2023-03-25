@@ -4,6 +4,7 @@ import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
+import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -27,7 +28,7 @@ public class GameLeaveCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(playerId);
 
 		if (lobby == null) {
-			sender.sendMessage("You are not in a paintball game.");
+			StringUtil.msg(sender, "You are not in a paintball game.");
 			return;
 		}
 		lobby.removePlayer(player);

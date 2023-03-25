@@ -6,6 +6,7 @@ import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
+import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -36,21 +37,21 @@ public class GameStartCommand extends ArgCommand {
 			lobby = lobbyHandler.getLobby(player.getUniqueId());
 
 			if (lobby == null) {
-				sender.sendMessage("You are not in a lobby right now. Join a lobby or specify which lobby to start.");
+				StringUtil.msg(sender, "You are not in a lobby right now. Join a lobby or specify which lobby to start.");
 				return;
 			}
 		} else {
 			lobby = lobbyHandler.getLobby(lobbyName);
 
 			if (lobby == null) {
-				sender.sendMessage(String.format("Lobby '%s' does not exits!", lobbyName));
+				StringUtil.msg(sender, "Lobby '%s' does not exits!", lobbyName);
 				return;
 			}
 		}
 		try {
 			lobby.startGame();
 		} catch (IllegalStateException e) {
-			sender.sendMessage(e.getMessage());
+			StringUtil.msg(sender, e.getMessage());
 		}
 	}
 

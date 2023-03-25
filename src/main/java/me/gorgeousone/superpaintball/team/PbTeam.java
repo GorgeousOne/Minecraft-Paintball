@@ -3,6 +3,7 @@ package me.gorgeousone.superpaintball.team;
 import me.gorgeousone.superpaintball.game.PbGame;
 import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
+import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -92,7 +93,7 @@ public class PbTeam {
 	public void addPlayer(Player player) {
 		UUID playerId = player.getUniqueId();
 		players.add(playerId);
-		player.sendMessage(String.format("You are now team %s.", teamType.displayName));
+		StringUtil.msg(player, "You are now team %s.", teamType.displayName);
 	}
 
 	public void removePlayer(UUID playerId) {

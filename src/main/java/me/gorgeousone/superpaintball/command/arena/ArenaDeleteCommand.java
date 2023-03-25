@@ -6,6 +6,7 @@ import me.gorgeousone.superpaintball.cmdframework.argument.ArgType;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
+import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.command.CommandSender;
 
 import java.util.LinkedList;
@@ -30,9 +31,9 @@ public class ArenaDeleteCommand extends ArgCommand {
 
 		try {
 			arenaHandler.removeArena(arenaName);
-			sender.sendMessage(String.format("Removed new arena '%s'.", arenaName));
+			StringUtil.msg(sender, "Removed new arena '%s'.", arenaName);
 		} catch (IllegalArgumentException e) {
-			sender.sendMessage(e.getMessage());
+			StringUtil.msg(sender, e.getMessage());
 		}
 	}
 

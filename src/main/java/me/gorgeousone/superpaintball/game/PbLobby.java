@@ -10,6 +10,7 @@ import me.gorgeousone.superpaintball.team.PbTeam;
 import me.gorgeousone.superpaintball.util.ConfigUtil;
 import me.gorgeousone.superpaintball.util.LocationUtil;
 import me.gorgeousone.superpaintball.util.SoundUtil;
+import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -103,7 +104,7 @@ public class PbLobby {
 		game.joinPlayer(playerId);
 		BackupUtil.saveBackup(player, getExitSpawn(), plugin);
 		player.setGameMode(GameMode.ADVENTURE);
-		player.sendMessage(String.format("Joined lobby '%s'.", name));
+		StringUtil.msg(player, "Joined lobby '%s'.", name);
 		
 		//TODO if game running, join as spectator?
 		player.teleport(joinSpawn);
@@ -126,11 +127,11 @@ public class PbLobby {
 		}
 		game.removePlayer(playerId);
 		BackupUtil.loadBackup(player, plugin);
-		player.sendMessage(String.format("You left lobby '%s'.", name));
+		StringUtil.msg(player, "You left lobby '%s'.", name);
 		
 		if (!game.isRunning() && game.size() < ConfigSettings.MIN_PLAYERS) {
 			countdown.cancel();
-			game.allPlayers(p -> p.sendMessage("Not enough players to start the game."));
+			game.allPlayers(p -> StringUtil.msg(player, "Not enough players to start the game."));
 		}
 	}
 	
@@ -180,7 +181,7 @@ public class PbLobby {
 	
 	private void onAnnounceTime(int secondsLeft) {
 		game.allPlayers(p -> {
-			p.sendMessage(String.format("Game starts in %d seconds.", secondsLeft));
+			StringUtil.msgPlain(p, "Game starts in %d seconds.", secondsLeft);
 			p.playSound(p.getLocation(), SoundUtil.COUNTDOWN_SOUND, .5f, 1f);
 		});
 	}
@@ -189,7 +190,7 @@ public class PbLobby {
 		try {
 			startGame();
 		} catch (IllegalArgumentException | IllegalStateException e) {
-			game.allPlayers(p -> p.sendMessage(e.getMessage()));
+			game.allPlayers(p -> StringUtil.msg(p, e.getMessage()));
 		}
 	}
 	
@@ -223,7 +224,7 @@ public class PbLobby {
 	public void reset() {
 		game.allPlayers(p -> {
 			BackupUtil.loadBackup(p, plugin);
-			p.sendMessage(String.format("Lobby '%s' closed.", name));
+			StringUtil.msg(p, "Lobby '%s' closed.", name);
 		});
 		game.reset();
 	}
