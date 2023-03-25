@@ -24,12 +24,12 @@ import java.util.Random;
 
 public class TeamUtil {
 	
-	public static final ItemStack[] DEATH_ARMOR_SET = createColoredArmoSet(TeamType.DEATH_COLOR);
+	public static final ItemStack[] DEATH_ARMOR_SET = createColoredArmoSet(TeamType.DEATH_COLOR, "");
 	public static final PotionEffect KNOCKOUT_BLINDNESS = new PotionEffect(PotionEffectType.BLINDNESS, 30, 4);
 	
 	private static final Random rng = new Random();
 	
-	public static ItemStack[] createColoredArmoSet(Color color) {
+	public static ItemStack[] createColoredArmoSet(Color color, String name) {
 		ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
 		ItemStack chest = new ItemStack(Material.LEATHER_CHESTPLATE);
 		ItemStack legs = new ItemStack(Material.LEATHER_LEGGINGS);
@@ -37,6 +37,7 @@ public class TeamUtil {
 		
 		LeatherArmorMeta meta = (LeatherArmorMeta) helmet.getItemMeta();
 		meta.setColor(color);
+		meta.setDisplayName(name);
 		
 		helmet.setItemMeta(meta);
 		chest.setItemMeta(meta);

@@ -4,6 +4,7 @@ import me.gorgeousone.superpaintball.game.PbGame;
 import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -47,7 +48,7 @@ public class PbTeam {
 		this.playerHealth = new HashMap<>();
 		this.uncoloredArmorSlots = new HashMap<>();
 		this.reviveSkellies = new HashMap<>();
-		this.teamArmorSet = TeamUtil.createColoredArmoSet(teamType.armorColor);
+		this.teamArmorSet = TeamUtil.createColoredArmoSet(teamType.armorColor, ChatColor.WHITE + "Team " + teamType.displayName);
 	}
 	
 	public void startGame(List<Location> spawns, int maxHealthPoints) {
@@ -266,6 +267,7 @@ public class PbTeam {
 		KitType kitType = kitHandler.getKitType(player.getUniqueId());
 		inv.setItem(0, kitType.getGun());
 		inv.setItem(1, PbKitHandler.getWaterBombs());
+		inv.setItem(8, teamArmorSet[2]);
 		inv.setArmorContents(teamArmorSet);
 	}
 

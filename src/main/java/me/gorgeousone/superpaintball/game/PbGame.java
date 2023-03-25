@@ -141,11 +141,18 @@ public class PbGame {
 	
 	private void startCountdown() {
 		allPlayers(p -> p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, .5f, 1f));
+		allPlayers(p -> p.sendMessage("quick start"));
 		BukkitRunnable countdown = new BukkitRunnable() {
-			int time = 2 * 10;
+			int time = 8 * 10;
 			
 			@Override
 			public void run() {
+				if (time == 70) {
+					allPlayers(p -> p.sendTitle("Shoot enemies", "to paint them"));
+				}
+				if (time == 40) {
+					allPlayers(p -> p.sendTitle("Throw water bombs", "to heal team mates"));
+				}
 				time -= 1;
 				
 				if (time <= 0) {

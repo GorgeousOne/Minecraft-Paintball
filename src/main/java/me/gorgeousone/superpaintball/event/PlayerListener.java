@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -69,6 +70,15 @@ public class PlayerListener implements Listener {
 		
 		if (lobbyHandler.isPlaying(player.getUniqueId())) {
 			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerExpGain(PlayerExpChangeEvent event) {
+		Player player = event.getPlayer();
+
+		if (lobbyHandler.isPlaying(player.getUniqueId())) {
+			event.setAmount(0);
 		}
 	}
 
