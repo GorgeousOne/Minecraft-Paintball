@@ -31,7 +31,8 @@ public class PbLobby {
 	private final PbLobbyHandler lobbyHandler;
 	private final PbKitHandler kitHandler;
 	private final String name;
-	private Location spawnPos;
+	private Location joinSpawn;
+	private Location exitSpawn;
 	private final List<PbArena> arenas;
 	private final PbGame game;
 	private final TeamQueue teamQueue;
@@ -39,13 +40,13 @@ public class PbLobby {
 	private final Equipment equipment;
 	private final PbCountdown countdown;
 	
-	public PbLobby(String name, Location spawnPos, JavaPlugin plugin, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
+	public PbLobby(String name, Location joinSpawn, JavaPlugin plugin, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
 		this.lobbyHandler = lobbyHandler;
 		this.kitHandler = kitHandler;
 		this.plugin = plugin;
 
 		this.name = name;
-		this.spawnPos = LocationUtil.cleanSpawn(spawnPos);
+		this.joinSpawn = LocationUtil.cleanSpawn(joinSpawn);
 
 		this.arenas = new LinkedList<>();
 		this.teamQueue = new TeamQueue();
@@ -60,12 +61,21 @@ public class PbLobby {
 		return name;
 	}
 	
-	public Location getSpawnPos() {
-		return spawnPos;
+	public Location getJoinSpawn() {
+		return joinSpawn;
 	}
 	
-	public void setSpawnPos(Location pos) {
-		this.spawnPos = LocationUtil.cleanSpawn(pos);
+	public void setJoinSpawn(Location pos) {
+		this.joinSpawn = LocationUtil.cleanSpawn(pos);
+		lobbyHandler.saveLobby(this);
+	}
+	
+	public Location getExitSpawn() {
+		return exitSpawn != null ? exitSpawn : lobbyHandler.getExitSpawn();
+	}
+	
+	public void setExitSpawn(Location pos) {
+		this.exitSpawn = LocationUtil.cleanSpawn(pos);
 		lobbyHandler.saveLobby(this);
 	}
 	
@@ -91,12 +101,12 @@ public class PbLobby {
 			throw new IllegalStateException(String.format("Lobby '%s' is full!", name));
 		}
 		game.joinPlayer(playerId);
-		BackupUtil.saveBackup(player, lobbyHandler.getExitSpawn(), plugin);
+		BackupUtil.saveBackup(player, getExitSpawn(), plugin);
 		player.setGameMode(GameMode.ADVENTURE);
 		player.sendMessage(String.format("Joined lobby '%s'.", name));
 		
 		//TODO if game running, join as spectator?
-		player.teleport(spawnPos);
+		player.teleport(joinSpawn);
 		equipment.equip(player);
 		
 		if (game.size() == ConfigSettings.MIN_PLAYERS) {
@@ -197,13 +207,12 @@ public class PbLobby {
 		PbArena arenaToPlay = mapVoting.pickArena(arenas);
 		arenaToPlay.assertIsPlayable();
 		arenaToPlay.reset();
-		game.allPlayers(p -> p.sendMessage("" + ConfigSettings.PLAYER_HEALTH_POINTS));
 		game.start(arenaToPlay, teamQueue, ConfigSettings.PLAYER_HEALTH_POINTS);
 	}
 	
 	public void returnToLobby() {
 		game.allPlayers(p -> {
-			p.teleport(spawnPos);
+			p.teleport(joinSpawn);
 			equipment.equip(p);
 		});
 		if (game.size() >= ConfigSettings.MIN_PLAYERS) {
@@ -221,9 +230,14 @@ public class PbLobby {
 	
 	public void toYml(ConfigurationSection parentSection) {
 		ConfigurationSection section = parentSection.createSection(name);
-		section.set("spawn", ConfigUtil.spawnToYmlString(spawnPos));
+		section.set("spawn", ConfigUtil.spawnToYmlString(joinSpawn));
+		
+		if (exitSpawn != null) {
+			section.set("exit", ConfigUtil.spawnToYmlString(exitSpawn));
+		}
 		List<String> arenaNames = arenas.stream().map(PbArena::getName).collect(Collectors.toList());
 		section.set("arenas", arenaNames);
+		
 	}
 	
 	public static PbLobby fromYml(
@@ -240,10 +254,13 @@ public class PbLobby {
 			ConfigUtil.assertKeyExists(section, "arenas");
 			Location spawnPos = ConfigUtil.spawnFromYmlString(section.getString("spawn"));
 			PbLobby lobby = new PbLobby(name, spawnPos, plugin, lobbyHandler, kitHandler);
-
+			
+			if (section.contains("exit")) {
+				lobby.setExitSpawn(ConfigUtil.spawnFromYmlString(section.getString("exit")));
+			}
 			List<String> arenaNames = section.getStringList("arenas");
-			//TODO (somehow) check if arena is arelady linked
-			arenaNames.forEach(n -> lobby.linkArena(arenaHandler.getArena(n)));
+			arenaNames.forEach(n -> lobbyHandler.linkArena(lobby, arenaHandler.getArena(n)));
+			
 			Bukkit.getLogger().log(Level.INFO, String.format("'%s' loaded", name));
 			return lobby;
 		} catch (IllegalArgumentException e) {

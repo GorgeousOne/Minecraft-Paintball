@@ -14,9 +14,9 @@ import java.util.Map;
 
 public class GameBoard {
 
-	private Scoreboard board;
-	private Objective objective;
-	private Map<Integer, String> lines;
+	private final Scoreboard board;
+	private final Objective objective;
+	private final Map<Integer, String> lines;
 
 	public GameBoard(String objectiveName, int size) {
 		this.board = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -31,7 +31,7 @@ public class GameBoard {
 			lines.put(lineIdx, blank);
 		}
 	}
-
+	
 	public void setTitle(String text) {
 		objective.setDisplayName(text);
 	}
@@ -44,7 +44,7 @@ public class GameBoard {
 		player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
 	}
 
-	public Team addTeam(String name, String prefix) {
+	public Team createTeam(String name, String prefix) {
 		Team team = board.registerNewTeam(name);
 		team.setPrefix(prefix);
 		return team;

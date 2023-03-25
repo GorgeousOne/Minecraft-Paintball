@@ -77,6 +77,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		lobbyCmd.addChild(new LobbyCreateCommand(lobbyHandler));
 		lobbyCmd.addChild(new LobbyDeleteCommand(lobbyHandler));
 		lobbyCmd.addChild(new LobbySetSpawnCommand(lobbyHandler));
+		lobbyCmd.addChild(new LobbySetExitCommand(lobbyHandler));
 		lobbyCmd.addChild(new LobbyLinkArenaCommand(lobbyHandler, arenaHandler));
 		lobbyCmd.addChild(new LobbyUnlinkArenaCommand(lobbyHandler, arenaHandler));
 		lobbyCmd.addChild(new LobbyListArenasCommand(lobbyHandler));

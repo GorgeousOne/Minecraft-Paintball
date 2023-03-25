@@ -129,7 +129,7 @@ public class PbLobbyHandler {
 	
 	public Location getExitSpawn() {
 		//TODO idk get config spawn pos
-		return lobbies.values().iterator().next().getSpawnPos().getWorld().getSpawnLocation();
+		return lobbies.values().iterator().next().getJoinSpawn().getWorld().getSpawnLocation();
 	}
 	
 	public void saveLobby(PbLobby lobby) {

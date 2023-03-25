@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class LobbySetSpawnCommand extends ArgCommand {
+public class LobbySetExitCommand extends ArgCommand {
 
 	private final PbLobbyHandler lobbyHandler;
 	
-	public LobbySetSpawnCommand(PbLobbyHandler lobbyHandler) {
-		super("set-spawn");
+	public LobbySetExitCommand(PbLobbyHandler lobbyHandler) {
+		super("set-exit");
 		this.addArg(new Argument("lobby name", ArgType.STRING));
 		
 		this.lobbyHandler = lobbyHandler;
@@ -36,8 +36,8 @@ public class LobbySetSpawnCommand extends ArgCommand {
 			return;
 		}
 		Player player = (Player) sender;
-		lobby.setJoinSpawn(player.getLocation());
-		sender.sendMessage(String.format("Set lobby '%s' spawn point to %s", lobby.getName(), LocationUtil.humanBlockPos(lobby.getJoinSpawn())));
+		lobby.setExitSpawn(player.getLocation());
+		sender.sendMessage(String.format("Set lobby '%s' exit point to %s", lobby.getName(), LocationUtil.humanBlockPos(lobby.getJoinSpawn())));
 	}
 
 	@Override

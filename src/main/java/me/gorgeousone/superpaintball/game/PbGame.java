@@ -124,7 +124,8 @@ public class PbGame {
 		
 		for (TeamType teamType : teams.keySet()) {
 			PbTeam team = teams.get(teamType);
-			Team boardTeam = gameBoard.addTeam(teamType.name(), team.getType().prefixColor + "");
+			Team boardTeam = gameBoard.createTeam(teamType.name(), team.getType().prefixColor + "");
+			
 			boardTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OTHER_TEAMS);
 			boardTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
 			
@@ -141,23 +142,21 @@ public class PbGame {
 	
 	private void startCountdown() {
 		allPlayers(p -> p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, .5f, 1f));
-		allPlayers(p -> p.sendMessage("quick start"));
 		BukkitRunnable countdown = new BukkitRunnable() {
 			int time = 8 * 10;
 			
 			@Override
 			public void run() {
-				if (time == 70) {
+				if (time == 80) {
 					allPlayers(p -> p.sendTitle("Shoot enemies", "to paint them"));
 				}
 				if (time == 40) {
-					allPlayers(p -> p.sendTitle("Throw water bombs", "to heal team mates"));
+					allPlayers(p -> p.sendTitle("Throw water bombs", "to revive team mates"));
 				}
 				time -= 1;
 				
 				if (time <= 0) {
-					allPlayers(p -> p.playSound(p.getLocation(), SoundUtil.GAME_START_SOUND, 1.5f, 2f));
-					state = GameState.RUNNING;
+					setRunning();
 					this.cancel();
 					return;
 				}
@@ -167,6 +166,18 @@ public class PbGame {
 			}
 		};
 		countdown.runTaskTimer(plugin, 0, 2);
+	}
+	
+	private void setRunning() {
+		allPlayers(p -> p.playSound(p.getLocation(), SoundUtil.GAME_START_SOUND, 1.5f, 2f));
+		state = GameState.RUNNING;
+		
+		for (PbTeam team : teams.values()) {
+			if (team.getAlivePlayers().size() == 0) {
+				onTeamKill(team);
+				break;
+			}
+		}
 	}
 	
 	private void onShoot(SlotClickEvent event) {
