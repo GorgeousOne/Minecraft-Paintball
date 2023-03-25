@@ -53,7 +53,7 @@ public class ParentCommand extends BaseCommand {
 		}
 		for (BaseCommand child : children) {
 			if (child.matchesAlias(args[0])) {
-				child.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
+				child.execute(sender, Arrays.copyOfRange(args, 1, args.length));
 				return;
 			}
 		}
@@ -61,15 +61,20 @@ public class ParentCommand extends BaseCommand {
 	}
 	
 	@Override
-	public List<String> getTabList(String[] arguments) {
-		if (arguments.length == 1) {
-			return children.stream().map(BaseCommand::getName).collect(Collectors.toList());
-		}
+	protected List<String> onTabComplete(CommandSender sender, String[] arguments) {
 		List<String> tabList = new LinkedList<>();
-		
+
+		if (arguments.length == 1) {
+			for (BaseCommand child : getChildren()) {
+				if (child.passesPermission(sender)) {
+					tabList.add(child.getName());
+				}
+			}
+			return tabList;
+		}
 		for (BaseCommand child : getChildren()) {
 			if (child.matchesAlias(arguments[0])) {
-				return child.getTabList(Arrays.copyOfRange(arguments, 1, arguments.length));
+				return child.getTabList(sender, Arrays.copyOfRange(arguments, 1, arguments.length));
 			}
 		}
 		return tabList;

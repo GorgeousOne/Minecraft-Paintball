@@ -6,3 +6,10 @@ depend: [WorldEdit]
 commands:
     paintball:
         aliases: [pb]
+permissions:
+    paintball.configure:
+        default: op
+    paintball.moderator:
+        default: op
+    paintball.debug:
+        default: op

@@ -55,7 +55,7 @@ public class LobbyUnlinkArenaCommand extends ArgCommand {
 		}
 	}
 	@Override
-	public List<String> getTabList(String[] stringArgs) {
+	protected List<String> onTabComplete(CommandSender sender, String[] stringArgs) {
 		if (stringArgs.length == 1) {
 			return lobbyHandler.getLobbies().stream().map(PbLobby::getName).collect(Collectors.toList());
 		} else if (stringArgs.length == 2) {

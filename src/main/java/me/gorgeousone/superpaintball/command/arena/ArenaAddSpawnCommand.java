@@ -55,7 +55,7 @@ public class ArenaAddSpawnCommand extends ArgCommand {
 	}
 
 	@Override
-	public List<String> getTabList(String[] stringArgs) {
+	protected List<String> onTabComplete(CommandSender sender, String[] stringArgs) {
 		switch (stringArgs.length) {
 			case 1:
 				return arenaHandler.getArenas().stream().map(PbArena::getName).collect(Collectors.toList());

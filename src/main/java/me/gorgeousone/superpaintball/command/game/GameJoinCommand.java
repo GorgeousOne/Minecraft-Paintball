@@ -1,4 +1,4 @@
-package me.gorgeousone.superpaintball.command.lobby;
+package me.gorgeousone.superpaintball.command.game;
 
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgType;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
@@ -6,22 +6,20 @@ import me.gorgeousone.superpaintball.cmdframework.argument.Argument;
 import me.gorgeousone.superpaintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.superpaintball.game.PbLobby;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
-import me.gorgeousone.superpaintball.team.TeamType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.nio.Buffer;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class LobbyJoinCommand extends ArgCommand {
+public class GameJoinCommand extends ArgCommand {
 
 	private final PbLobbyHandler lobbyHandler;
 
-	public LobbyJoinCommand(PbLobbyHandler lobbyHandler) {
+	public GameJoinCommand(PbLobbyHandler lobbyHandler) {
 		super("join");
 		this.addArg(new Argument("lobby name", ArgType.STRING));
 		this.addArg(new Argument("player", ArgType.STRING).setDefault("~"));
@@ -42,7 +40,7 @@ public class LobbyJoinCommand extends ArgCommand {
 		String playerName = argValues.get(1).get();
 		Player player;
 
-		if (!sender.isOp() || playerName.equals("~")) {
+		if (!sender.hasPermission("paintball.moderator") || playerName.equals("~")) {
 			player = (Player) sender;
 		} else {
 			player = Bukkit.getPlayer(playerName);
@@ -60,7 +58,7 @@ public class LobbyJoinCommand extends ArgCommand {
 	}
 
 	@Override
-	public List<String> getTabList(String[] stringArgs) {
+	protected List<String> onTabComplete(CommandSender sender, String[] stringArgs) {
 		if (stringArgs.length == 1) {
 			return lobbyHandler.getLobbies().stream().map(PbLobby::getName).collect(Collectors.toList());
 		}

@@ -5,6 +5,7 @@ import me.gorgeousone.superpaintball.cmdframework.command.ParentCommand;
 import me.gorgeousone.superpaintball.cmdframework.handler.CommandHandler;
 import me.gorgeousone.superpaintball.command.*;
 import me.gorgeousone.superpaintball.command.arena.*;
+import me.gorgeousone.superpaintball.command.game.*;
 import me.gorgeousone.superpaintball.command.lobby.*;
 import me.gorgeousone.superpaintball.event.*;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
@@ -64,7 +65,9 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		pbCmd.addAlias("pb");
 
 		ParentCommand arenaCmd = new ParentCommand("arena");
+		arenaCmd.setPermission("paintball.configure");
 		arenaCmd.setPlayerRequired(false);
+		
 		arenaCmd.addChild(new ArenaCreateCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaDeleteCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaCopyCommand(arenaHandler));
@@ -73,7 +76,9 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		arenaCmd.addChild(new ArenaListSpawnsCommand(arenaHandler));
 
 		ParentCommand lobbyCmd = new ParentCommand("lobby");
+		lobbyCmd.setPermission("paintball.configure");
 		lobbyCmd.setPlayerRequired(false);
+		
 		lobbyCmd.addChild(new LobbyCreateCommand(lobbyHandler));
 		lobbyCmd.addChild(new LobbyDeleteCommand(lobbyHandler));
 		lobbyCmd.addChild(new LobbySetSpawnCommand(lobbyHandler));
@@ -84,9 +89,9 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 
 		pbCmd.addChild(arenaCmd);
 		pbCmd.addChild(lobbyCmd);
-		pbCmd.addChild(new LobbyJoinCommand(lobbyHandler));
-		pbCmd.addChild(new LobbyStartCommand(lobbyHandler));
-		pbCmd.addChild(new LobbyLeaveCommand(lobbyHandler));
+		pbCmd.addChild(new GameJoinCommand(lobbyHandler));
+		pbCmd.addChild(new GameStartCommand(lobbyHandler));
+		pbCmd.addChild(new GameLeaveCommand(lobbyHandler));
 		pbCmd.addChild(new ReloadCommand(this));
 
 		pbCmd.addChild(new DebugKillCommand(lobbyHandler));

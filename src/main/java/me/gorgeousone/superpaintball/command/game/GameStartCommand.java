@@ -1,4 +1,4 @@
-package me.gorgeousone.superpaintball.command.lobby;
+package me.gorgeousone.superpaintball.command.game;
 
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgType;
 import me.gorgeousone.superpaintball.cmdframework.argument.ArgValue;
@@ -14,13 +14,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class LobbyStartCommand extends ArgCommand {
+public class GameStartCommand extends ArgCommand {
 
 	private final PbLobbyHandler lobbyHandler;
 
-	public LobbyStartCommand(PbLobbyHandler lobbyHandler) {
+	public GameStartCommand(PbLobbyHandler lobbyHandler) {
 		super("start");
 		this.addArg(new Argument("lobby name", ArgType.STRING).setDefault("~"));
+		setPermission("paintball.moderator");
 		
 		this.lobbyHandler = lobbyHandler;
 	}
@@ -54,7 +55,7 @@ public class LobbyStartCommand extends ArgCommand {
 	}
 
 	@Override
-	public List<String> getTabList(String[] stringArgs) {
+	protected List<String> onTabComplete(CommandSender sender, String[] stringArgs) {
 		if (stringArgs.length == 1) {
 			return lobbyHandler.getLobbies().stream().map(PbLobby::getName).collect(Collectors.toList());
 		}

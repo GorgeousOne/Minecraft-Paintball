@@ -111,7 +111,7 @@ public abstract class ArgCommand extends BaseCommand {
 	}
 	
 	@Override
-	public List<String> getTabList(String[] stringArgs) {
+	protected List<String> onTabComplete(CommandSender sender, String[] stringArgs) {
 		String tabbedArg = stringArgs[stringArgs.length - 1];
 		
 		if (isFlag(tabbedArg)) {

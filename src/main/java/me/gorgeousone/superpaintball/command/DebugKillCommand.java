@@ -12,6 +12,8 @@ public class DebugKillCommand extends BaseCommand {
 	
 	public DebugKillCommand(PbLobbyHandler lobbyHandler) {
 		super("kill");
+		setPermission("paintball.debug");
+
 		this.lobbyHandler = lobbyHandler;
 	}
 	

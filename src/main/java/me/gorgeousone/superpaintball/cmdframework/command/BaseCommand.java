@@ -42,6 +42,10 @@ public abstract class BaseCommand {
 		this.permission = permission;
 	}
 	
+	public boolean passesPermission(CommandSender sender) {
+		return permission == null || sender.hasPermission(permission);
+	}
+	
 	public boolean isPlayerRequired() {
 		return isPlayerRequired;
 	}
@@ -78,7 +82,7 @@ public abstract class BaseCommand {
 			sender.sendMessage(ChatColor.RED + "Only players can execute this command.");
 			return;
 		}
-		if (getPermission() != null && !sender.hasPermission(getPermission())) {
+		if (!passesPermission(sender)) {
 			sender.sendMessage(ChatColor.RED + "You do not have the permission for this command.");
 			return;
 		}
@@ -109,8 +113,8 @@ public abstract class BaseCommand {
 	 * Returns the pattern how to use this command
 	 */
 	public String getUsage() {
-		if (getParent() != null) {
-			return getParent().getParentUsage() + " " + getName();
+		if (parent != null) {
+			return parent.getParentUsage() + " " + getName();
 		}
 		return ChatColor.RED + "/" + getName();
 	}
@@ -119,7 +123,14 @@ public abstract class BaseCommand {
 		sender.sendMessage(getUsage());
 	}
 	
-	public List<String> getTabList(String[] arguments) {
+	public List<String> getTabList(CommandSender sender, String[] arguments) {
+		if (passesPermission(sender)) {
+			return onTabComplete(sender, arguments);
+		}
+		return new LinkedList<>();
+	}
+	
+	protected List<String> onTabComplete(CommandSender sender, String[] arguments) {
 		return new LinkedList<>();
 	}
 	

@@ -12,6 +12,8 @@ public class DebugReviveCommand extends BaseCommand {
 	
 	public DebugReviveCommand(PbLobbyHandler lobbyHandler) {
 		super("rev");
+		setPermission("paintball.debug");
+		
 		this.lobbyHandler = lobbyHandler;
 	}
 	
