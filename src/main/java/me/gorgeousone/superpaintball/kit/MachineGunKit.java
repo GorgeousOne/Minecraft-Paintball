@@ -29,7 +29,7 @@ public class  MachineGunKit extends AbstractKit {
 	}
 
 	@Override
-	public void launchShot(Player player, PbTeam team, Collection<Player> coplayers) {
+	public void launchShot(Player player, PbTeam team, Collection<Player> gamePlayers) {
 		UUID playerId = player.getUniqueId();
 
 		if (getMagazine(playerId) <= 0) {
@@ -37,7 +37,7 @@ public class  MachineGunKit extends AbstractKit {
 		}
 		increaseMagazine(playerId, -1);
 		lastShots.put(playerId, System.currentTimeMillis());
-		super.launchShot(player, team, coplayers);
+		super.launchShot(player, team, gamePlayers);
 	}
 
 	@Override

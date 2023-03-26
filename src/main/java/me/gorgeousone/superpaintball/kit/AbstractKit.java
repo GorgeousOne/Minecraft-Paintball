@@ -48,7 +48,7 @@ public abstract class AbstractKit {
 		this.shootCooldowns = new HashMap<>();
 	}
 	
-	public void launchShot(Player player, PbTeam team, Collection<Player> coplayers) {
+	public void launchShot(Player player, PbTeam team, Collection<Player> gamePlayers) {
 		UUID playerId = player.getUniqueId();
 
 		if (shootCooldowns.getOrDefault(playerId, 0L) > System.currentTimeMillis()) {
@@ -62,12 +62,14 @@ public abstract class AbstractKit {
 			bullet.setVelocity(createVelocity(facing, bulletSpeed, bulletSpread));
 			bullet.setCustomName("" + bulletDmg);
 		}
-		playGunshotSound(player, coplayers, gunshotPitchLow, gunshotPitchHigh);
+		playGunshotSound(player, gamePlayers, gunshotPitchLow, gunshotPitchHigh);
 
 		if (fireRate > 0) {
 			shootCooldowns.put(playerId, System.currentTimeMillis() + fireRate * 50);
 		}
 	}
+	
+	public void prepPlayer(Player player) {}
 	
 	//TODO make own gunshots sound high pitched
 	//TODO lower pitch? seems loud

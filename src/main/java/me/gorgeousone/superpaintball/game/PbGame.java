@@ -245,7 +245,6 @@ public class PbGame {
 				allPlayers(p -> {
 					gameBoard.removePlayer(p);
 					onGameEnd.run();
-					//TODO cancel spectator states
 				});
 			}
 		};

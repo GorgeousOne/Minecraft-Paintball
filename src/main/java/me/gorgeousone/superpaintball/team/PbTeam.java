@@ -13,6 +13,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,7 +94,7 @@ public class PbTeam {
 	public void addPlayer(Player player) {
 		UUID playerId = player.getUniqueId();
 		players.add(playerId);
-		StringUtil.msg(player, "You are now team %s.", teamType.displayName);
+		StringUtil.msg(player, "You are in team %s.", teamType.displayName);
 	}
 
 	public void removePlayer(UUID playerId) {
@@ -120,6 +121,8 @@ public class PbTeam {
 			Player player = Bukkit.getPlayer(playerId);
 			setSpectator(player, false);
 			player.getInventory().setArmorContents(null);
+			//TODO find way to let Kits reset their effects
+			player.removePotionEffect(PotionEffectType.SPEED);
 		}
 		reviveSkellies.keySet().forEach(id -> Bukkit.getEntity(id).remove());
 		reviveSkellies.clear();
@@ -266,6 +269,8 @@ public class PbTeam {
 		PlayerInventory inv = player.getInventory();
 		inv.clear();
 		KitType kitType = kitHandler.getKitType(player.getUniqueId());
+		PbKitHandler.getKit(kitType).prepPlayer(player);
+		
 		inv.setItem(0, kitType.getGun());
 		inv.setItem(1, PbKitHandler.getWaterBombs());
 		inv.setItem(8, teamArmorSet[2]);

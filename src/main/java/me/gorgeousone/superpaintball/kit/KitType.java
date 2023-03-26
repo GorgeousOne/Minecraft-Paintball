@@ -13,7 +13,8 @@ public enum KitType {
 	RIFLE(ChatColor.YELLOW + "Paintball Rifle"),
 	SHOTGUN(ChatColor.YELLOW + "Paintball Shotgun"),
 	MACHINE_GUN(ChatColor.YELLOW + "Paintball Machine Gun"),
-	SNIPER(ChatColor.YELLOW + "Paintball Sniper");
+//	SNIPER(ChatColor.YELLOW + "Paintball Sniper")
+	;
 	
 	public final String gunName;
 	public Material gunMaterial;
@@ -38,7 +39,7 @@ public enum KitType {
 		RIFLE.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("IRON_BARDING") : Material.valueOf("IRON_HORSE_ARMOR"));
 		SHOTGUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("GOLD_BARDING") : Material.valueOf("GOLDEN_HORSE_ARMOR"));
 		MACHINE_GUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("DIAMOND_BARDING") : Material.valueOf("DIAMOND_HORSE_ARMOR"));
-		SNIPER.setGunMaterial(Material.DIAMOND_HOE);
+//		SNIPER.setGunMaterial(Material.DIAMOND_HOE);
 	}
 
 	public static KitType valueOf(ItemStack itemStack) {
