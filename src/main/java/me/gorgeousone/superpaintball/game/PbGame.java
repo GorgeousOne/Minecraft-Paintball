@@ -115,7 +115,7 @@ public class PbGame {
 		state = GameState.COUNTING_DOWN;
 		createScoreboard();
 		startCountdown();
-		allPlayers(p -> StringUtil.msg(p, "Playing map %s!", ChatColor.WHITE + arenaToPlay.getName() + StringUtil.MSG_COLOR));
+		allPlayers(p -> StringUtil.msg(p, "Playing map %s!", ChatColor.WHITE + arenaToPlay.getSpacedNamed() + StringUtil.MSG_COLOR));
 	}
 	
 	private void createScoreboard() {

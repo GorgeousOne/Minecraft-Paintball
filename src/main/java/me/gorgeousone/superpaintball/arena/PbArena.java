@@ -78,6 +78,10 @@ public class PbArena {
 	public String getName() {
 		return name;
 	}
+	
+	public String getSpacedNamed() {
+		return name.replace('_', ' ');
+	}
 
 	public Location getSchemPos() {
 		return schemPos.clone();

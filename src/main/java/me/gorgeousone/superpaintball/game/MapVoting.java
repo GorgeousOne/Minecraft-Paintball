@@ -65,7 +65,7 @@ public class MapVoting {
 		
 		for (PbArena map : arenas) {
 			ItemStack mapVoteItem = new ItemStack(Material.WHITE_TERRACOTTA);
-			ItemUtil.nameItem(mapVoteItem, ChatColor.WHITE + map.getName());
+			ItemUtil.nameItem(mapVoteItem, ChatColor.WHITE + map.getSpacedNamed());
 			mapVoter.setItem(slot, mapVoteItem);
 			++slot;
 		}
