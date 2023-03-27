@@ -56,7 +56,7 @@ public class PbLobby {
 		this.game = new PbGame(plugin, kitHandler, this::returnToLobby);
 		
 		this.equipment = new LobbyEquipment(teamQueue::onQueueForTeam, this::onMapVote, this::onSelectKit, this::onQuit, kitHandler);
-		this.countdown = new PbCountdown(ConfigSettings.COUNTDOWN_SECS, this::onAnnounceTime, this::onCountdownEnd, plugin);
+		this.countdown = new PbCountdown(this::onAnnounceTime, this::onCountdownEnd, plugin);
 	}
 	
 	public String getName() {
@@ -103,6 +103,7 @@ public class PbLobby {
 			throw new IllegalStateException(String.format("Lobby '%s' is full!", name));
 		}
 		game.joinPlayer(playerId);
+		
 		BackupUtil.saveBackup(player, getExitSpawn(), plugin);
 		player.setGameMode(GameMode.ADVENTURE);
 		StringUtil.msg(player, "Joined lobby '%s'.", name);
@@ -111,8 +112,11 @@ public class PbLobby {
 		player.teleport(joinSpawn);
 		equipment.equip(player);
 		
-		if (game.size() == ConfigSettings.MIN_PLAYERS) {
-			countdown.start();
+		if (game.size() >= ConfigSettings.MIN_PLAYERS && !countdown.isRunning()) {
+			countdown.start(ConfigSettings.COUNTDOWN_SECS);
+		}
+		if (arenas.size() == 0) {
+			game.allPlayers(p -> StringUtil.msg(p, "Lobby '%s' cannot start a game because no arenas to play are linked to it. /pb link '%s' <arena name>", name, name));
 		}
 	}
 	
@@ -202,7 +206,7 @@ public class PbLobby {
 		countdown.cancel();
 		
 		if (arenas.isEmpty()) {
-			countdown.start();
+			countdown.start(ConfigSettings.COUNTDOWN_SECS);
 			throw new IllegalStateException(String.format(
 					"Lobby '%s' cannot start a game because no arenas to play are linked to it. /pb link '%s' <arena name>", name, name));
 		}
@@ -218,7 +222,7 @@ public class PbLobby {
 			equipment.equip(p);
 		});
 		if (game.size() >= ConfigSettings.MIN_PLAYERS) {
-			countdown.start();
+			countdown.start(ConfigSettings.COUNTDOWN_SECS);
 		}
 	}
 	
@@ -232,14 +236,13 @@ public class PbLobby {
 	
 	public void toYml(ConfigurationSection parentSection) {
 		ConfigurationSection section = parentSection.createSection(name);
-		section.set("spawn", ConfigUtil.spawnToYmlString(joinSpawn));
+		section.set("spawn", ConfigUtil.spawnToYmlString(joinSpawn, true));
 		
 		if (exitSpawn != null) {
-			section.set("exit", ConfigUtil.spawnToYmlString(exitSpawn));
+			section.set("exit", ConfigUtil.spawnToYmlString(exitSpawn, true));
 		}
 		List<String> arenaNames = arenas.stream().map(PbArena::getName).collect(Collectors.toList());
 		section.set("arenas", arenaNames);
-		
 	}
 	
 	public static PbLobby fromYml(

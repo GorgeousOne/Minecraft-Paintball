@@ -23,9 +23,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class PbArena {
 
@@ -57,9 +60,18 @@ public class PbArena {
 		this.schemFile = other.schemFile;
 		this.schemPos = LocationUtil.cleanSpawn(schemPos);
 		this.teamSpawns = new HashMap<>();
-
+		
+		Location dist = this.schemPos.clone().subtract(other.getSchemPos());
+		
 		for (TeamType teamType : other.teamSpawns.keySet()) {
-			teamSpawns.put(teamType, other.teamSpawns.get(teamType).stream().map(Location::clone).collect(Collectors.toList()));
+			List<Location> spawns = new ArrayList<>();
+			
+			for (Location spawn : other.teamSpawns.get(teamType)) {
+				Location spawnCopy = spawn.clone().add(dist);
+				spawnCopy.setWorld(this.schemPos.getWorld());
+				spawns.add(spawnCopy);
+			}
+			teamSpawns.put(teamType, spawns);
 		}
 	}
 
@@ -93,7 +105,7 @@ public class PbArena {
 			Operation operation = new ClipboardHolder(clipboard)
 					.createPaste(editSession)
 					.to(BlockVector3.at(schemPos.getX(), schemPos.getY(), schemPos.getZ()))
-					.ignoreAirBlocks(false)
+					.ignoreAirBlocks(true)
 					.build();
 			Operations.complete(operation);
 		} catch (WorldEditException e) {
@@ -119,7 +131,7 @@ public class PbArena {
 			List<String> spawnStrings = new ArrayList<>();
 
 			for (Location spawn : teamSpawns.get(teamType)) {
-				spawnStrings.add(ConfigUtil.spawnToYmlString(spawn));
+				spawnStrings.add(ConfigUtil.spawnToYmlString(spawn, false));
 			}
 			spawnsSection.set(teamType.name().toLowerCase(), spawnStrings);
 		}
@@ -151,7 +163,7 @@ public class PbArena {
 			}
 			try {
 				for (String spawnString : spawnStrings) {
-					Location spawn = ConfigUtil.spawnFromYmlString(spawnString);
+					Location spawn = ConfigUtil.spawnFromYmlString(spawnString, arena.getSchemPos().getWorld());
 					arena.addSpawn(teamType, spawn);
 				}
 			} catch (IllegalArgumentException e) {

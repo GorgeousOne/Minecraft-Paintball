@@ -1,6 +1,5 @@
 package me.gorgeousone.superpaintball.kit;
 
-import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;

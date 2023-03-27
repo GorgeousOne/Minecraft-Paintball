@@ -59,7 +59,7 @@ public class MapVoting {
 	}
 	
 	public static void openMapVoteUI(Player player, List<PbArena> arenas, int oldArenaIdx) {
-		int rows = (int) Math.ceil(arenas.size() / 9f);
+		int rows = Math.max(1, (int) Math.ceil(arenas.size() / 9f));
 		Inventory mapVoter = Bukkit.createInventory(null, rows * 9, MAP_VOTE_UI_TITLE);
 		int slot = 0;
 		

@@ -69,16 +69,27 @@ public final class ConfigUtil {
 		}
 	}
 
-	public static String spawnToYmlString(Location spawn) {
-		return String.format("world=%s x=%d y=%d z=%d facing=%s", spawn.getWorld().getName(), spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ(), LocationUtil.yawToFace(spawn.getYaw()).name().toLowerCase());
+	public static String spawnToYmlString(Location spawn, boolean saveWorld) {
+		if (saveWorld) {
+			return String.format("world=%s,x=%d,y=%d,z=%d,facing=%s", spawn.getWorld().getName(), spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ(), LocationUtil.yawToFace(spawn.getYaw()).name().toLowerCase());
+		} else {
+			return String.format("x=%d,y=%d,z=%d,facing=%s", spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ(), LocationUtil.yawToFace(spawn.getYaw()).name().toLowerCase());
+		}
 	}
-
+	
 	public static Location spawnFromYmlString(String ymlBlockPos) {
+		return spawnFromYmlString(ymlBlockPos, null);
+	}
+	
+	public static Location spawnFromYmlString(String ymlBlockPos, World world) {
 		Map<String, String> dataMap = getDataMapFromString(ymlBlockPos);
 
 		try {
-			assertKeysExist(dataMap, "world", "x", "y", "z", "facing");
-			World world = parseWorld(dataMap, "world");
+			if (world == null) {
+				assertKeysExist(dataMap, "world");
+				world = parseWorld(dataMap, "world");
+			}
+			assertKeysExist(dataMap, "x", "y", "z", "facing");
 			double x = parseInt(dataMap, "x") + .5;
 			double y = parseInt(dataMap, "y") + .5;
 			double z = parseInt(dataMap, "z") + .5;
@@ -90,7 +101,7 @@ public final class ConfigUtil {
 	}
 	
 	private static Map<String, String> getDataMapFromString(String s) {
-		return getDataMapFromString(s, ' ', '=');
+		return getDataMapFromString(s, ',', '=');
 	}
 	
 	private static Map<String, String> getDataMapFromString(String s, char itemSep, char keyValSep) {

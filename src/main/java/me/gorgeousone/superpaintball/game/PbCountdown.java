@@ -10,15 +10,13 @@ public class PbCountdown {
 	
 	private static final Set<Integer> ANNOUNCEMENTS = Set.of(300, 240, 180, 120, 60, 30, 20, 10, 3, 2, 1);
 	private final JavaPlugin plugin;
-	private final int maxSeconds;
 	private int secondsLeft;
 	private final Consumer<Integer> onAnnounceTime;
 	private final Runnable onTimeOut;
 	private BukkitRunnable timer;
 	private boolean isRunning;
 	
-	public PbCountdown(int maxSeconds, Consumer<Integer> onAnnounceTime, Runnable onTimerOut, JavaPlugin plugin) {
-		this.maxSeconds = maxSeconds;
+	public PbCountdown(Consumer<Integer> onAnnounceTime, Runnable onTimerOut, JavaPlugin plugin) {
 		this.onAnnounceTime = onAnnounceTime;
 		this.onTimeOut = onTimerOut;
 		this.plugin = plugin;
@@ -29,12 +27,12 @@ public class PbCountdown {
 		return isRunning;
 	}
 	
-	public void start() {
+	public void start(int seconds) {
 		if (isRunning()) {
 			return;
 		}
 		isRunning = true;
-		secondsLeft = maxSeconds;
+		secondsLeft = seconds;
 		
 		timer = new BukkitRunnable() {
 			@Override
