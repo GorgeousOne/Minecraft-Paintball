@@ -44,7 +44,7 @@ public class PbGame {
 		this.kitHandler = kitHandler;
 		this.onGameEnd = onGameEnd;
 		
-		this.state = GameState.IDLING;
+		this.state = GameState.LOBBYING;
 		this.players = new HashSet<>();
 		this.teams = new HashMap<>();
 		
@@ -89,7 +89,7 @@ public class PbGame {
 	}
 	
 	public boolean isRunning() {
-		return state != GameState.IDLING;
+		return state != GameState.LOBBYING;
 	}
 	
 	public PbTeam getTeam(UUID playerId) {
@@ -106,7 +106,7 @@ public class PbGame {
 	}
 	
 	public void start(PbArena arenaToPlay, TeamQueue teamQueue, int maxHealthPoints) {
-		if (state != GameState.IDLING) {
+		if (state != GameState.LOBBYING) {
 			throw new IllegalStateException("The game is already running.");
 		}
 		teamQueue.assignTeams(players, teams);
@@ -241,7 +241,7 @@ public class PbGame {
 		BukkitRunnable restartTimer = new BukkitRunnable() {
 			@Override
 			public void run() {
-				state = GameState.IDLING;
+				state = GameState.LOBBYING;
 				teams.values().forEach(PbTeam::reset);
 				allPlayers(p -> {
 					gameBoard.removePlayer(p);
@@ -253,7 +253,7 @@ public class PbGame {
 	}
 	
 	public void updateAliveScores() {
-		if (state == GameState.IDLING) {
+		if (state == GameState.LOBBYING) {
 			return;
 		}
 		int i = 2;

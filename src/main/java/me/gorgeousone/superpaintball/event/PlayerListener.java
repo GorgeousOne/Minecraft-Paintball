@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball.event;
 
+import me.gorgeousone.superpaintball.game.GameState;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
 import me.gorgeousone.superpaintball.util.BackupUtil;
 import me.gorgeousone.superpaintball.util.LocationUtil;
@@ -37,15 +38,15 @@ public class PlayerListener implements Listener {
 		}
 		Player player = (Player) event.getEntity();
 		EntityDamageEvent.DamageCause dmgCause = event.getCause();
+		PbLobby lobby = lobbyHandler.getLobby(player.getUniqueId());
 		
-		if (!lobbyHandler.isPlaying(player.getUniqueId())) {
+		if (lobby == null || dmgCause == EntityDamageEvent.DamageCause.CUSTOM) {
 			return;
 		}
-		boolean isBelowWorldMin = player.getLocation().getY() < LocationUtil.getWorldMinY(player.getWorld());
-
-		if (!(dmgCause == EntityDamageEvent.DamageCause.CUSTOM ||
-				dmgCause == EntityDamageEvent.DamageCause.VOID && isBelowWorldMin)) {
-			event.setCancelled(true);
+		event.setCancelled(true);
+		
+		if (dmgCause == EntityDamageEvent.DamageCause.VOID && lobby.getGame().getState() == GameState.LOBBYING) {
+			player.teleport(lobby.getJoinSpawn());
 		}
 	}
 	

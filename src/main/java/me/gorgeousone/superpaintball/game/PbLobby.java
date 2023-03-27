@@ -225,7 +225,7 @@ public class PbLobby {
 		if (game.size() < ConfigSettings.MIN_PLAYERS) {
 			throw new IllegalStateException( "Not enough players to start the game.");
 		}
-		if (game.getState() != GameState.IDLING) {
+		if (game.getState() != GameState.LOBBYING) {
 			throw new IllegalStateException("The game is already running.");
 		}
 		countdown.cancel();
