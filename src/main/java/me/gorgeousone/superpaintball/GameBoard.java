@@ -18,9 +18,9 @@ public class GameBoard {
 	private final Objective objective;
 	private final Map<Integer, String> lines;
 
-	public GameBoard(String objectiveName, int size) {
+	public GameBoard(int size) {
 		this.board = Bukkit.getScoreboardManager().getNewScoreboard();
-		this.objective = board.registerNewObjective(objectiveName, "dummy");
+		this.objective = board.registerNewObjective("paintball", "dummy");
 		this.objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 		this.lines = new HashMap<>();
 

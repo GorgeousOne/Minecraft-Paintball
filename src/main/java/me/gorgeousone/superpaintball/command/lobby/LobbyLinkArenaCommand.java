@@ -22,7 +22,7 @@ public class LobbyLinkArenaCommand extends ArgCommand {
 	private final PbArenaHandler arenaHandler;
 
 	public LobbyLinkArenaCommand(PbLobbyHandler lobbyHandler, PbArenaHandler arenaHandler) {
-		super("link");
+		super("link-arena");
 		this.addArg(new Argument("lobby name", ArgType.STRING));
 		this.addArg(new Argument("arena names...", ArgType.STRING));
 

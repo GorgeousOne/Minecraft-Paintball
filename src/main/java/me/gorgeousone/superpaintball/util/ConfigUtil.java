@@ -51,7 +51,7 @@ public final class ConfigUtil {
 	}
 
 	public static String blockPosToYmlString(Location blockPos) {
-		return String.format("world=%s x=%d y=%d z=%d", blockPos.getWorld().getName(), blockPos.getBlockX(), blockPos.getBlockY(), blockPos.getBlockZ());
+		return String.format("world=%s,x=%d,y=%d,z=%d", blockPos.getWorld().getName(), blockPos.getBlockX(), blockPos.getBlockY(), blockPos.getBlockZ());
 	}
 	
 	public static Location blockPosFromYmlString(String ymlBlockPos) {

@@ -3,21 +3,19 @@ package me.gorgeousone.superpaintball.game;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Set;
 import java.util.function.Consumer;
 
 public class PbCountdown {
 	
-	private static final Set<Integer> ANNOUNCEMENTS = Set.of(300, 240, 180, 120, 60, 30, 20, 10, 3, 2, 1);
 	private final JavaPlugin plugin;
 	private int secondsLeft;
-	private final Consumer<Integer> onAnnounceTime;
+	private final Consumer<Integer> onTick;
 	private final Runnable onTimeOut;
 	private BukkitRunnable timer;
 	private boolean isRunning;
 	
-	public PbCountdown(Consumer<Integer> onAnnounceTime, Runnable onTimerOut, JavaPlugin plugin) {
-		this.onAnnounceTime = onAnnounceTime;
+	public PbCountdown(Consumer<Integer> onTick, Runnable onTimerOut, JavaPlugin plugin) {
+		this.onTick = onTick;
 		this.onTimeOut = onTimerOut;
 		this.plugin = plugin;
 	}
@@ -40,9 +38,8 @@ public class PbCountdown {
 				if (!isRunning) {
 					return;
 				}
-				if (ANNOUNCEMENTS.contains(secondsLeft)) {
-					onAnnounceTime.accept(secondsLeft);
-				}
+				onTick.accept(secondsLeft);
+				
 				if (secondsLeft <= 0) {
 					this.cancel();
 					isRunning = false;
@@ -59,5 +56,9 @@ public class PbCountdown {
 			isRunning = false;
 			timer.cancel();
 		}
+	}
+	
+	public Object getSecondsLeft() {
+		return secondsLeft;
 	}
 }

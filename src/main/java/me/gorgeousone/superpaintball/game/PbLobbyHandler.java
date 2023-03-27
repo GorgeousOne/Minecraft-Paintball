@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball.game;
 
+import me.gorgeousone.superpaintball.ConfigSettings;
 import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;

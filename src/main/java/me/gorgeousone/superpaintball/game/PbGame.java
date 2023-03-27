@@ -119,7 +119,7 @@ public class PbGame {
 	}
 	
 	private void createScoreboard() {
-		gameBoard = new GameBoard("alive", 3 * teams.size() + 1);
+		gameBoard = new GameBoard(3 * teams.size() + 1);
 		gameBoard.setTitle("" + ChatColor.GOLD + ChatColor.BOLD + "SUPER PAINTBALL");
 		int i = 2;
 		
@@ -249,7 +249,7 @@ public class PbGame {
 				});
 			}
 		};
-		restartTimer.runTaskLater(plugin, 3*20);
+		restartTimer.runTaskLater(plugin, 8*20);
 	}
 	
 	public void updateAliveScores() {

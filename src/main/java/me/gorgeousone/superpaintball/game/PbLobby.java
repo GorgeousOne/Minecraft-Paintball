@@ -1,6 +1,7 @@
 package me.gorgeousone.superpaintball.game;
 
 import me.gorgeousone.superpaintball.ConfigSettings;
+import me.gorgeousone.superpaintball.GameBoard;
 import me.gorgeousone.superpaintball.util.BackupUtil;
 import me.gorgeousone.superpaintball.arena.PbArena;
 import me.gorgeousone.superpaintball.arena.PbArenaHandler;
@@ -12,6 +13,7 @@ import me.gorgeousone.superpaintball.util.LocationUtil;
 import me.gorgeousone.superpaintball.util.SoundUtil;
 import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -19,16 +21,18 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class PbLobby {
-
+	
+	private static final Set<Integer> ANNOUNCEMENT_INTERVALS = Set.of(300, 240, 180, 120, 60, 30, 20, 10, 3, 2, 1);
+	
 	private final JavaPlugin plugin;
 	private final PbLobbyHandler lobbyHandler;
 	private final PbKitHandler kitHandler;
@@ -41,6 +45,7 @@ public class PbLobby {
 	private final MapVoting mapVoting;
 	private final Equipment equipment;
 	private final PbCountdown countdown;
+	private GameBoard board;
 	
 	public PbLobby(String name, Location joinSpawn, JavaPlugin plugin, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
 		this.lobbyHandler = lobbyHandler;
@@ -56,7 +61,8 @@ public class PbLobby {
 		this.game = new PbGame(plugin, kitHandler, this::returnToLobby);
 		
 		this.equipment = new LobbyEquipment(teamQueue::onQueueForTeam, this::onMapVote, this::onSelectKit, this::onQuit, kitHandler);
-		this.countdown = new PbCountdown(this::onAnnounceTime, this::onCountdownEnd, plugin);
+		this.countdown = new PbCountdown(this::onCountdownTick, this::onCountdownEnd, plugin);
+		createGameBoard();
 	}
 	
 	public String getName() {
@@ -99,18 +105,22 @@ public class PbLobby {
 		if (game.hasPlayer(playerId)) {
 			throw new IllegalArgumentException(String.format("You already are in lobby '%s'.", name));
 		}
+		//TODO join as spectator?
+		if (game.isRunning()) {
+			throw new IllegalStateException(String.format("The game has already started! Please wait for the next round."));
+		}
 		if (game.size() >= ConfigSettings.MAX_PLAYERS) {
 			throw new IllegalStateException(String.format("Lobby '%s' is full!", name));
 		}
-		game.joinPlayer(playerId);
-		
 		BackupUtil.saveBackup(player, getExitSpawn(), plugin);
 		player.setGameMode(GameMode.ADVENTURE);
 		StringUtil.msg(player, "Joined lobby '%s'.", name);
 		
-		//TODO if game running, join as spectator?
 		player.teleport(joinSpawn);
 		equipment.equip(player);
+		board.addPlayer(player);
+		game.joinPlayer(playerId);
+		updateGameBoard();
 		
 		if (game.size() >= ConfigSettings.MIN_PLAYERS && !countdown.isRunning()) {
 			countdown.start(ConfigSettings.COUNTDOWN_SECS);
@@ -134,9 +144,9 @@ public class PbLobby {
 		BackupUtil.loadBackup(player, plugin);
 		StringUtil.msg(player, "You left lobby '%s'.", name);
 		
-		if (!game.isRunning() && game.size() < ConfigSettings.MIN_PLAYERS) {
-			countdown.cancel();
-			game.allPlayers(p -> StringUtil.msg(player, "Not enough players to start the game."));
+		if (!game.isRunning()) {
+			board.removePlayer(player);
+			updateGameBoard();
 		}
 	}
 	
@@ -174,6 +184,10 @@ public class PbLobby {
 			throw new IllegalArgumentException(String.format("Arena '%s' already linked to this lobby!", arena.getName()));
 		}
 		arenas.add(arena);
+		
+		if (!game.isRunning() && !countdown.isRunning() && game.size() >= ConfigSettings.MIN_PLAYERS) {
+			countdown.start(ConfigSettings.COUNTDOWN_SECS);
+		}
 	}
 	
 	public void unlinkArena(PbArena arena) {
@@ -184,11 +198,15 @@ public class PbLobby {
 		lobbyHandler.saveLobby(this);
 	}
 	
-	private void onAnnounceTime(int secondsLeft) {
-		game.allPlayers(p -> {
-			StringUtil.msgPlain(p, "Game starts in %d seconds.", secondsLeft);
-			p.playSound(p.getLocation(), SoundUtil.COUNTDOWN_SOUND, .5f, 1f);
-		});
+	private void onCountdownTick(int secondsLeft) {
+		updateGameBoard();
+		
+		if (ANNOUNCEMENT_INTERVALS.contains(secondsLeft)) {
+			game.allPlayers(p -> {
+				StringUtil.msgPlain(p, "Game starts in %d seconds.", secondsLeft);
+				p.playSound(p.getLocation(), SoundUtil.COUNTDOWN_SOUND, .5f, 1f);
+			});
+		}
 	}
 	
 	private void onCountdownEnd() {
@@ -200,16 +218,17 @@ public class PbLobby {
 	}
 	
 	public void startGame() {
+		if (arenas.isEmpty()) {
+			throw new IllegalStateException(String.format(
+					"Lobby '%s' cannot start a game because no arenas to play are linked to it. /pb link '%s' <arena name>", name, name));
+		}
+		if (game.size() < ConfigSettings.MIN_PLAYERS) {
+			throw new IllegalStateException( "Not enough players to start the game.");
+		}
 		if (game.getState() != GameState.IDLING) {
 			throw new IllegalStateException("The game is already running.");
 		}
 		countdown.cancel();
-		
-		if (arenas.isEmpty()) {
-			countdown.start(ConfigSettings.COUNTDOWN_SECS);
-			throw new IllegalStateException(String.format(
-					"Lobby '%s' cannot start a game because no arenas to play are linked to it. /pb link '%s' <arena name>", name, name));
-		}
 		PbArena arenaToPlay = mapVoting.pickArena(arenas);
 		arenaToPlay.assertIsPlayable();
 		arenaToPlay.reset();
@@ -220,10 +239,12 @@ public class PbLobby {
 		game.allPlayers(p -> {
 			p.teleport(joinSpawn);
 			equipment.equip(p);
+			board.addPlayer(p);
 		});
 		if (game.size() >= ConfigSettings.MIN_PLAYERS) {
 			countdown.start(ConfigSettings.COUNTDOWN_SECS);
 		}
+		updateGameBoard();
 	}
 	
 	public void reset() {
@@ -232,6 +253,25 @@ public class PbLobby {
 			StringUtil.msg(p, "Lobby '%s' closed.", name);
 		});
 		game.reset();
+	}
+	
+	private void createGameBoard() {
+		board = new GameBoard(7);
+		board.setTitle(ChatColor.BOLD + "Waiting for Players");
+		board.setLine(6, "" + ChatColor.GREEN + ChatColor.BOLD + "Players");
+		board.setLine(5, game.size() + "/" + ConfigSettings.MAX_PLAYERS);
+		board.setLine(3, "" + ChatColor.GREEN + ChatColor.BOLD + "Lobby");
+		board.setLine(2, name);
+	}
+	
+	private void updateGameBoard() {
+		if (game.size() < ConfigSettings.MIN_PLAYERS) {
+			board.setTitle(ChatColor.BOLD + "Waiting for Players");
+			
+		} else {
+			board.setTitle(ChatColor.BOLD + "Starting Game in " + ChatColor.GOLD + countdown.getSecondsLeft() + " Seconds");
+		}
+		board.setLine(5, game.size() + "/" + ConfigSettings.MAX_PLAYERS);
 	}
 	
 	public void toYml(ConfigurationSection parentSection) {

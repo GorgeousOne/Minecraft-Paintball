@@ -22,7 +22,7 @@ public class LobbyUnlinkArenaCommand extends ArgCommand {
 	private final PbArenaHandler arenaHandler;
 
 	public LobbyUnlinkArenaCommand(PbLobbyHandler lobbyHandler, PbArenaHandler arenaHandler) {
-		super("unlink");
+		super("unlink-arena");
 		this.addArg(new Argument("lobby name", ArgType.STRING));
 		this.addArg(new Argument("arena names...", ArgType.STRING));
 
@@ -49,7 +49,7 @@ public class LobbyUnlinkArenaCommand extends ArgCommand {
 			}
 			try {
 				lobby.unlinkArena(arena);
-				StringUtil.msg(sender, "Arena '%s' is now removed from lobby '%s'.", arenaName, lobbyName);
+				StringUtil.msg(sender, "Arena '%s' is now detached from lobby '%s'.", arenaName, lobbyName);
 			} catch (IllegalArgumentException e) {
 				StringUtil.msg(sender, e.getMessage());
 			}
