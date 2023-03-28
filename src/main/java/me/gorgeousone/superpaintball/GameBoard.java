@@ -2,6 +2,7 @@ package me.gorgeousone.superpaintball;
 
 import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -44,9 +45,9 @@ public class GameBoard {
 		player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
 	}
 
-	public Team createTeam(String name, String prefix) {
+	public Team createTeam(String name, ChatColor chatColor) {
 		Team team = board.registerNewTeam(name);
-		team.setPrefix(prefix);
+		team.setColor(chatColor);
 		return team;
 	}
 

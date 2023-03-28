@@ -120,7 +120,7 @@ public class PbLobby {
 		equipment.equip(player);
 		board.addPlayer(player);
 		game.joinPlayer(playerId);
-		updateGameBoard();
+		updateLobbyBoard();
 		
 		if (game.size() >= ConfigSettings.MIN_PLAYERS && !countdown.isRunning()) {
 			countdown.start(ConfigSettings.COUNTDOWN_SECS);
@@ -146,7 +146,7 @@ public class PbLobby {
 		
 		if (!game.isRunning()) {
 			board.removePlayer(player);
-			updateGameBoard();
+			updateLobbyBoard();
 		}
 	}
 	
@@ -166,7 +166,7 @@ public class PbLobby {
 	public void addMapVote(Player player, Inventory mapVoter, int arenaIdx) {
 		UUID playerId = player.getUniqueId();
 		
-		if (arenaIdx >= arenas.size()) {
+		if (arenaIdx < 0 || arenaIdx >= arenas.size()) {
 			return;
 		}
 		PbArena lastVote = mapVoting.getVote(playerId);
@@ -199,7 +199,7 @@ public class PbLobby {
 	}
 	
 	private void onCountdownTick(int secondsLeft) {
-		updateGameBoard();
+		updateLobbyBoard();
 		
 		if (ANNOUNCEMENT_INTERVALS.contains(secondsLeft)) {
 			game.allPlayers(p -> {
@@ -231,7 +231,6 @@ public class PbLobby {
 		countdown.cancel();
 		PbArena arenaToPlay = mapVoting.pickArena(arenas);
 		arenaToPlay.assertIsPlayable();
-		arenaToPlay.reset();
 		game.start(arenaToPlay, teamQueue, ConfigSettings.PLAYER_HEALTH_POINTS);
 	}
 	
@@ -244,7 +243,7 @@ public class PbLobby {
 		if (game.size() >= ConfigSettings.MIN_PLAYERS) {
 			countdown.start(ConfigSettings.COUNTDOWN_SECS);
 		}
-		updateGameBoard();
+		updateLobbyBoard();
 	}
 	
 	public void reset() {
@@ -264,7 +263,7 @@ public class PbLobby {
 		board.setLine(2, name);
 	}
 	
-	private void updateGameBoard() {
+	private void updateLobbyBoard() {
 		if (game.size() < ConfigSettings.MIN_PLAYERS) {
 			board.setTitle(ChatColor.BOLD + "Waiting for Players");
 			

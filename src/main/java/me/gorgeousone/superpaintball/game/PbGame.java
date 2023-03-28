@@ -38,6 +38,7 @@ public class PbGame {
 	private GameBoard gameBoard;
 	private final Runnable onGameEnd;
 	private final Equipment equipment;
+	private PbArena arena;
 	
 	public PbGame(JavaPlugin plugin, PbKitHandler kitHandler, Runnable onGameEnd) {
 		this.plugin = plugin;
@@ -76,12 +77,11 @@ public class PbGame {
 		if (!players.contains(playerId)) {
 			return;
 		}
-		players.remove(playerId);
-
 		if (isRunning()) {
 			getTeam(playerId).removePlayer(playerId);
 			updateAliveScores();
 		}
+		players.remove(playerId);
 	}
 	
 	public GameState getState() {
@@ -116,16 +116,18 @@ public class PbGame {
 		createScoreboard();
 		startCountdown();
 		allPlayers(p -> StringUtil.msg(p, "Playing map %s!", ChatColor.WHITE + arenaToPlay.getSpacedNamed() + StringUtil.MSG_COLOR));
+		arena = arenaToPlay;
 	}
 	
 	private void createScoreboard() {
 		gameBoard = new GameBoard(3 * teams.size() + 1);
 		gameBoard.setTitle("" + ChatColor.GOLD + ChatColor.BOLD + "SUPER PAINTBALL");
+		allPlayers(p -> gameBoard.addPlayer(p));
 		int i = 2;
 		
 		for (TeamType teamType : teams.keySet()) {
 			PbTeam team = teams.get(teamType);
-			Team boardTeam = gameBoard.createTeam(teamType.name(), team.getType().prefixColor + "");
+			Team boardTeam = gameBoard.createTeam(teamType.name(), team.getType().prefixColor);
 			
 			boardTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OTHER_TEAMS);
 			boardTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
@@ -138,7 +140,6 @@ public class PbGame {
 			gameBoard.setLine(i + 1, teamType.displayName);
 			i += 3;
 		}
-		allPlayers(p -> gameBoard.addPlayer(p));
 	}
 	
 	private void startCountdown() {
@@ -245,6 +246,7 @@ public class PbGame {
 				teams.values().forEach(PbTeam::reset);
 				allPlayers(p -> {
 					gameBoard.removePlayer(p);
+					arena.reset();
 					onGameEnd.run();
 				});
 			}

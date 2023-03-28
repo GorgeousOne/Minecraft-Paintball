@@ -101,6 +101,10 @@ public class PbTeam {
 		if (!players.contains(playerId)) {
 			throw new IllegalArgumentException("Can't remove player with id: " + playerId + ". They are not in this team.");
 		}
+		Player player = Bukkit.getPlayer(playerId);
+		player.removePotionEffect(PotionEffectType.SPEED);
+		setSpectator(player, false);
+		
 		players.remove(playerId);
 		alivePlayers.remove(playerId);
 		playerHealth.remove(playerId);
@@ -120,16 +124,17 @@ public class PbTeam {
 		for (UUID playerId : players) {
 			Player player = Bukkit.getPlayer(playerId);
 			setSpectator(player, false);
+			healPlayer(player);
 			player.getInventory().setArmorContents(null);
 			//TODO find way to let Kits reset their effects
 			player.removePotionEffect(PotionEffectType.SPEED);
 		}
-		reviveSkellies.keySet().forEach(id -> Bukkit.getEntity(id).remove());
-		reviveSkellies.clear();
+		players.clear();
 		playerHealth.clear();
 		alivePlayers.clear();
 		uncoloredArmorSlots.clear();
-		players.clear();
+		reviveSkellies.keySet().forEach(id -> Bukkit.getEntity(id).remove());
+		reviveSkellies.clear();
 	}
 
 	public void paintBlock(Block shotBlock) {

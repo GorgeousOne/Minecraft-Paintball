@@ -1,0 +1,8 @@
+plugin-version: 1.0.0
+schematics-folder: "plugins/WorldEdit/schematics"
+countdown:
+    seconds: 60
+game:
+    min-players: 2
+    max-players: 16
+    player-health-points: 4

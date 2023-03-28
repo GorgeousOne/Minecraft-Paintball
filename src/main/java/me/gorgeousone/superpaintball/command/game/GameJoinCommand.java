@@ -53,8 +53,8 @@ public class GameJoinCommand extends ArgCommand {
 		}
 		try {
 			lobby.joinPlayer(player);
-		} catch (IllegalArgumentException e) {
-			StringUtil.msg(sender, e.getMessage());
+		} catch (IllegalArgumentException | IllegalStateException e) {
+			StringUtil.msg(player, e.getMessage());
 		}
 	}
 

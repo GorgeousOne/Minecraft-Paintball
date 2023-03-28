@@ -14,7 +14,7 @@ public class ShotgunKit extends AbstractKit {
 	private final JavaPlugin plugin;
 	
 	public ShotgunKit(JavaPlugin plugin) {
-		super(KitType.SHOTGUN, 1, 8, 1.75f, .2f, 30, Sound.ENTITY_CHICKEN_EGG, 1f, .85f);
+		super(KitType.SHOTGUN, 1, 8, 1f, .3f, 30, Sound.ENTITY_CHICKEN_EGG, 1f, .85f);
 		this.plugin = plugin;
 	}
 	
@@ -32,6 +32,6 @@ public class ShotgunKit extends AbstractKit {
 	
 	@Override
 	public void prepPlayer(Player player) {
-		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999, 0));
+		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999, 0, false, false, false));
 	}
 }
