@@ -98,15 +98,6 @@ public class PbLobbyHandler {
 		return false;
 	}
 	
-	public PbTeam getTeam(UUID playerId) {
-		PbLobby lobby = getLobby(playerId);
-
-		if (lobby != null) {
-			return lobby.getTeam(playerId);
-		}
-		return null;
-	}
-	
 	public PbTeam getTeam(ArmorStand reviveSkelly) {
 		for (PbLobby lobby : lobbies.values()) {
 			for (PbTeam team : lobby.getGame().getTeams()) {

@@ -16,7 +16,7 @@ public class ConfigSettings {
 	public static int PLAYER_HEALTH_POINTS;
 	
 	public static void loadSettings(FileConfiguration config) {
-		COUNTDOWN_SECS = clamp(config.getInt("countdown.seconds"), 10, 300);
+		COUNTDOWN_SECS = clamp(config.getInt("countdown.seconds"), 5, 600);
 
 		ConfigurationSection gameSection = config.getConfigurationSection("game");
 		MIN_PLAYERS = clamp(gameSection.getInt("min-players"), 2, 24);

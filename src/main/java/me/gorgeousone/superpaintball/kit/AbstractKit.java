@@ -48,11 +48,11 @@ public abstract class AbstractKit {
 		this.shootCooldowns = new HashMap<>();
 	}
 	
-	public void launchShot(Player player, PbTeam team, Collection<Player> gamePlayers) {
+	public boolean launchShot(Player player, PbTeam team, Collection<Player> gamePlayers) {
 		UUID playerId = player.getUniqueId();
 
 		if (shootCooldowns.getOrDefault(playerId, 0L) > System.currentTimeMillis()) {
-			return;
+			return false;
 		}
 		Vector facing = player.getLocation().getDirection();
 		
@@ -67,6 +67,7 @@ public abstract class AbstractKit {
 		if (fireRate > 0) {
 			shootCooldowns.put(playerId, System.currentTimeMillis() + fireRate * 50);
 		}
+		return true;
 	}
 	
 	public void prepPlayer(Player player) {}

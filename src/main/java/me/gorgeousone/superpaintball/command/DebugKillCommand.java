@@ -1,5 +1,6 @@
 package me.gorgeousone.superpaintball.command;
 
+import me.gorgeousone.superpaintball.game.PbGame;
 import me.gorgeousone.superpaintball.game.PbLobbyHandler;
 import me.gorgeousone.superpaintball.cmdframework.command.BaseCommand;
 import me.gorgeousone.superpaintball.team.PbTeam;
@@ -20,10 +21,10 @@ public class DebugKillCommand extends BaseCommand {
 	@Override
 	protected void onCommand(CommandSender sender, String[] args) {
 		Player player = (Player) sender;
-		PbTeam team = lobbyHandler.getTeam(player.getUniqueId());
+		PbGame game = lobbyHandler.getGame(player.getUniqueId());
 		
-		if (team != null) {
-			team.damagePlayer(player, player, 9001);
+		if (game != null) {
+			game.damagePlayer(player, player, 9001);
 		}
 	}
 }

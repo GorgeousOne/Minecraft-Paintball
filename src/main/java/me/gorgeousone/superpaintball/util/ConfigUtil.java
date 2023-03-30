@@ -9,6 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.swing.DefaultCellEditor;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,16 +22,21 @@ public final class ConfigUtil {
 	private ConfigUtil() {}
 	
 	public static YamlConfiguration loadConfig(String configName, JavaPlugin plugin) {
+		return loadConfig(configName, configName, plugin);
+	}
+	
+	public static YamlConfiguration loadConfig(String configName, String defaultName, JavaPlugin plugin) {
 		File configFile = new File(plugin.getDataFolder() + "/" + configName + ".yml");
-		YamlConfiguration defConfig = loadDefaultConfig(configName, plugin);
+		YamlConfiguration defConfig = loadDefaultConfig(defaultName, plugin);
 		
 		if (!configFile.exists()) {
 			try {
 				defConfig.save(configFile);
-			} catch (IOException ignored) {
+				return defConfig;
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
-		
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 		config.setDefaults(defConfig);
 		config.options().copyDefaults(true);

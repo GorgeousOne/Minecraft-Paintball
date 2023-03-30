@@ -1,0 +1,14 @@
+games-played: 0
+games-won: 0
+kills: 0
+deaths: 0
+gun-stats:
+    rifle:
+        shots-fired: 0
+        bullet-hits: 0
+    shotgun:
+        shots-fired: 0
+        bullet-hits: 0
+    machine-gun:
+        shots-fired: 0
+        bullet-hits: 0
