@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 public enum TeamType {
 	
 	EMBER("Ember", EnderPearl.class, Color.RED, ChatColor.RED, Particle.ITEM_CRACK, new ItemStack(Material.REDSTONE_BLOCK)),
-	ICE("Ice", Snowball.class, Color.AQUA, ChatColor.AQUA, Particle.SNOWBALL, null);
+	ICE("Ice", Snowball.class, Color.AQUA, ChatColor.AQUA, Particle.WATER_SPLASH, null);
 	
 	public static final Color DEATH_COLOR = Color.PURPLE;
 

@@ -154,9 +154,8 @@ public class PbGame {
 	//TODO find nice wrapper class?
 	private void startCountdown() {
 		allPlayers(p -> p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, .5f, 1f));
-		allPlayers(p -> p.sendMessage("REALLY FAST RN"));
 		BukkitRunnable countdown = new BukkitRunnable() {
-			int time = 1 * 10;
+			int time = 8 * 10;
 			
 			@Override
 			public void run() {
