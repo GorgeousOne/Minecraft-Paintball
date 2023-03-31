@@ -69,7 +69,6 @@ public class TeamUtil {
 	}
 	
 	//TODO make this nicer block patterns :(
-	//TODO add water/snowball & lava particles to painted blocks
 	public static void paintBlot(Block block, TeamType teamType, int blockCount, int range) {
 		World world = block.getWorld();
 		
@@ -84,11 +83,8 @@ public class TeamUtil {
 			}
 			int rndIdx = rng.nextInt(neighbors.size());
 			Block neighbor = neighbors.get(rndIdx);
-
-			if (!BlockType.get(neighbor).equals(teamType.blockColor)) {
-				paintBlock(neighbor, teamType);
-				neighbors.remove(rndIdx);
-			}
+			paintBlock(neighbor, teamType);
+			neighbors.remove(rndIdx);
 		}
 	}
 	
