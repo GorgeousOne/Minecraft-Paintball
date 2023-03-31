@@ -1,1 +1,1 @@
-# SuperPaintball
+# Minecraft Paintball

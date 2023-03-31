@@ -1,6 +1,6 @@
-name: SuperPaintball
+name: MinecraftPaintball
 version: '${project.version}'
-main: me.gorgeousone.superpaintball.SuperPaintballPlugin
+main: me.gorgeousone.paintball.PaintballPlugin
 api-version: 1.13
 depend: [WorldEdit]
 commands:
