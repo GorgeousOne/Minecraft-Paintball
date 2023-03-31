@@ -34,20 +34,20 @@ public class ArenaCopyCommand extends ArgCommand {
 		String oldName = argValues.get(0).get();
 
 		if (!arenaHandler.containsArena(oldName)) {
-			StringUtil.msg(sender, "Arena '%s' does not exist!", oldName);
+			StringUtil.msg(sender, "Arena %s does not exist!", oldName);
 			return;
 		}
 		String newName = argValues.get(1).get();
 
 		if (arenaHandler.containsArena(oldName)) {
-			StringUtil.msg(sender, "Arena '%s' does already exist!");
+			StringUtil.msg(sender, "Arena %s does already exist!");
 			return;
 		}
 		PbArena oldArena = arenaHandler.getArena(oldName);
 
 		try {
 			PbArena newArena = arenaHandler.createArena(oldArena, newName, player.getLocation());
-			StringUtil.msg(sender, "Copied new arena '%s' to %s", newName, LocationUtil.humanBlockPos(newArena.getSchemPos()));
+			StringUtil.msg(sender, "Copied new arena %s to %s", newName, LocationUtil.humanBlockPos(newArena.getSchemPos()));
 		}catch (IllegalArgumentException e) {
 			StringUtil.msg(sender, e.getMessage());
 		}

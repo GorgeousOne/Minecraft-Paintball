@@ -31,12 +31,12 @@ public class ArenaResetCommand extends ArgCommand {
 		String arenaName = argValues.get(0).get();
 
 		if (!arenaHandler.containsArena(arenaName)) {
-			StringUtil.msg(sender, "Arena '%s' does not exist!", arenaName);
+			StringUtil.msg(sender, "Arena %s does not exist!", arenaName);
 			return;
 		}
 		PbArena arena = arenaHandler.getArena(arenaName);
 		arena.reset();
-		StringUtil.msg(sender, "Reset arena '%s' for a new game.", arenaName);
+		StringUtil.msg(sender, "Reset arena %s for a new game.", arenaName);
 	}
 
 	@Override

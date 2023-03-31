@@ -7,7 +7,6 @@ import me.gorgeousone.superpaintball.equipment.IngameEquipment;
 import me.gorgeousone.superpaintball.equipment.SlotClickEvent;
 import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.kit.PbKitHandler;
-import me.gorgeousone.superpaintball.stats.GameStats;
 import me.gorgeousone.superpaintball.team.PbTeam;
 import me.gorgeousone.superpaintball.team.TeamType;
 import me.gorgeousone.superpaintball.util.SoundUtil;
@@ -122,7 +121,7 @@ public class PbGame {
 		gameStats = new GameStats();
 		
 		allPlayers(p -> {
-			StringUtil.msg(p, "Playing map %s!", ChatColor.WHITE + arenaToPlay.getSpacedNamed() + StringUtil.MSG_COLOR);
+			StringUtil.msg(p, "Playing map %s!", ChatColor.WHITE + arenaToPlay.getSpacedName() + StringUtil.MSG_COLOR);
 			gameStats.addPlayer(p.getUniqueId(), kitHandler.getKitType(p.getUniqueId()));
 		});
 		arena = arenaToPlay;

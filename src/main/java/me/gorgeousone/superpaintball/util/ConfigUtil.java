@@ -9,7 +9,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.swing.DefaultCellEditor;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,6 +54,20 @@ public final class ConfigUtil {
 			e.printStackTrace();
 		}
 	}
+	
+	public static File matchFirstFile(String partialName, String folderPath, JavaPlugin plugin) {
+		File folder = new File(plugin.getDataFolder() + "/" + folderPath);
+		
+		if (!folder.exists()) {
+			return null;
+		}
+		File[] matches = folder.listFiles((dir, name) -> name.contains(partialName));
+		
+		if (matches != null && matches.length > 0) {
+			return matches[0];
+		}
+		return null;
+	}
 
 	public static String blockPosToYmlString(Location blockPos) {
 		return String.format("world=%s,x=%d,y=%d,z=%d", blockPos.getWorld().getName(), blockPos.getBlockX(), blockPos.getBlockY(), blockPos.getBlockZ());
@@ -71,7 +84,7 @@ public final class ConfigUtil {
 			int z = parseInt(dataMap, "z");
 			return new Location(world, x, y, z);
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException(String.format("Could not load position '%s': %s", ymlBlockPos, e.getMessage()));
+			throw new IllegalArgumentException(String.format("Could not load position %s: %s", ymlBlockPos, e.getMessage()));
 		}
 	}
 
@@ -102,7 +115,7 @@ public final class ConfigUtil {
 			BlockFace facing = parseBlockFace(dataMap, "facing");
 			return new Location(world, x, y, z).setDirection(LocationUtil.faceToDirection(facing));
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException(String.format("Could not load spawn '%s': %s", ymlBlockPos, e.getMessage()));
+			throw new IllegalArgumentException(String.format("Could not load spawn %s: %s", ymlBlockPos, e.getMessage()));
 		}
 	}
 	
@@ -129,13 +142,13 @@ public final class ConfigUtil {
 
 	public static void assertKeyExists(ConfigurationSection section, String key) {
 		if (!section.contains(key)) {
-			throw new IllegalArgumentException(String.format("Missing or incomplete value for '%s'.", key));
+			throw new IllegalArgumentException(String.format("Missing or incomplete value for %s.", key));
 		}
 	}
 	private static void assertKeysExist(Map<?, ?> map, Object... keys) {
 		for (Object key : keys) {
 			if (!map.containsKey(key)) {
-				throw new IllegalArgumentException(String.format("Missing or incomplete value for '%s'.", key.toString()));
+				throw new IllegalArgumentException(String.format("Missing or incomplete value for %s.", key.toString()));
 			}
 		}
 	}
@@ -147,7 +160,7 @@ public final class ConfigUtil {
 		if (world != null) {
 			return world;
 		}
-		throw new IllegalArgumentException(String.format("Could not find %s with name '%s'.", key, value));
+		throw new IllegalArgumentException(String.format("Could not find %s with name %s.", key, value));
 	}
 
 	private static int parseInt(Map<String, String> dataMap, String key) {
@@ -156,7 +169,7 @@ public final class ConfigUtil {
 		try {
 			return Integer.parseInt(value);
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException(String.format("Could not read integer '%s' for %s.", value, key));
+			throw new IllegalArgumentException(String.format("Could not read integer %s for %s.", value, key));
 		}
 	}
 
@@ -166,7 +179,7 @@ public final class ConfigUtil {
 		try {
 			return BlockFace.valueOf(value.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException(String.format("Could not read '%s' as %s.", value, key));
+			throw new IllegalArgumentException(String.format("Could not read %s as %s.", value, key));
 		}
 	}
 
@@ -174,13 +187,13 @@ public final class ConfigUtil {
 		File file = new File(schemFolder + "/" + fileName);
 
 		if (!file.exists()) {
-			throw new IllegalArgumentException(String.format("Schematic '%s' does not exist.", fileName));
+			throw new IllegalArgumentException(String.format("Schematic %s does not exist.", fileName));
 		}
 		String[] nameParts = fileName.split("\\.");
 		String extension = nameParts[nameParts.length - 1];
 
 		if (!("schem".equals(extension) || "schematic".equals(extension))) {
-			throw new IllegalArgumentException(String.format("File '%s' does not have extension '.schem' or '.schematic'", fileName));
+			throw new IllegalArgumentException(String.format("File %s does not have extension '.schem' or '.schematic'", fileName));
 		}
 		return file;
 	}
@@ -189,7 +202,7 @@ public final class ConfigUtil {
 		try {
 			return TeamType.valueOf(teamName.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException(String.format("Plugin doesn't have team '%s'.", teamName));
+			throw new IllegalArgumentException(String.format("Plugin doesn't have team %s.", teamName));
 		}
 	}
 }

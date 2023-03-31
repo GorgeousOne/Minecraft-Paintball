@@ -1,4 +1,4 @@
-package me.gorgeousone.superpaintball.stats;
+package me.gorgeousone.superpaintball.game;
 
 import me.gorgeousone.superpaintball.kit.KitType;
 import me.gorgeousone.superpaintball.util.ConfigUtil;
@@ -84,6 +84,7 @@ public class GameStats {
 		statsToAdd.put("kills", kills.get(playerId));
 		statsToAdd.put("deaths", deaths.get(playerId));
 		statsToAdd.put("revives", revives.get(playerId));
+		statsToAdd.put(gunKey + ".times-used", 1);
 		statsToAdd.put(gunKey + ".shots-fired", shotsFired.get(playerId));
 		statsToAdd.put(gunKey + ".bullet-hits", bulletHits.get(playerId));
 		

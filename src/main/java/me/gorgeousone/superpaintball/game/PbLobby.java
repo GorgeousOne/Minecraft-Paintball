@@ -103,18 +103,18 @@ public class PbLobby {
 		UUID playerId = player.getUniqueId();
 		
 		if (game.hasPlayer(playerId)) {
-			throw new IllegalArgumentException(String.format("You already are in lobby '%s'.", name));
+			throw new IllegalArgumentException(String.format("You already are in lobby %s.", name));
 		}
 		//TODO join as spectator?
 		if (game.isRunning()) {
 			throw new IllegalStateException(String.format("The game has already started! Please wait for the next round."));
 		}
 		if (game.size() >= ConfigSettings.MAX_PLAYERS) {
-			throw new IllegalStateException(String.format("Lobby '%s' is full!", name));
+			throw new IllegalStateException(String.format("Lobby %s is full!", name));
 		}
 		BackupUtil.saveBackup(player, getExitSpawn(), plugin);
 		player.setGameMode(GameMode.ADVENTURE);
-		StringUtil.msg(player, "Joined lobby '%s'.", name);
+		StringUtil.msg(player, "Joined lobby %s.", name);
 		
 		player.teleport(joinSpawn);
 		equipment.equip(player);
@@ -126,7 +126,7 @@ public class PbLobby {
 			countdown.start(ConfigSettings.COUNTDOWN_SECS);
 		}
 		if (arenas.size() == 0) {
-			game.allPlayers(p -> StringUtil.msg(p, "Lobby '%s' cannot start a game because no arenas to play are linked to it. /pb link '%s' <arena name>", name, name));
+			game.allPlayers(p -> StringUtil.msg(p, "Lobby %s cannot start a game because no arenas to play are linked to it. /pb link %s <arena name>", name, name));
 		}
 	}
 	
@@ -142,7 +142,7 @@ public class PbLobby {
 		}
 		game.removePlayer(playerId);
 		BackupUtil.loadBackup(player, plugin);
-		StringUtil.msg(player, "You left lobby '%s'.", name);
+		StringUtil.msg(player, "You left lobby %s.", name);
 		
 		if (!game.isRunning()) {
 			board.removePlayer(player);
@@ -181,7 +181,7 @@ public class PbLobby {
 	
 	public void linkArena(PbArena arena) {
 		if (arenas.contains(arena)) {
-			throw new IllegalArgumentException(String.format("Arena '%s' already linked to this lobby!", arena.getName()));
+			throw new IllegalArgumentException(String.format("Arena %s already linked to this lobby!", arena.getName()));
 		}
 		arenas.add(arena);
 		
@@ -192,7 +192,7 @@ public class PbLobby {
 	
 	public void unlinkArena(PbArena arena) {
 		if (arenas.contains(arena)) {
-			throw new IllegalArgumentException(String.format("Arena '%s' is not linked to this lobby!", arena.getName()));
+			throw new IllegalArgumentException(String.format("Arena %s is not linked to this lobby!", arena.getName()));
 		}
 		arenas.remove(arena);
 		lobbyHandler.saveLobby(this);
@@ -220,7 +220,7 @@ public class PbLobby {
 	public void startGame() {
 		if (arenas.isEmpty()) {
 			throw new IllegalStateException(String.format(
-					"Lobby '%s' cannot start a game because no arenas to play are linked to it. /pb link '%s' <arena name>", name, name));
+					"Lobby %s cannot start a game because no arenas to play are linked to it. /pb link %s <arena name>", name, name));
 		}
 		if (game.size() < ConfigSettings.MIN_PLAYERS) {
 			throw new IllegalStateException( "Not enough players to start the game.");
@@ -249,7 +249,7 @@ public class PbLobby {
 	public void reset() {
 		game.allPlayers(p -> {
 			BackupUtil.loadBackup(p, plugin);
-			StringUtil.msg(p, "Lobby '%s' closed.", name);
+			StringUtil.msg(p, "Lobby %s closed.", name);
 		});
 		game.reset();
 	}
@@ -305,10 +305,10 @@ public class PbLobby {
 			List<String> arenaNames = section.getStringList("arenas");
 			arenaNames.forEach(n -> lobbyHandler.linkArena(lobby, arenaHandler.getArena(n)));
 			
-			Bukkit.getLogger().log(Level.INFO, String.format("'%s' loaded", name));
+			Bukkit.getLogger().log(Level.INFO, String.format("%s loaded", name));
 			return lobby;
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException(String.format("Could not load lobby '%s': %s", name, e.getMessage()));
+			throw new IllegalArgumentException(String.format("Could not load lobby %s: %s", name, e.getMessage()));
 		}
 	}
 }

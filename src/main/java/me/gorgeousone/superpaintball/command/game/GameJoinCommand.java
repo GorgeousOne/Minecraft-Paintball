@@ -35,7 +35,7 @@ public class GameJoinCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
 
 		if (lobby == null) {
-			StringUtil.msg(sender, "Lobby '%s' does not exits!", lobbyName);
+			StringUtil.msg(sender, "Lobby %s does not exits!", lobbyName);
 			return;
 		}
 		String playerName = argValues.get(1).get();

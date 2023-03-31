@@ -4,11 +4,14 @@ kills: 0
 deaths: 0
 gun-stats:
     rifle:
+        times-used: 0
         shots-fired: 0
         bullet-hits: 0
     shotgun:
+        times-used: 0
         shots-fired: 0
         bullet-hits: 0
     machine-gun:
+        times-used: 0
         shots-fired: 0
         bullet-hits: 0

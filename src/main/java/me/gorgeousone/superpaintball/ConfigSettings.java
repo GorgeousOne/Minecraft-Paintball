@@ -26,7 +26,7 @@ public class ConfigSettings {
 		
 		if (!new File(SCHEM_FOLDER).isDirectory()) {
 			String defaultSchemFolder = "plugins/WorldEdit/schematics";
-			Bukkit.getLogger().log(Level.WARNING, String.format("Schematic folder '%s' does not exist! Falling back to '%s'", SCHEM_FOLDER, defaultSchemFolder));
+			Bukkit.getLogger().log(Level.WARNING, String.format("Schematic folder %s does not exist! Falling back to %s", SCHEM_FOLDER, defaultSchemFolder));
 			SCHEM_FOLDER = defaultSchemFolder;
 		}
 	}
