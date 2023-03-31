@@ -14,6 +14,7 @@ import me.gorgeousone.superpaintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -22,6 +23,7 @@ import org.bukkit.scoreboard.Team;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -39,6 +41,8 @@ public class PbGame {
 	private final Runnable onGameEnd;
 	private final Equipment equipment;
 	private PbArena arena;
+	
+	private GameStats gameStats;
 	
 	public PbGame(JavaPlugin plugin, PbKitHandler kitHandler, Runnable onGameEnd) {
 		this.plugin = plugin;
@@ -69,7 +73,7 @@ public class PbGame {
 	
 	public void joinPlayer(UUID playerId) {
 		players.add(playerId);
-		String playerName = Bukkit.getPlayer(playerId).getDisplayName();
+		String playerName = Bukkit.getOfflinePlayer(playerId).getName();
 		allPlayers(p -> StringUtil.msg(p, playerName + " joined."));
 	}
 	
@@ -110,13 +114,18 @@ public class PbGame {
 			throw new IllegalStateException("The game is already running.");
 		}
 		teamQueue.assignTeams(players, teams);
-		
 		teams.values().forEach(t -> t.startGame(arenaToPlay.getSpawns(t.getType()), maxHealthPoints));
-		state = GameState.COUNTING_DOWN;
+
 		createScoreboard();
 		startCountdown();
-		allPlayers(p -> StringUtil.msg(p, "Playing map %s!", ChatColor.WHITE + arenaToPlay.getSpacedNamed() + StringUtil.MSG_COLOR));
+		gameStats = new GameStats();
+		
+		allPlayers(p -> {
+			StringUtil.msg(p, "Playing map %s!", ChatColor.WHITE + arenaToPlay.getSpacedName() + StringUtil.MSG_COLOR);
+			gameStats.addPlayer(p.getUniqueId(), kitHandler.getKitType(p.getUniqueId()));
+		});
 		arena = arenaToPlay;
+		state = GameState.COUNTING_DOWN;
 	}
 	
 	private void createScoreboard() {
@@ -142,17 +151,18 @@ public class PbGame {
 		}
 	}
 	
+	//TODO find nice wrapper class?
 	private void startCountdown() {
 		allPlayers(p -> p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, .5f, 1f));
+		allPlayers(p -> p.sendMessage("REALLY FAST RN"));
 		BukkitRunnable countdown = new BukkitRunnable() {
-			int time = 8 * 10;
+			int time = 1 * 10;
 			
 			@Override
 			public void run() {
 				if (time == 80) {
 					allPlayers(p -> p.sendTitle("Shoot enemies", "to paint them"));
-				}
-				if (time == 40) {
+				} else if (time == 40) {
 					allPlayers(p -> p.sendTitle("Throw water bombs", "to revive team mates"));
 				}
 				time -= 1;
@@ -191,7 +201,12 @@ public class PbGame {
 			return;
 		}
 		KitType kitType = kitHandler.getKitType(playerId);
-		PbKitHandler.getKit(kitType).launchShot(player, getTeam(playerId), players.stream().map(Bukkit::getPlayer).collect(Collectors.toList()));
+		List<Player> coplayers = players.stream().map(Bukkit::getPlayer).collect(Collectors.toList());
+		boolean didShoot = PbKitHandler.getKit(kitType).launchShot(player, getTeam(playerId), coplayers);
+		
+		if (didShoot) {
+			gameStats.addGunShot(playerId);
+		}
 	}
 	
 	private void onThrowWaterBomb(SlotClickEvent event) {
@@ -202,37 +217,75 @@ public class PbGame {
 		}
 	}
 	
+	public void damagePlayer(Player target, Player shooter, int bulletDmg) {
+		PbTeam team = getTeam(target.getUniqueId());
+		UUID shooterId = shooter.getUniqueId();
+		
+		if (!team.hasPlayer(shooterId)) {
+			team.damagePlayer(target, shooter, bulletDmg);
+			gameStats.addBulletHit(shooterId);
+		}
+	}
+	
+	public void healPlayer(Player target, Player healer) {
+		if (state != GameState.RUNNING) {
+			return;
+		}
+		PbTeam team = getTeam(healer.getUniqueId());
+		
+		if (team.hasPlayer(target.getUniqueId())) {
+			team.healPlayer(target);
+		}
+	}
+	
+	public void revivePlayer(ArmorStand skelly, Player healer) {
+		if (state != GameState.RUNNING) {
+			return;
+		}
+		PbTeam team = getTeam(healer.getUniqueId());
+		
+		if (team.hasReviveSkelly(skelly)) {
+			team.revivePlayer(skelly);
+			gameStats.addRevive(healer.getUniqueId());
+		}
+	}
+	
 	public void broadcastKill(Player target, Player shooter) {
-		TeamType targetTeam = getTeam(target.getUniqueId()).getType();
-		TeamType shooterTeam = getTeam(shooter.getUniqueId()).getType();
-		String message = targetTeam.prefixColor + target.getDisplayName() + StringUtil.MSG_COLOR + " was painted by " + shooterTeam.prefixColor + shooter.getDisplayName() + ".";
+		UUID shooterId = shooter.getUniqueId();
+		UUID targetId = target.getUniqueId();
+		
+		TeamType targetTeam = getTeam(targetId).getType();
+		TeamType shooterTeam = getTeam(shooterId).getType();
+		String message = targetTeam.prefixColor + target.getDisplayName() + ChatColor.WHITE + " was painted by " + shooterTeam.prefixColor + shooter.getDisplayName() + ".";
 		allPlayers(p -> StringUtil.msgPlain(p, message));
+		gameStats.addKill(shooterId, targetId);
 	}
 	
 	public void onTeamKill(PbTeam killedTeam) {
 		if (state != GameState.RUNNING) {
 			return;
 		}
-		TeamType leftTeam = null;
+		PbTeam leftTeam = null;
 		
 		for (PbTeam team : teams.values()) {
 			if (team.getAlivePlayers().size() > 0) {
 				if (leftTeam != null) {
 					return;
 				}
-				leftTeam = team.getType();
+				leftTeam = team;
 			}
 		}
 		allPlayers(p -> p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, .5f, 1f));
 		announceWinners(leftTeam);
+		leftTeam.getPlayers().forEach(id -> gameStats.setWin(id));
 		scheduleRestart();
 	}
 	
-	private void announceWinners(TeamType winningTeam) {
+	private void announceWinners(PbTeam winningTeam) {
 		state = GameState.OVER;
 		
 		if (winningTeam != null) {
-			allPlayers(p -> p.sendTitle(String.format("Team %s wins!", winningTeam.displayName + ChatColor.WHITE), ""));
+			allPlayers(p -> p.sendTitle(String.format("Team %s wins!", winningTeam.getType().displayName + ChatColor.WHITE), ""));
 		} else {
 			allPlayers(p -> p.sendTitle("It's a draw?", ""));
 		}
@@ -242,6 +295,7 @@ public class PbGame {
 		BukkitRunnable restartTimer = new BukkitRunnable() {
 			@Override
 			public void run() {
+				gameStats.save(plugin);
 				state = GameState.LOBBYING;
 				teams.values().forEach(PbTeam::reset);
 				allPlayers(p -> {

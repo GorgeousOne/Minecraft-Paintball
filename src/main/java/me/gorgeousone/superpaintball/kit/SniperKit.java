@@ -13,7 +13,8 @@ public class SniperKit extends AbstractKit {
 	}
 
 	@Override
-	public void launchShot(Player player, PbTeam team, Collection<Player> gamePlayers) {
+	public boolean launchShot(Player player, PbTeam team, Collection<Player> gamePlayers) {
 		//TODO complicated stuff
+		return false;
 	}
 }

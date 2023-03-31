@@ -16,7 +16,7 @@ public class ConfigSettings {
 	public static int PLAYER_HEALTH_POINTS;
 	
 	public static void loadSettings(FileConfiguration config) {
-		COUNTDOWN_SECS = clamp(config.getInt("countdown.seconds"), 10, 300);
+		COUNTDOWN_SECS = clamp(config.getInt("countdown.seconds"), 5, 600);
 
 		ConfigurationSection gameSection = config.getConfigurationSection("game");
 		MIN_PLAYERS = clamp(gameSection.getInt("min-players"), 2, 24);
@@ -26,7 +26,7 @@ public class ConfigSettings {
 		
 		if (!new File(SCHEM_FOLDER).isDirectory()) {
 			String defaultSchemFolder = "plugins/WorldEdit/schematics";
-			Bukkit.getLogger().log(Level.WARNING, String.format("Schematic folder '%s' does not exist! Falling back to '%s'", SCHEM_FOLDER, defaultSchemFolder));
+			Bukkit.getLogger().log(Level.WARNING, String.format("Schematic folder %s does not exist! Falling back to %s", SCHEM_FOLDER, defaultSchemFolder));
 			SCHEM_FOLDER = defaultSchemFolder;
 		}
 	}

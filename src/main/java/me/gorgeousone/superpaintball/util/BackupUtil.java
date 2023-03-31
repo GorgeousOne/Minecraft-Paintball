@@ -42,7 +42,7 @@ public class BackupUtil {
 	}
 
 	public static boolean loadBackup(Player player, JavaPlugin plugin) {
-		File backupFile = findBackup(player, plugin);
+		File backupFile = ConfigUtil.matchFirstFile(player.getUniqueId().toString(), "backups", plugin);
 
 		if (backupFile == null) {
 			return false;
@@ -70,16 +70,5 @@ public class BackupUtil {
 		}
 		backupFile.delete();
 		return true;
-	}
-
-	private static File findBackup(Player player, JavaPlugin plugin) {
-		File backupFolder = new File(plugin.getDataFolder() + "/backups");
-		String playerId = player.getUniqueId().toString();
-		File[] backups = backupFolder.listFiles((dir, name) -> name.contains(playerId));
-
-		if (backups != null && backups.length > 0) {
-			return backups[0];
-		}
-		return null;
 	}
 }

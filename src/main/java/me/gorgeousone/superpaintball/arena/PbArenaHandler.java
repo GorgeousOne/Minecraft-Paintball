@@ -39,7 +39,7 @@ public class PbArenaHandler {
 	
 	public PbArena createArena(String name, File schemFile, Location schemPos) {
 		if (arenas.containsKey(name)) {
-			throw new IllegalArgumentException(String.format("Arena '%s' already exists!", name));
+			throw new IllegalArgumentException(String.format("Arena %s already exists!", name));
 		}
 		PbArena arena = new PbArena(name, schemFile, schemPos, this);
 		arenas.put(name, arena);
@@ -52,7 +52,7 @@ public class PbArenaHandler {
 	
 	public PbArena createArena(PbArena oldArena, String name, Location schemPos) {
 		if (arenas.containsKey(name)) {
-			throw new IllegalArgumentException(String.format("Arena '%s' already exists!", name));
+			throw new IllegalArgumentException(String.format("Arena %s already exists!", name));
 		}
 		PbArena arena = new PbArena(oldArena, name, schemPos);
 		arenas.put(name, arena);
@@ -61,7 +61,7 @@ public class PbArenaHandler {
 	}
 	private void registerArena(PbArena arena) {
 		if (arenas.containsKey(arena.getName())) {
-			throw new IllegalArgumentException(String.format("Arena '%s' already exists!", arena.getName()));
+			throw new IllegalArgumentException(String.format("Arena %s already exists!", arena.getName()));
 		}
 		arenas.put(arena.getName(), arena);
 		ConfigurationSection arenasSection = backupConfig.getConfigurationSection("arenas");
@@ -79,7 +79,7 @@ public class PbArenaHandler {
 	
 	public void removeArena(String name) {
 		if (!arenas.containsKey(name)) {
-			throw new IllegalArgumentException(String.format("Arena '%s' does not exist!", name));
+			throw new IllegalArgumentException(String.format("Arena %s does not exist!", name));
 		}
 		arenas.remove(name);
 		ConfigurationSection arenasSection = backupConfig.getConfigurationSection("arenas");

@@ -37,7 +37,7 @@ public class ArenaAddSpawnCommand extends ArgCommand {
 		String arenaName = argValues.get(0).get();
 
 		if (!arenaHandler.containsArena(arenaName)) {
-			StringUtil.msg(sender, "Arena '%s' does not exist!", arenaName);
+			StringUtil.msg(sender, "Arena %s does not exist!", arenaName);
 			return;
 		}
 		TeamType teamType;
@@ -46,13 +46,13 @@ public class ArenaAddSpawnCommand extends ArgCommand {
 		try {
 			teamType = TeamType.valueOf(teamName.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			StringUtil.msg(sender, "Team '%s' does not exist!", teamName);
+			StringUtil.msg(sender, "Team %s does not exist!", teamName);
 			return;
 		}
 		PbArena arena = arenaHandler.getArena(arenaName);
 		Location spawnPos = player.getLocation();
 		arena.addSpawn(teamType, spawnPos);
-		StringUtil.msg(sender, "Added spawn %s in arena '%s' for team %s.", LocationUtil.humanBlockPos(spawnPos), arenaName, teamType.displayName);
+		StringUtil.msg(sender, "Added spawn %s in arena %s for team %s.", LocationUtil.humanBlockPos(spawnPos), arenaName, teamType.displayName);
 	}
 
 	@Override

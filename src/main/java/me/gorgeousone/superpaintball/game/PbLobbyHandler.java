@@ -36,7 +36,7 @@ public class PbLobbyHandler {
 
 	public PbLobby createLobby(String name, Location spawn) {
 		if (lobbies.containsKey(name)) {
-			throw new IllegalArgumentException(String.format("Lobby with name '%s' already exists.", name));
+			throw new IllegalArgumentException(String.format("Lobby with name %s already exists.", name));
 		}
 		PbLobby lobby = new PbLobby(name, spawn, plugin, this, kitHandler);
 		lobbies.put(lobby.getName(), lobby);
@@ -48,7 +48,7 @@ public class PbLobbyHandler {
 		String name = lobby.getName();
 
 		if (lobbies.containsKey(name)) {
-			throw new IllegalArgumentException(String.format("Lobby with name '%s' already exists.", name));
+			throw new IllegalArgumentException(String.format("Lobby with name %s already exists.", name));
 		}
 		lobbies.put(name, lobby);
 	}
@@ -98,15 +98,6 @@ public class PbLobbyHandler {
 		return false;
 	}
 	
-	public PbTeam getTeam(UUID playerId) {
-		PbLobby lobby = getLobby(playerId);
-
-		if (lobby != null) {
-			return lobby.getTeam(playerId);
-		}
-		return null;
-	}
-	
 	public PbTeam getTeam(ArmorStand reviveSkelly) {
 		for (PbLobby lobby : lobbies.values()) {
 			for (PbTeam team : lobby.getGame().getTeams()) {
@@ -121,7 +112,7 @@ public class PbLobbyHandler {
 	public void linkArena(PbLobby lobby, PbArena arena) {
 		for (PbLobby other : lobbies.values()) {
 			if (other.getArenas().contains(arena)) {
-				throw new IllegalArgumentException(String.format("Arena '%s' already linked to lobby '%s'", arena.getName(), lobby.getName()));
+				throw new IllegalArgumentException(String.format("Arena %s already linked to lobby %s", arena.getName(), lobby.getName()));
 			}
 		}
 		lobby.linkArena(arena);

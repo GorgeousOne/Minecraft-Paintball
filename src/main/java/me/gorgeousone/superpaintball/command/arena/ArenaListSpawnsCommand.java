@@ -34,10 +34,10 @@ public class ArenaListSpawnsCommand extends ArgCommand {
 		PbArena arena = arenaHandler.getArena(arenaName);
 		
 		if (arena == null) {
-			StringUtil.msg(sender, "Arena '%s' does not exits!", arenaName);
+			StringUtil.msg(sender, "Arena %s does not exits!", arenaName);
 			return;
 		}
-		StringUtil.msg(sender, "Spawn points of arena '%s':", arenaName);
+		StringUtil.msg(sender, "Spawn points of arena %s:", arenaName);
 
 		for (TeamType teamType : TeamType.values()) {
 			StringUtil.msgPlain(sender, teamType.displayName + ":");

@@ -36,7 +36,7 @@ public class LobbyUnlinkArenaCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
 
 		if (lobby == null) {
-			StringUtil.msg(sender, "Lobby '%s' does not exits!", lobbyName);
+			StringUtil.msg(sender, "Lobby %s does not exits!", lobbyName);
 			return;
 		}
 		for (int i = 1; i < argValues.size(); ++i) {
@@ -44,12 +44,12 @@ public class LobbyUnlinkArenaCommand extends ArgCommand {
 			PbArena arena = arenaHandler.getArena(arenaName);
 
 			if (arena == null) {
-				StringUtil.msg(sender, "Arena '%s' does not exits!", arenaName);
+				StringUtil.msg(sender, "Arena %s does not exits!", arenaName);
 				continue;
 			}
 			try {
 				lobby.unlinkArena(arena);
-				StringUtil.msg(sender, "Arena '%s' is now detached from lobby '%s'.", arenaName, lobbyName);
+				StringUtil.msg(sender, "Arena %s is now detached from lobby %s.", arenaName, lobbyName);
 			} catch (IllegalArgumentException e) {
 				StringUtil.msg(sender, e.getMessage());
 			}

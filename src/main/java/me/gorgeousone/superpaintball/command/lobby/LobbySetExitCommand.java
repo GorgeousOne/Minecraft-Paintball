@@ -33,12 +33,12 @@ public class LobbySetExitCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
 		
 		if (lobby == null) {
-			StringUtil.msg(sender, "Lobby '%s' does not exits!", lobbyName);
+			StringUtil.msg(sender, "Lobby %s does not exits!", lobbyName);
 			return;
 		}
 		Player player = (Player) sender;
 		lobby.setExitSpawn(player.getLocation());
-		StringUtil.msg(sender, "Set lobby '%s' exit point to %s", lobby.getName(), LocationUtil.humanBlockPos(lobby.getJoinSpawn()));
+		StringUtil.msg(sender, "Set lobby %s exit point to %s", lobby.getName(), LocationUtil.humanBlockPos(lobby.getJoinSpawn()));
 	}
 
 	@Override

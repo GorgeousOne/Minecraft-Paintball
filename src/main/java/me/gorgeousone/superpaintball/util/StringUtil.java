@@ -15,10 +15,12 @@ public abstract class StringUtil {
 	private StringUtil() {}
 
 	public static void msg(CommandSender sender, String message, Object... args) {
+		message = message.replaceAll("%-?\\d*\\.?\\d*[a-zA-D]", ChatColor.RESET + "$0" + MSG_COLOR);
 		sender.sendMessage(PLUGIN_PREFIX + String.format(message, args));
 	}
 	
 	public static void msgPlain(CommandSender sender, String message, Object... args) {
+		message = message.replaceAll("%-?\\d*\\.?\\d*[a-zA-D]", ChatColor.RESET + "$0" + MSG_COLOR);
 		sender.sendMessage(ChatColor.GRAY + String.format(message, args));
 	}
 	

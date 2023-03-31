@@ -44,7 +44,7 @@ public class GameStartCommand extends ArgCommand {
 			lobby = lobbyHandler.getLobby(lobbyName);
 
 			if (lobby == null) {
-				StringUtil.msg(sender, "Lobby '%s' does not exits!", lobbyName);
+				StringUtil.msg(sender, "Lobby %s does not exits!", lobbyName);
 				return;
 			}
 		}

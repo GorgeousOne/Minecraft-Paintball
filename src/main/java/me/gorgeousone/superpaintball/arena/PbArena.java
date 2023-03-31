@@ -79,7 +79,7 @@ public class PbArena {
 		return name;
 	}
 	
-	public String getSpacedNamed() {
+	public String getSpacedName() {
 		return name.replace('_', ' ');
 	}
 
@@ -152,7 +152,7 @@ public class PbArena {
 			Location schemPos = ConfigUtil.blockPosFromYmlString(section.getString("position"));
 			arena = new PbArena(name, schemFile, schemPos, arenaHandler);
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException(String.format("Could not load arena '%s': %s", name, e.getMessage()));
+			throw new IllegalArgumentException(String.format("Could not load arena %s: %s", name, e.getMessage()));
 		}
 		ConfigurationSection spawnsSection = section.getConfigurationSection("spawns");
 
@@ -163,7 +163,7 @@ public class PbArena {
 				teamType = ConfigUtil.teamTypeFromYml(teamName);
 				spawnStrings = spawnsSection.getStringList(teamName);
 			} catch (IllegalArgumentException e) {
-				throw new IllegalArgumentException(String.format("Could not load arena '%s': %s", name, e.getMessage()));
+				throw new IllegalArgumentException(String.format("Could not load arena %s: %s", name, e.getMessage()));
 			}
 			try {
 				for (String spawnString : spawnStrings) {
@@ -171,21 +171,21 @@ public class PbArena {
 					arena.addSpawn(teamType, spawn);
 				}
 			} catch (IllegalArgumentException e) {
-				throw new IllegalArgumentException(String.format("Could not load arena '%s' team '%s' spawns: %s", arena, teamName, e.getMessage()));
+				throw new IllegalArgumentException(String.format("Could not load arena %s team %s spawns: %s", arena, teamName, e.getMessage()));
 			}
 		}
-		Bukkit.getLogger().log(Level.INFO, String.format("'%s' loaded", name));
+		Bukkit.getLogger().log(Level.INFO, String.format("%s loaded", name));
 		return arena;
 	}
 
 	public void assertIsPlayable() {
 		if (!schemFile.exists()) {
-			throw new IllegalArgumentException(String.format("Schematic '%s' for arena %s does not exist.", schemFile.getName(), name));
+			throw new IllegalArgumentException(String.format("Schematic %s for arena %s does not exist.", schemFile.getName(), name));
 		}
 		for (TeamType teamType : TeamType.values()) {
 			if (!teamSpawns.containsKey(teamType) || teamSpawns.get(teamType).isEmpty()) {
 				throw new IllegalArgumentException(String.format(
-						"Arena '%s' does not have any spawn points for team %s. /pb arena add-spawn %s", name, teamType.displayName, teamType.name().toLowerCase()));
+						"Arena %s does not have any spawn points for team %s. /pb arena add-spawn %s", name, teamType.displayName, teamType.name().toLowerCase()));
 			}
 		}
 	}

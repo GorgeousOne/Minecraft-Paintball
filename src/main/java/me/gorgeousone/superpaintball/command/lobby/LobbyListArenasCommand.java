@@ -33,10 +33,10 @@ public class LobbyListArenasCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
 		
 		if (lobby == null) {
-			StringUtil.msg(sender, "Lobby '%s' does not exits!", lobbyName);
+			StringUtil.msg(sender, "Lobby %s does not exits!", lobbyName);
 			return;
 		}
-		StringUtil.msg(sender, "Arenas linked to lobby '%s':", lobbyName);
+		StringUtil.msg(sender, "Arenas linked to lobby %s:", lobbyName);
 		
 		for (PbArena arena : lobby.getArenas()) {
 			StringUtil.msgPlain(sender, "  " + arena.getName() + ":  " + LocationUtil.humanBlockPos(arena.getSchemPos()));

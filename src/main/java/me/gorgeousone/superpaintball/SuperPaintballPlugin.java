@@ -16,6 +16,7 @@ import me.gorgeousone.superpaintball.util.SoundUtil;
 import me.gorgeousone.superpaintball.util.blocktype.BlockType;
 import me.gorgeousone.superpaintball.util.version.VersionUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -41,7 +42,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		registerCommands();
 		registerListeners();
 	}
-
+	
 	@Override
 	public void onDisable() {
 		lobbyHandler.closeLobbies();
@@ -93,6 +94,7 @@ public final class SuperPaintballPlugin extends JavaPlugin {
 		pbCmd.addChild(new GameJoinCommand(lobbyHandler));
 		pbCmd.addChild(new GameStartCommand(lobbyHandler));
 		pbCmd.addChild(new GameLeaveCommand(lobbyHandler));
+		pbCmd.addChild(new PlayerStatsCommand(this));
 		pbCmd.addChild(new ReloadCommand(this));
 
 		pbCmd.addChild(new DebugKillCommand(lobbyHandler));
