@@ -2,13 +2,13 @@ package me.gorgeousone.paintball.game;
 
 import me.gorgeousone.paintball.ConfigSettings;
 import me.gorgeousone.paintball.GameBoard;
-import me.gorgeousone.paintball.util.BackupUtil;
 import me.gorgeousone.paintball.arena.PbArena;
 import me.gorgeousone.paintball.arena.PbArenaHandler;
 import me.gorgeousone.paintball.equipment.*;
 import me.gorgeousone.paintball.kit.PbKitHandler;
 import me.gorgeousone.paintball.team.PbTeam;
 import me.gorgeousone.paintball.util.ConfigUtil;
+import me.gorgeousone.paintball.util.ItemUtil;
 import me.gorgeousone.paintball.util.LocationUtil;
 import me.gorgeousone.paintball.util.SoundUtil;
 import me.gorgeousone.paintball.util.StringUtil;
@@ -103,16 +103,16 @@ public class PbLobby {
 		UUID playerId = player.getUniqueId();
 		
 		if (game.hasPlayer(playerId)) {
-			throw new IllegalArgumentException(String.format("You already are in lobby %s.", name));
+			throw new IllegalArgumentException(StringUtil.format("You already are in lobby %s.", name));
 		}
 		//TODO join as spectator?
 		if (game.isRunning()) {
-			throw new IllegalStateException(String.format("The game has already started! Please wait for the next round."));
+			throw new IllegalStateException(StringUtil.format("The game has already started! Please wait for the next round."));
 		}
 		if (game.size() >= ConfigSettings.MAX_PLAYERS) {
-			throw new IllegalStateException(String.format("Lobby %s is full!", name));
+			throw new IllegalStateException(StringUtil.format("Lobby %s is full!", name));
 		}
-		BackupUtil.saveBackup(player, getExitSpawn(), plugin);
+		ItemUtil.saveInventory(player, getExitSpawn(), plugin);
 		player.setGameMode(GameMode.ADVENTURE);
 		StringUtil.msg(player, "Joined lobby %s.", name);
 		
@@ -141,17 +141,13 @@ public class PbLobby {
 			throw new IllegalArgumentException("Can't remove player with id: " + playerId + ". They are not in this game");
 		}
 		game.removePlayer(playerId);
-		BackupUtil.loadBackup(player, plugin);
+		ItemUtil.loadInventory(player, plugin);
 		StringUtil.msg(player, "You left lobby %s.", name);
 		
 		if (!game.isRunning()) {
 			board.removePlayer(player);
 			updateLobbyBoard();
 		}
-	}
-	
-	public PbTeam getTeam(UUID playerId) {
-		return game.getTeam(playerId);
 	}
 	
 	private void onSelectKit(SlotClickEvent event) {
@@ -181,7 +177,7 @@ public class PbLobby {
 	
 	public void linkArena(PbArena arena) {
 		if (arenas.contains(arena)) {
-			throw new IllegalArgumentException(String.format("Arena %s already linked to this lobby!", arena.getName()));
+			throw new IllegalArgumentException(StringUtil.format("Arena %s already linked to this lobby!", arena.getName()));
 		}
 		arenas.add(arena);
 		
@@ -192,7 +188,7 @@ public class PbLobby {
 	
 	public void unlinkArena(PbArena arena) {
 		if (arenas.contains(arena)) {
-			throw new IllegalArgumentException(String.format("Arena %s is not linked to this lobby!", arena.getName()));
+			throw new IllegalArgumentException(StringUtil.format("Arena %s is not linked to this lobby!", arena.getName()));
 		}
 		arenas.remove(arena);
 		lobbyHandler.saveLobby(this);
@@ -219,7 +215,7 @@ public class PbLobby {
 	
 	public void startGame() {
 		if (arenas.isEmpty()) {
-			throw new IllegalStateException(String.format(
+			throw new IllegalStateException(StringUtil.format(
 					"Lobby %s cannot start a game because no arenas to play are linked to it. /pb link %s <arena name>", name, name));
 		}
 		if (game.size() < ConfigSettings.MIN_PLAYERS) {
@@ -248,7 +244,7 @@ public class PbLobby {
 	
 	public void reset() {
 		game.allPlayers(p -> {
-			BackupUtil.loadBackup(p, plugin);
+			ItemUtil.loadInventory(p, plugin);
 			StringUtil.msg(p, "Lobby %s closed.", name);
 		});
 		game.reset();

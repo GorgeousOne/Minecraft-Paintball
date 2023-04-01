@@ -1,28 +1,16 @@
 package me.gorgeousone.paintball.arena;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
-import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.function.operation.Operations;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.world.World;
 import me.gorgeousone.paintball.util.LocationUtil;
 import me.gorgeousone.paintball.team.TeamType;
 import me.gorgeousone.paintball.util.ConfigUtil;
+import me.gorgeousone.paintball.util.SchemUtil;
+import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -32,13 +20,15 @@ import java.util.logging.Level;
 
 public class PbArena {
 
+	private final JavaPlugin plugin;
 	private final PbArenaHandler arenaHandler;
 	private final String name;
 	private File schemFile;
 	private Location schemPos;
 	private final Map<TeamType, List<Location>> teamSpawns;
 
-	public PbArena(String name, File schemFile, Location schemPos, PbArenaHandler arenaHandler) {
+	public PbArena(String name, File schemFile, Location schemPos, JavaPlugin plugin, PbArenaHandler arenaHandler) {
+		this.plugin = plugin;
 		this.arenaHandler = arenaHandler;
 		this.name = name;
 		this.schemFile = schemFile;
@@ -55,6 +45,7 @@ public class PbArena {
 	}
 
 	public PbArena(PbArena other, String name, Location schemPos) {
+		this.plugin = other.plugin;
 		this.arenaHandler = other.arenaHandler;
 		this.name = name;
 		this.schemFile = other.schemFile;
@@ -93,28 +84,17 @@ public class PbArena {
 		teamSpawns.get(teamType).add(spawnPos);
 		arenaHandler.saveArena(this);
 	}
+	
+	public void setup() {
+		SchemUtil.pasteSchemWithBackup(schemFile, schemPos, name, plugin);
+	}
 
 	public void reset() {
-		ClipboardFormat format = ClipboardFormats.findByFile(schemFile);
-		Clipboard clipboard;
-
-		try (ClipboardReader reader = format.getReader(Files.newInputStream(schemFile.toPath()))) {
-			clipboard = reader.read();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		World weWorld = BukkitAdapter.adapt(schemPos.getWorld());
-
-		try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(weWorld, -1)) {
-			Operation operation = new ClipboardHolder(clipboard)
-					.createPaste(editSession)
-					.to(BlockVector3.at(schemPos.getX(), schemPos.getY(), schemPos.getZ()))
-					.ignoreAirBlocks(true)
-					.build();
-			Operations.complete(operation);
-		} catch (WorldEditException e) {
-			throw new RuntimeException(e);
-		}
+		SchemUtil.pasteSchem(schemFile, schemPos);
+	}
+	
+	public void removeSchem() {
+		SchemUtil.resetSchemFromBackup(name, schemPos, plugin);
 	}
 
 	public boolean hasSpawns(TeamType teamType) {
@@ -141,7 +121,7 @@ public class PbArena {
 		}
 	}
 
-	public static PbArena fromYml(String name, ConfigurationSection parentSection, String schemFolder, PbArenaHandler arenaHandler) {
+	public static PbArena fromYml(String name, ConfigurationSection parentSection, String schemFolder, JavaPlugin plugin, PbArenaHandler arenaHandler) {
 		ConfigurationSection section = parentSection.getConfigurationSection(name);
 		PbArena arena;
 		try {
@@ -150,7 +130,7 @@ public class PbArena {
 			ConfigUtil.assertKeyExists(section, "spawns");
 			File schemFile = ConfigUtil.schemFileFromYml(section.getString("schematic"), schemFolder);
 			Location schemPos = ConfigUtil.blockPosFromYmlString(section.getString("position"));
-			arena = new PbArena(name, schemFile, schemPos, arenaHandler);
+			arena = new PbArena(name, schemFile, schemPos, plugin, arenaHandler);
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException(String.format("Could not load arena %s: %s", name, e.getMessage()));
 		}
@@ -180,11 +160,11 @@ public class PbArena {
 
 	public void assertIsPlayable() {
 		if (!schemFile.exists()) {
-			throw new IllegalArgumentException(String.format("Schematic %s for arena %s does not exist.", schemFile.getName(), name));
+			throw new IllegalArgumentException(StringUtil.format("Schematic %s for arena %s does not exist.", schemFile.getName(), name));
 		}
 		for (TeamType teamType : TeamType.values()) {
 			if (!teamSpawns.containsKey(teamType) || teamSpawns.get(teamType).isEmpty()) {
-				throw new IllegalArgumentException(String.format(
+				throw new IllegalArgumentException(StringUtil.format(
 						"Arena %s does not have any spawn points for team %s. /pb arena add-spawn %s", name, teamType.displayName, teamType.name().toLowerCase()));
 			}
 		}

@@ -51,7 +51,7 @@ public class LobbyUnlinkArenaCommand extends ArgCommand {
 				lobby.unlinkArena(arena);
 				StringUtil.msg(sender, "Arena %s is now detached from lobby %s.", arenaName, lobbyName);
 			} catch (IllegalArgumentException e) {
-				StringUtil.msg(sender, e.getMessage());
+				sender.sendMessage(e.getMessage());
 			}
 		}
 	}

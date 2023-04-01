@@ -6,6 +6,7 @@ import me.gorgeousone.paintball.cmdframework.argument.ArgType;
 import me.gorgeousone.paintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.paintball.cmdframework.argument.Argument;
 import me.gorgeousone.paintball.cmdframework.command.ArgCommand;
+import me.gorgeousone.paintball.game.PbLobbyHandler;
 import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.command.CommandSender;
 
@@ -17,12 +18,14 @@ import java.util.stream.Collectors;
 public class ArenaDeleteCommand extends ArgCommand {
 
 	private final PbArenaHandler arenaHandler;
+	private final PbLobbyHandler lobbyHandler;
 	
-	public ArenaDeleteCommand(PbArenaHandler arenaHandler) {
+	public ArenaDeleteCommand(PbArenaHandler arenaHandler, PbLobbyHandler lobbyHandler) {
 		super("delete");
 		this.addArg(new Argument("arena name", ArgType.STRING));
 		
 		this.arenaHandler = arenaHandler;
+		this.lobbyHandler = lobbyHandler;
 	}
 	
 	@Override
@@ -30,10 +33,11 @@ public class ArenaDeleteCommand extends ArgCommand {
 		String arenaName = argValues.get(0).get();
 
 		try {
+			lobbyHandler.unlinkArena(arenaHandler.getArena(arenaName));
 			arenaHandler.removeArena(arenaName);
 			StringUtil.msg(sender, "Removed new arena %s.", arenaName);
 		} catch (IllegalArgumentException e) {
-			StringUtil.msg(sender, e.getMessage());
+			sender.sendMessage(e.getMessage());
 		}
 	}
 

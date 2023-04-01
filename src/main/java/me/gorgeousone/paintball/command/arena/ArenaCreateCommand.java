@@ -44,14 +44,14 @@ public class ArenaCreateCommand extends ArgCommand {
 		try {
 			schemFile = ConfigUtil.schemFileFromYml(schemFileName, ConfigSettings.SCHEM_FOLDER);
 		}catch (IllegalArgumentException e) {
-			StringUtil.msg(sender, e.getMessage());
+			sender.sendMessage(e.getMessage());
 			return;
 		}
 		try {
 			PbArena arena = arenaHandler.createArena(arenaName, schemFile, player.getLocation());
 			StringUtil.msg(sender, "Created new arena %s at %s", arenaName, LocationUtil.humanBlockPos(arena.getSchemPos()));
 		}catch (IllegalArgumentException e) {
-			StringUtil.msg(sender, e.getMessage());
+			sender.sendMessage(e.getMessage());
 		}
 	}
 }

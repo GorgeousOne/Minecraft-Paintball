@@ -33,7 +33,7 @@ public class LobbyCreateCommand extends ArgCommand {
 			PbLobby lobby = lobbyHandler.createLobby(lobbyName, player.getLocation());
 			StringUtil.msg(sender, "Created new lobby %s at %s", lobbyName, LocationUtil.humanBlockPos(lobby.getJoinSpawn()));
 		} catch (Exception e) {
-			StringUtil.msg(sender, e.getMessage());
+			sender.sendMessage(e.getMessage());
 		}
 	}
 }

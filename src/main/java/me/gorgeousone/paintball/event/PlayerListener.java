@@ -2,9 +2,9 @@ package me.gorgeousone.paintball.event;
 
 import me.gorgeousone.paintball.game.GameState;
 import me.gorgeousone.paintball.kit.PbKitHandler;
-import me.gorgeousone.paintball.util.BackupUtil;
 import me.gorgeousone.paintball.game.PbLobbyHandler;
 import me.gorgeousone.paintball.game.PbLobby;
+import me.gorgeousone.paintball.util.ItemUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -85,7 +85,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		//TODO check if file searching is expensive
-		BackupUtil.loadBackup(event.getPlayer(), plugin);
+		ItemUtil.loadInventory(event.getPlayer(), plugin);
 	}
 
 	@EventHandler

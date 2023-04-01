@@ -49,7 +49,7 @@ public class ArenaCopyCommand extends ArgCommand {
 			PbArena newArena = arenaHandler.createArena(oldArena, newName, player.getLocation());
 			StringUtil.msg(sender, "Copied new arena %s to %s", newName, LocationUtil.humanBlockPos(newArena.getSchemPos()));
 		}catch (IllegalArgumentException e) {
-			StringUtil.msg(sender, e.getMessage());
+			sender.sendMessage(e.getMessage());
 		}
 	}
 

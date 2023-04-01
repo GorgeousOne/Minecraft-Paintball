@@ -84,7 +84,7 @@ public final class ConfigUtil {
 			int z = parseInt(dataMap, "z");
 			return new Location(world, x, y, z);
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException(String.format("Could not load position %s: %s", ymlBlockPos, e.getMessage()));
+			throw new IllegalArgumentException(StringUtil.format("Could not load position %s: %s", ymlBlockPos, e.getMessage()));
 		}
 	}
 
@@ -202,7 +202,7 @@ public final class ConfigUtil {
 		try {
 			return TeamType.valueOf(teamName.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException(String.format("Plugin doesn't have team %s.", teamName));
+			throw new IllegalArgumentException(StringUtil.format("Plugin doesn't have team %s.", teamName));
 		}
 	}
 }

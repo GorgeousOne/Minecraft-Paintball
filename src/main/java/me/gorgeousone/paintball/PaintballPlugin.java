@@ -69,7 +69,7 @@ public final class PaintballPlugin extends JavaPlugin {
 		arenaCmd.setPlayerRequired(false);
 		
 		arenaCmd.addChild(new ArenaCreateCommand(arenaHandler));
-		arenaCmd.addChild(new ArenaDeleteCommand(arenaHandler));
+		arenaCmd.addChild(new ArenaDeleteCommand(arenaHandler, lobbyHandler));
 		arenaCmd.addChild(new ArenaCopyCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaAddSpawnCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaRemoveSpawnCommand(arenaHandler));

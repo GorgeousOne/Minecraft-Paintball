@@ -5,6 +5,7 @@ import me.gorgeousone.paintball.arena.PbArenaHandler;
 import me.gorgeousone.paintball.kit.PbKitHandler;
 import me.gorgeousone.paintball.team.PbTeam;
 import me.gorgeousone.paintball.util.ConfigUtil;
+import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -35,7 +36,7 @@ public class PbLobbyHandler {
 
 	public PbLobby createLobby(String name, Location spawn) {
 		if (lobbies.containsKey(name)) {
-			throw new IllegalArgumentException(String.format("Lobby with name %s already exists.", name));
+			throw new IllegalArgumentException(StringUtil.format("Lobby with name %s already exists.", name));
 		}
 		PbLobby lobby = new PbLobby(name, spawn, plugin, this, kitHandler);
 		lobbies.put(lobby.getName(), lobby);
@@ -47,7 +48,7 @@ public class PbLobbyHandler {
 		String name = lobby.getName();
 
 		if (lobbies.containsKey(name)) {
-			throw new IllegalArgumentException(String.format("Lobby with name %s already exists.", name));
+			throw new IllegalArgumentException(StringUtil.format("Lobby with name %s already exists.", name));
 		}
 		lobbies.put(name, lobby);
 	}
@@ -111,11 +112,20 @@ public class PbLobbyHandler {
 	public void linkArena(PbLobby lobby, PbArena arena) {
 		for (PbLobby other : lobbies.values()) {
 			if (other.getArenas().contains(arena)) {
-				throw new IllegalArgumentException(String.format("Arena %s already linked to lobby %s", arena.getName(), lobby.getName()));
+				throw new IllegalArgumentException(StringUtil.format("Arena %s already linked to lobby %s", arena.getName(), lobby.getName()));
 			}
 		}
 		lobby.linkArena(arena);
 		saveLobby(lobby);
+	}
+	
+	public void unlinkArena(PbArena arena) {
+		for (PbLobby lobby : lobbies.values()) {
+			if (lobby.getArenas().contains(arena)) {
+				lobby.unlinkArena(arena);
+				return;
+			}
+		}
 	}
 	
 	public Location getExitSpawn() {

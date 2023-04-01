@@ -1,6 +1,7 @@
 package me.gorgeousone.paintball.arena;
 
 import me.gorgeousone.paintball.util.ConfigUtil;
+import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -32,29 +33,29 @@ public class PbArenaHandler {
 	
 	public PbArena createArena(String name, File schemFile, Location schemPos) {
 		if (arenas.containsKey(name)) {
-			throw new IllegalArgumentException(String.format("Arena %s already exists!", name));
+			throw new IllegalArgumentException(StringUtil.format("Arena %s already exists!", name));
 		}
-		PbArena arena = new PbArena(name, schemFile, schemPos, this);
+		PbArena arena = new PbArena(name, schemFile, schemPos, plugin, this);
 		arenas.put(name, arena);
-		arena.reset();
+		arena.setup();
 		saveArena(arena);
 		return arena;
 	}
 	
 	//TODO overthink this weird duplicate code? Is that wrapper needed?
-	
 	public PbArena createArena(PbArena oldArena, String name, Location schemPos) {
 		if (arenas.containsKey(name)) {
-			throw new IllegalArgumentException(String.format("Arena %s already exists!", name));
+			throw new IllegalArgumentException(StringUtil.format("Arena %s already exists!", name));
 		}
 		PbArena arena = new PbArena(oldArena, name, schemPos);
 		arenas.put(name, arena);
-		arena.reset();
+		arena.setup();
 		return arena;
 	}
+	
 	private void registerArena(PbArena arena) {
 		if (arenas.containsKey(arena.getName())) {
-			throw new IllegalArgumentException(String.format("Arena %s already exists!", arena.getName()));
+			throw new IllegalArgumentException(StringUtil.format("Arena %s already exists!", arena.getName()));
 		}
 		arenas.put(arena.getName(), arena);
 		ConfigurationSection arenasSection = backupConfig.getConfigurationSection("arenas");
@@ -72,27 +73,13 @@ public class PbArenaHandler {
 	
 	public void removeArena(String name) {
 		if (!arenas.containsKey(name)) {
-			throw new IllegalArgumentException(String.format("Arena %s does not exist!", name));
+			throw new IllegalArgumentException(StringUtil.format("Arena %s does not exist!", name));
 		}
+		arenas.get(name).removeSchem();
 		arenas.remove(name);
 		ConfigurationSection arenasSection = backupConfig.getConfigurationSection("arenas");
 		arenasSection.set(name, null);
 		ConfigUtil.saveConfig(backupConfig, "arenas", plugin);
-	}
-	
-	
-	
-	public void saveArenas() {
-		Logger logger = Bukkit.getLogger();
-		logger.log(Level.INFO, "  Saving arenas:");
-		
-		if (!backupConfig.contains("arenas")) {
-			backupConfig.createSection("arenas");
-		}
-		ConfigurationSection arenasSection = backupConfig.getConfigurationSection("arenas");
-		arenas.values().forEach(l -> l.toYml(arenasSection));
-		ConfigUtil.saveConfig(backupConfig, "arenas", plugin);
-		logger.log(Level.INFO, String.format("  Saved %d arenas", arenas.size()));
 	}
 	
 	void saveArena(PbArena arena) {
@@ -113,7 +100,7 @@ public class PbArenaHandler {
 
 		for (String name : arenaSection.getKeys(false)) {
 			try {
-				PbArena arena = PbArena.fromYml(name, arenaSection, schemFolder, this);
+				PbArena arena = PbArena.fromYml(name, arenaSection, schemFolder,  plugin,this);
 				registerArena(arena);
 			} catch (IllegalArgumentException e) {
 				logger.log(Level.WARNING, e.getMessage());

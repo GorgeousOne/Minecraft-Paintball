@@ -51,7 +51,7 @@ public class LobbyLinkArenaCommand extends ArgCommand {
 				lobbyHandler.linkArena(lobby, arena);
 				StringUtil.msg(sender, "Arena %s is now playable in lobby %s.", arenaName, lobbyName);
 			} catch (IllegalArgumentException e) {
-				StringUtil.msg(sender, e.getMessage());
+				sender.sendMessage(e.getMessage());
 			}
 		}
 	}
