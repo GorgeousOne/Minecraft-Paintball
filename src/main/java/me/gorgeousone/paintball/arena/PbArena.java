@@ -11,6 +11,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -86,15 +88,27 @@ public class PbArena {
 	}
 	
 	public void setup() {
-		SchemUtil.pasteSchemWithBackup(schemFile, schemPos, name, plugin);
+		try {
+			SchemUtil.pasteSchemWithBackup(schemFile, schemPos, name, plugin);
+		} catch (IOException e) {
+			throw new IllegalArgumentException(StringUtil.format("Could not find the schematic of arena %s.", name));
+		}
 	}
 
 	public void reset() {
-		SchemUtil.pasteSchem(schemFile, schemPos);
+		try {
+			SchemUtil.pasteSchem(schemFile, schemPos);
+		} catch (IOException e) {
+			throw new IllegalArgumentException(StringUtil.format("Could not find the schematic of arena %s.", name));
+		}
 	}
 	
 	public void removeSchem() {
-		SchemUtil.resetSchemFromBackup(name, schemPos, plugin);
+		try {
+			SchemUtil.resetSchemFromBackup(name, schemPos, plugin);
+		} catch (IOException e) {
+			throw new IllegalArgumentException(StringUtil.format("The find the backup schematic to remove arena %s.", name));
+		}
 	}
 
 	public boolean hasSpawns(TeamType teamType) {

@@ -75,11 +75,12 @@ public class PbArenaHandler {
 		if (!arenas.containsKey(name)) {
 			throw new IllegalArgumentException(StringUtil.format("Arena %s does not exist!", name));
 		}
-		arenas.get(name).removeSchem();
+		PbArena arena = arenas.get(name);
 		arenas.remove(name);
 		ConfigurationSection arenasSection = backupConfig.getConfigurationSection("arenas");
 		arenasSection.set(name, null);
 		ConfigUtil.saveConfig(backupConfig, "arenas", plugin);
+		arena.removeSchem();
 	}
 	
 	void saveArena(PbArena arena) {

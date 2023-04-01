@@ -187,13 +187,7 @@ public final class ConfigUtil {
 		File file = new File(schemFolder + "/" + fileName);
 
 		if (!file.exists()) {
-			throw new IllegalArgumentException(String.format("Schematic %s does not exist.", fileName));
-		}
-		String[] nameParts = fileName.split("\\.");
-		String extension = nameParts[nameParts.length - 1];
-
-		if (!("schem".equals(extension) || "schematic".equals(extension))) {
-			throw new IllegalArgumentException(String.format("File %s does not have extension '.schem' or '.schematic'", fileName));
+			throw new IllegalArgumentException(StringUtil.format("Schematic %s does not exist.", fileName));
 		}
 		return file;
 	}
