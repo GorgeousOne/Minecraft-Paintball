@@ -8,7 +8,7 @@ import org.bukkit.potion.PotionEffectType;
 public class RifleKit extends AbstractKit {
 	
 	public RifleKit() {
-		super(KitType.RIFLE, 3, 1, 2.25f, 0.02f, 10, Sound.ENTITY_CHICKEN_EGG, 1.35f, 1.15f);
+		super(KitType.RIFLE, 3, 1, 1.75f, 0.02f, 10, Sound.ENTITY_CHICKEN_EGG, 1.35f, 1.15f);
 	}
 	
 	@Override

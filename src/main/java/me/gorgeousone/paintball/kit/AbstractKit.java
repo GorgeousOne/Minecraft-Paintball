@@ -19,7 +19,7 @@ public abstract class AbstractKit {
 	protected final int bulletDmg;
 	protected final int bulletCount;
 	protected final float bulletSpeed;
-	protected final float bulletSpread;
+	protected float bulletSpread;
 	protected final long fireRate;
 	protected final Sound gunshotSound;
 	protected final float gunshotPitchHigh;

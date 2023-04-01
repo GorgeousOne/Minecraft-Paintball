@@ -16,13 +16,13 @@ public class  MachineGunKit extends AbstractKit {
 
 	private final Map<UUID, Integer> magazines;
 	private final Map<UUID, Long> lastShots;
-	private static final int MAGAZINE_SIZE = 30;
+	private static final int MAGAZINE_SIZE = 50;
 	private static final long RELOAD_DELAY = 10L;
 	private static final long RELOAD_INTERVAL = 2L;
 	private static final int RELOAD_RATE = 2;
-
+	
 	public MachineGunKit(JavaPlugin plugin) {
-		super(KitType.MACHINE_GUN, 1, 1, 1.75f, .075f, 0, Sound.ENTITY_CHICKEN_EGG, 2f, 1.75f);
+		super(KitType.MACHINE_GUN, 1, 1, 2.25f, .2f, 3, Sound.ENTITY_CHICKEN_EGG, 2f, 1.75f);
 		this.magazines = new HashMap<>();
 		this.lastShots = new HashMap<>();
 		startReloadAnimator(plugin);
@@ -31,13 +31,23 @@ public class  MachineGunKit extends AbstractKit {
 	@Override
 	public boolean launchShot(Player player, PbTeam team, Collection<Player> gamePlayers) {
 		UUID playerId = player.getUniqueId();
-
-		if (getMagazine(playerId) <= 0) {
+		int magazine = getMagazine(playerId);
+		
+		if (magazine <= 0) {
+			return false;
+		}
+		float maxBulletSpread = bulletSpread;
+		float gunHeat = (float) Math.pow(1f - 1f * magazine / MAGAZINE_SIZE, 2);
+		bulletSpread *= gunHeat;
+		boolean didShoot = super.launchShot(player, team, gamePlayers);
+		bulletSpread = maxBulletSpread;
+		
+		if (!didShoot) {
 			return false;
 		}
 		increaseMagazine(playerId, -1);
 		lastShots.put(playerId, System.currentTimeMillis());
-		return super.launchShot(player, team, gamePlayers);
+		return true;
 	}
 
 	@Override
