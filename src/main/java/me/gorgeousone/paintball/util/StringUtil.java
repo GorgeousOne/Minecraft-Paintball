@@ -24,6 +24,10 @@ public abstract class StringUtil {
 		sender.sendMessage(ChatColor.GRAY + String.format(message, args));
 	}
 	
+	public static String replace(String message, String configPlaceholder, String value) {
+		return message.replace("%" + configPlaceholder + "%", value);
+	}
+	
 	public static String pad(int n) {
 		return pad(n, ' ');
 	}

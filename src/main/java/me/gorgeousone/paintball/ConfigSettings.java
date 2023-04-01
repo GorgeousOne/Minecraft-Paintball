@@ -14,6 +14,8 @@ public class ConfigSettings {
 	public static int MIN_PLAYERS;
 	public static int MAX_PLAYERS;
 	public static int PLAYER_HEALTH_POINTS;
+	public static String CHAT_PREFIX_ALIVE;
+	public static String CHAT_PREFIX_DEAD;
 	
 	public static void loadSettings(FileConfiguration config) {
 		COUNTDOWN_SECS = clamp(config.getInt("countdown.seconds"), 5, 600);
@@ -29,6 +31,9 @@ public class ConfigSettings {
 			Bukkit.getLogger().log(Level.WARNING, String.format("Schematic folder %s does not exist! Falling back to %s", SCHEM_FOLDER, defaultSchemFolder));
 			SCHEM_FOLDER = defaultSchemFolder;
 		}
+		ConfigurationSection prefixSection = config.getConfigurationSection("chat-prefix");
+		CHAT_PREFIX_ALIVE = prefixSection.getString("alive").replace('&', '§');
+		CHAT_PREFIX_DEAD = prefixSection.getString("dead").replace('&', '§');
 	}
 	
 	public static <T extends Comparable<T>> T clamp(T val, T min, T max) {

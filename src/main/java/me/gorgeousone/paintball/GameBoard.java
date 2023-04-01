@@ -42,7 +42,7 @@ public class GameBoard {
 	}
 
 	public void removePlayer(Player player) {
-		player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+		player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 	}
 
 	public Team createTeam(String name, ChatColor chatColor) {

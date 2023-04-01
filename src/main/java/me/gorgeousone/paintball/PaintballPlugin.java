@@ -109,6 +109,7 @@ public final class PaintballPlugin extends JavaPlugin {
 		manager.registerEvents(new ItemUseListener(lobbyHandler), this);
 		manager.registerEvents(new InventoryListener(lobbyHandler, kitHandler), this);
 		manager.registerEvents(new MovementListener(lobbyHandler), this);
+		manager.registerEvents(new ChatListener(lobbyHandler), this);
 
 		manager.registerEvents(new ProjectileListener(lobbyHandler), this);
 		manager.registerEvents(new SkellyInteractListener(lobbyHandler), this);
