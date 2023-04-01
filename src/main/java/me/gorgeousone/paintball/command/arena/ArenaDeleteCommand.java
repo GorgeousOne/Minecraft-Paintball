@@ -35,7 +35,7 @@ public class ArenaDeleteCommand extends ArgCommand {
 		try {
 			lobbyHandler.unlinkArena(arenaHandler.getArena(arenaName));
 			arenaHandler.removeArena(arenaName);
-			StringUtil.msg(sender, "Removed new arena %s.", arenaName);
+			StringUtil.msg(sender, "Removed arena %s.", arenaName);
 		} catch (IllegalArgumentException e) {
 			sender.sendMessage(e.getMessage());
 		}

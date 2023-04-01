@@ -299,7 +299,7 @@ public class PbGame {
 				teams.values().forEach(PbTeam::reset);
 				allPlayers(p -> {
 					gameBoard.removePlayer(p);
-					arena.reset();
+					arena.resetSchem();
 					onGameEnd.run();
 				});
 			}

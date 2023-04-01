@@ -37,7 +37,7 @@ public class PbArenaHandler {
 		}
 		PbArena arena = new PbArena(name, schemFile, schemPos, plugin, this);
 		arenas.put(name, arena);
-		arena.setup();
+		arena.setupSchem();
 		saveArena(arena);
 		return arena;
 	}
@@ -49,7 +49,7 @@ public class PbArenaHandler {
 		}
 		PbArena arena = new PbArena(oldArena, name, schemPos);
 		arenas.put(name, arena);
-		arena.setup();
+		arena.setupSchem();
 		return arena;
 	}
 	

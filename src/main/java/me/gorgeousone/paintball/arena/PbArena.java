@@ -11,7 +11,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,11 +74,11 @@ public class PbArena {
 	public String getSpacedName() {
 		return name.replace('_', ' ');
 	}
-
+	
 	public Location getSchemPos() {
 		return schemPos.clone();
 	}
-
+	
 	public void addSpawn(TeamType teamType, Location spawnPos) {
 		LocationUtil.cleanSpawn(spawnPos);
 		teamSpawns.computeIfAbsent(teamType, v -> new ArrayList<>());
@@ -87,15 +86,15 @@ public class PbArena {
 		arenaHandler.saveArena(this);
 	}
 	
-	public void setup() {
+	public void setupSchem() {
 		try {
 			SchemUtil.pasteSchemWithBackup(schemFile, schemPos, name, plugin);
 		} catch (IOException e) {
 			throw new IllegalArgumentException(StringUtil.format("Could not find the schematic of arena %s.", name));
 		}
 	}
-
-	public void reset() {
+	
+	public void resetSchem() {
 		try {
 			SchemUtil.pasteSchem(schemFile, schemPos);
 		} catch (IOException e) {
@@ -103,22 +102,37 @@ public class PbArena {
 		}
 	}
 	
+	public void moveTo(Location pos) {
+		removeSchem();
+		Location newSchemPos = LocationUtil.cleanSpawn(pos);
+		Location dist = newSchemPos.clone().subtract(schemPos);
+		schemPos = newSchemPos;
+		
+		for (TeamType teamType : teamSpawns.keySet()) {
+			for (Location spawn : teamSpawns.get(teamType)) {
+				spawn.add(dist);
+				spawn.setWorld(schemPos.getWorld());
+			}
+		}
+		setupSchem();
+	}
+	
 	public void removeSchem() {
 		try {
 			SchemUtil.resetSchemFromBackup(name, schemPos, plugin);
 		} catch (IOException e) {
-			throw new IllegalArgumentException(StringUtil.format("The find the backup schematic to remove arena %s.", name));
+			throw new IllegalArgumentException(StringUtil.format("The find the backup schematic to remove arena %s. But removed arena.", name));
 		}
 	}
-
+	
 	public boolean hasSpawns(TeamType teamType) {
 		return teamSpawns.containsKey(teamType);
 	}
-
+	
 	public List<Location> getSpawns(TeamType type) {
 		return teamSpawns.get(type);
 	}
-
+	
 	public void toYml(ConfigurationSection parentSection) {
 		ConfigurationSection section = parentSection.createSection(name);
 		section.set("schematic", schemFile.getName());
@@ -134,7 +148,7 @@ public class PbArena {
 			spawnsSection.set(teamType.name().toLowerCase(), spawnStrings);
 		}
 	}
-
+	
 	public static PbArena fromYml(String name, ConfigurationSection parentSection, String schemFolder, JavaPlugin plugin, PbArenaHandler arenaHandler) {
 		ConfigurationSection section = parentSection.getConfigurationSection(name);
 		PbArena arena;
@@ -171,7 +185,7 @@ public class PbArena {
 		Bukkit.getLogger().log(Level.INFO, String.format("%s loaded", name));
 		return arena;
 	}
-
+	
 	public void assertIsPlayable() {
 		if (!schemFile.exists()) {
 			throw new IllegalArgumentException(StringUtil.format("Schematic %s for arena %s does not exist.", schemFile.getName(), name));
