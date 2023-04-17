@@ -187,7 +187,7 @@ public class PbLobby {
 	}
 	
 	public void unlinkArena(PbArena arena) {
-		if (arenas.contains(arena)) {
+		if (!arenas.contains(arena)) {
 			throw new IllegalArgumentException(StringUtil.format("Arena %s is not linked to this lobby!", arena.getName()));
 		}
 		arenas.remove(arena);

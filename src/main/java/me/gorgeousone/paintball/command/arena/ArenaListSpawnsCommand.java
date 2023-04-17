@@ -44,7 +44,7 @@ public class ArenaListSpawnsCommand extends ArgCommand {
 			int i = 1;
 			
 			for (Location location : arena.getSpawns(teamType)) {
-				StringUtil.msgPlain(sender, i + "  " + LocationUtil.humanBlockPos(location));
+				StringUtil.msgPlain(sender, i + " %s", LocationUtil.humanBlockPos(location));
 				++i;
 			}
 		}

@@ -76,7 +76,7 @@ public final class PaintballPlugin extends JavaPlugin {
 		arenaCmd.addChild(new ArenaRemoveSpawnCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaListSpawnsCommand(arenaHandler));
 		arenaCmd.addChild(new ArenaResetCommand(arenaHandler));
-
+		
 		ParentCommand lobbyCmd = new ParentCommand("lobby");
 		lobbyCmd.setPermission("paintball.configure");
 		lobbyCmd.setPlayerRequired(false);
@@ -88,9 +88,17 @@ public final class PaintballPlugin extends JavaPlugin {
 		lobbyCmd.addChild(new LobbyLinkArenaCommand(lobbyHandler, arenaHandler));
 		lobbyCmd.addChild(new LobbyUnlinkArenaCommand(lobbyHandler, arenaHandler));
 		lobbyCmd.addChild(new LobbyListArenasCommand(lobbyHandler));
-
+		
+		ParentCommand listCmd = new ParentCommand("list");
+		lobbyCmd.setPermission("paintball.configure");
+		lobbyCmd.setPlayerRequired(false);
+		
+		listCmd.addChild(new ListLobbiesCommand(lobbyHandler));
+		listCmd.addChild(new ListArenasCommand(arenaHandler));
+		
 		pbCmd.addChild(arenaCmd);
 		pbCmd.addChild(lobbyCmd);
+		pbCmd.addChild(listCmd);
 		pbCmd.addChild(new GameJoinCommand(lobbyHandler));
 		pbCmd.addChild(new GameStartCommand(lobbyHandler));
 		pbCmd.addChild(new GameLeaveCommand(lobbyHandler));

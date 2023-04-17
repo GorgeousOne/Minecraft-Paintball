@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.util;
 
+import me.gorgeousone.paintball.ConfigSettings;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -43,6 +44,7 @@ public abstract class ItemUtil {
 	public static void saveInventory(Player player, Location spawn, JavaPlugin plugin) {
 		YamlConfiguration backup = new YamlConfiguration();
 		backup.set("gamemode", player.getGameMode().name());
+		backup.set("max-health", player.getMaxHealth());
 		backup.set("health", player.getHealth());
 		backup.set("food", player.getFoodLevel());
 		backup.set("xp", player.getLevel() + player.getExp());
@@ -62,7 +64,8 @@ public abstract class ItemUtil {
 		String backupPath = BACKUPS_FOLDER + player.getName() + player.getUniqueId();
 		ConfigUtil.saveConfig(backup, backupPath, plugin);
 		inv.clear();
-		player.setHealth(20);
+		player.setMaxHealth(2 * ConfigSettings.PLAYER_HEALTH_POINTS);
+		player.setHealth(2 * ConfigSettings.PLAYER_HEALTH_POINTS);
 		player.setFoodLevel(20);
 		player.setLevel(0);
 		player.setExp(0);
@@ -80,6 +83,7 @@ public abstract class ItemUtil {
 		if (player.getGameMode() == GameMode.CREATIVE) {
 			player.setAllowFlight(true);
 		}
+		player.setMaxHealth(backup.getDouble("max-health"));
 		player.setHealth(backup.getDouble("health"));
 		player.setFoodLevel(backup.getInt("food"));
 		player.setLevel(backup.getInt("level"));

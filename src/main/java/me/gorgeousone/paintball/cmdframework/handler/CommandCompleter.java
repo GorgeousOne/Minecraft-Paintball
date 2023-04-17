@@ -27,7 +27,7 @@ public class CommandCompleter implements TabCompleter {
 			}
 			List<String> tabList = new LinkedList<>();
 			for (String tab : command.getTabList(sender, args)) {
-				if (tab.startsWith(args[args.length - 1])) {
+				if (tab.toLowerCase().startsWith(args[args.length - 1].toLowerCase())) {
 					tabList.add(tab);
 				}
 			}

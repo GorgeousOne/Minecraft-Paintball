@@ -32,7 +32,7 @@ public class SchemUtil {
 	
 	public static void pasteSchem(File file, Location origin) throws IOException {
 		Clipboard clipboard = loadClipboard(file);
-		pasteClipboard(clipboard, origin, true);
+		pasteClipboard(clipboard, origin, false);
 	}
 	
 	public static void pasteSchemWithBackup(File file, Location origin, String backupName, JavaPlugin plugin) throws IOException {
@@ -46,7 +46,7 @@ public class SchemUtil {
 		backup.setOrigin(originVec);
 		
 		saveClipboard(backup, backupFile);
-		pasteClipboard(clipboard, origin, true);
+		pasteClipboard(clipboard, origin, false);
 	}
 	
 	public static void resetSchemFromBackup(String backupName, Location origin, JavaPlugin plugin) throws IOException {

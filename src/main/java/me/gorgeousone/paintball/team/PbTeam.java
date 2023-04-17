@@ -142,41 +142,32 @@ public class PbTeam {
 	}
 
 	public void damagePlayer(Player target, Player shooter, int bulletDmg) {
-		UUID playerId = target.getUniqueId();
+		UUID targetId = target.getUniqueId();
 		
-		if (!alivePlayers.contains(playerId)) {
+		if (!alivePlayers.contains(targetId)) {
 			return;
 		}
 		shooter.playSound(shooter.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 2f);
-		boolean isAlive = updateHealth(playerId, bulletDmg);
-
-		if (isAlive) {
-			paintArmor(playerId);
-		} else {
-			game.broadcastKill(target, shooter);
-		}
-	}
-
-	private boolean updateHealth(UUID playerId, int dmgPoints) {
-		Player player = Bukkit.getPlayer(playerId);
-		int healthPoints = playerHealth.get(playerId);
+		int healthPoints = playerHealth.get(targetId);
 		
-		if (dmgPoints >= healthPoints) {
-			player.damage(player.getHealth() - 1);
-			knockoutPlayer(player);
-			return false;
+		if (bulletDmg < healthPoints) {
+			target.damage(2 * bulletDmg);
+			playerHealth.put(targetId, healthPoints - bulletDmg);
+			target.setNoDamageTicks(0);
+			paintArmor(targetId);
 		} else {
-			player.damage(20f * dmgPoints / maxHealthPoints);
-			playerHealth.put(playerId, healthPoints - dmgPoints);
-			player.setNoDamageTicks(0);
-			return true;
+			knockoutPlayer(target);
+			game.broadcastKill(target, shooter);
 		}
 	}
 	
 	public void knockoutPlayer(Player player) {
 		UUID playerId = player.getUniqueId();
 		alivePlayers.remove(player.getUniqueId());
+		
 		setSpectator(player, true);
+		healPlayer(player);
+		player.addPotionEffect(TeamUtil.KNOCKOUT_BLINDNESS);
 		
 		ArmorStand skelly = TeamUtil.createSkelly(TeamUtil.DEATH_ARMOR_SET, player, teamType, kitHandler.getKitType(playerId));
 		reviveSkellies.put(skelly.getUniqueId(), playerId);
@@ -210,9 +201,7 @@ public class PbTeam {
 		player.setFlying(isSpectator);
 
 		if (isSpectator) {
-			healPlayer(player);
 			player.teleport(player.getLocation().add(0, 1, 0));
-			player.addPotionEffect(TeamUtil.KNOCKOUT_BLINDNESS);
 			game.hidePlayer(player);
 		} else {
 			game.showPlayer(player);
@@ -230,15 +219,6 @@ public class PbTeam {
 			}
 		}
 		return null;
-	}
-
-	public void revivePlayer(UUID playerId) {
-		for (UUID skellyId : reviveSkellies.keySet()) {
-			if (reviveSkellies.get(skellyId) == playerId) {
-				revivePlayer((ArmorStand) Bukkit.getEntity(skellyId));
-				return;
-			}
-		}
 	}
 
 	public void revivePlayer(ArmorStand skelly) {
@@ -262,7 +242,8 @@ public class PbTeam {
 	
 	public void healPlayer(Player player) {
 		player.setFoodLevel(20);
-		player.setHealth(20);
+		player.setMaxHealth(2 * maxHealthPoints);
+		player.setHealth(2 * maxHealthPoints);
 		player.getInventory().setArmorContents(teamArmorSet);
 
 		UUID playerId = player.getUniqueId();
@@ -281,6 +262,4 @@ public class PbTeam {
 		inv.setItem(8, teamArmorSet[2]);
 		inv.setArmorContents(teamArmorSet);
 	}
-
-
 }
