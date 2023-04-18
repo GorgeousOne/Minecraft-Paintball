@@ -16,9 +16,9 @@ import java.util.UUID;
 public abstract class AbstractKit {
 	
 	protected final KitType kitType;
-	protected final int bulletDmg;
-	protected final int bulletCount;
-	protected final float bulletSpeed;
+	protected int bulletDmg;
+	protected int bulletCount;
+	protected float bulletSpeed;
 	protected float bulletSpread;
 	protected final long fireRate;
 	protected final Sound gunshotSound;
@@ -46,6 +46,13 @@ public abstract class AbstractKit {
 		this.gunshotPitchHigh = gunshotPitchHigh;
 		this.gunshotPitchLow = gunshotPitchLow;
 		this.shootCooldowns = new HashMap<>();
+	}
+	
+	public void reload(int bulletCount, int bulletDmg, float bulletSpeed, float bulletSpread) {
+		this.bulletCount = bulletCount;
+		this.bulletDmg = bulletDmg;
+		this.bulletSpeed = bulletSpeed;
+		this.bulletSpread = bulletSpread;
 	}
 	
 	public boolean launchShot(Player player, PbTeam team, Collection<Player> gamePlayers) {

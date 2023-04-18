@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.kit;
 
+import me.gorgeousone.paintball.ConfigSettings;
 import me.gorgeousone.paintball.util.ItemUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -37,6 +38,12 @@ public class PbKitHandler {
 		KITS.put(KitType.MACHINE_GUN, new MachineGunKit(plugin));
 //		KITS.put(KitType.SNIPER, new SniperKit());
 		WATER_BOMBS = createWaterBombs();
+	}
+	
+	public void reloadKits() {
+		getKit(KitType.RIFLE).reload(1, ConfigSettings.RIFLE_BULLET_DMG, ConfigSettings.RIFLE_BULLET_SPEED, ConfigSettings.RIFLE_BULLET_SPREAD);
+		getKit(KitType.SHOTGUN).reload(ConfigSettings.SHOTGUN_BULLET_COUNT, ConfigSettings.SHOTGUN_BULLET_DMG, ConfigSettings.SHOTGUN_BULLET_SPEED, ConfigSettings.SHOTGUN_BULLET_SPREAD);
+		getKit(KitType.MACHINE_GUN).reload(1, ConfigSettings.MACHINE_GUN_BULLET_DMG, ConfigSettings.MACHINE_GUN_BULLET_SPEED, ConfigSettings.MACHINE_GUN_MAX_BULLET_SPREAD);
 	}
 	
 	public static AbstractKit getKit(KitType kitType) {

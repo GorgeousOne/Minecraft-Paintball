@@ -16,10 +16,20 @@ public class ConfigSettings {
 	public static int PLAYER_HEALTH_POINTS;
 	public static String CHAT_PREFIX_ALIVE;
 	public static String CHAT_PREFIX_DEAD;
+	public static int RIFLE_BULLET_DMG;
+	public static float RIFLE_BULLET_SPEED;
+	public static float RIFLE_BULLET_SPREAD;
+	public static int SHOTGUN_BULLET_COUNT;
+	public static int SHOTGUN_BULLET_DMG;
+	public static float SHOTGUN_BULLET_SPEED;
+	public static float SHOTGUN_BULLET_SPREAD;
+	public static int MACHINE_GUN_BULLET_DMG;
+	public static float MACHINE_GUN_BULLET_SPEED;
+	public static float MACHINE_GUN_MAX_BULLET_SPREAD;
 	
 	public static void loadSettings(FileConfiguration config) {
 		COUNTDOWN_SECS = clamp(config.getInt("countdown.seconds"), 5, 600);
-
+		
 		ConfigurationSection gameSection = config.getConfigurationSection("game");
 		MIN_PLAYERS = clamp(gameSection.getInt("min-players"), 2, 24);
 		MAX_PLAYERS = clamp(gameSection.getInt("max-players"), MIN_PLAYERS, 24);
@@ -34,6 +44,18 @@ public class ConfigSettings {
 		ConfigurationSection prefixSection = config.getConfigurationSection("chat-prefix");
 		CHAT_PREFIX_ALIVE = prefixSection.getString("alive").replace('&', '§');
 		CHAT_PREFIX_DEAD = prefixSection.getString("dead").replace('&', '§');
+		
+		ConfigurationSection kitSettingsSection = config.getConfigurationSection("kit-settings");
+		RIFLE_BULLET_DMG = clamp(kitSettingsSection.getInt("rifle.bullet-dmg"), 1, 100);
+		RIFLE_BULLET_SPEED = clamp((float) kitSettingsSection.getDouble("rifle.bullet-speed"), 0f, 5f);
+		RIFLE_BULLET_SPREAD = clamp((float) kitSettingsSection.getDouble("rifle.bullet-spread"), 0f, 1f);
+		SHOTGUN_BULLET_COUNT = clamp(kitSettingsSection.getInt("shotgun.bullet-count"), 1, 100);
+		SHOTGUN_BULLET_DMG = clamp(kitSettingsSection.getInt("shotgun.bullet-dmg"), 1, 100);
+		SHOTGUN_BULLET_SPEED = clamp((float) kitSettingsSection.getDouble("shotgun.bullet-speed"), 0f, 5f);
+		SHOTGUN_BULLET_SPREAD = clamp((float) kitSettingsSection.getDouble("shotgun.bullet-spread"), 0f, 1f);
+		MACHINE_GUN_BULLET_DMG = clamp(kitSettingsSection.getInt("machine-gun.bullet-dmg"), 1, 100);
+		MACHINE_GUN_BULLET_SPEED = clamp((float) kitSettingsSection.getDouble("machine-gun.bullet-speed"), 0f, 5f);
+		MACHINE_GUN_MAX_BULLET_SPREAD = clamp((float) kitSettingsSection.getDouble("machine-gun.,ax-bullet-spread"), 0f, 1f);
 	}
 	
 	public static <T extends Comparable<T>> T clamp(T val, T min, T max) {

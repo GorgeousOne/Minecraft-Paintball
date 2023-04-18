@@ -9,3 +9,17 @@ game:
 chat-prefix:
     alive: "%team-color%<%player%>&r"
     dead: "&7Dead %team-color%<%player%>&r"
+kit-settings:
+    rifle:
+        bullet-dmg: 3
+        bullet-speed: 1.75
+        bullet-spread: 0.02
+    shotgun:
+        bullet-count: 8
+        bullet-dmg: 1
+        bullet-speed: 1.25
+        bullet-spread: 0.35
+    machine-gun:
+        bullet-dmg: 1
+        bullet-speed: 2.25
+        max-bullet-spread: 0.2

@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class  MachineGunKit extends AbstractKit {
-
+public class MachineGunKit extends AbstractKit {
+	
 	private final Map<UUID, Integer> magazines;
 	private final Map<UUID, Long> lastShots;
 	private static final int MAGAZINE_SIZE = 50;
@@ -27,7 +27,7 @@ public class  MachineGunKit extends AbstractKit {
 		this.lastShots = new HashMap<>();
 		startReloadAnimator(plugin);
 	}
-
+	
 	@Override
 	public boolean launchShot(Player player, PbTeam team, Collection<Player> gamePlayers) {
 		UUID playerId = player.getUniqueId();
@@ -49,39 +49,39 @@ public class  MachineGunKit extends AbstractKit {
 		lastShots.put(playerId, System.currentTimeMillis());
 		return true;
 	}
-
+	
 	@Override
 	public void removePlayer(UUID playerId) {
 		super.removePlayer(playerId);
 		magazines.remove(playerId);
 		lastShots.remove(playerId);
 	}
-
+	
 	private int getMagazine(UUID playerId) {
 		magazines.putIfAbsent(playerId, MAGAZINE_SIZE);
 		return magazines.get(playerId);
 	}
-
+	
 	private void increaseMagazine(UUID playerId, int bullets) {
 		int newMagazine = magazines.get(playerId) + bullets;
 		newMagazine = Math.max(0, Math.min(MAGAZINE_SIZE, newMagazine));
 		magazines.put(playerId, newMagazine);
 		updateMagazineUI(playerId);
 	}
-
+	
 	private void updateMagazineUI(UUID playerId) {
 		Bukkit.getPlayer(playerId).setExp(1f - 1f * getMagazine(playerId) / MAGAZINE_SIZE);
 	}
-
+	
 	private void startReloadAnimator(JavaPlugin plugin) {
 		BukkitRunnable animator = new BukkitRunnable() {
 			@Override
 			public void run() {
 				long reloadStart = System.currentTimeMillis() - RELOAD_DELAY * 50;
-
+				
 				for (UUID playerId : magazines.keySet()) {
 					long lastShot = lastShots.getOrDefault(playerId, 0L);
-
+					
 					if (lastShot > reloadStart) {
 						continue;
 					}

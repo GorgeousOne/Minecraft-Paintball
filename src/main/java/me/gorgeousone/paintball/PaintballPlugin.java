@@ -30,10 +30,11 @@ public final class PaintballPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		setupVersioning();
-		loadConfigSettings();
 		PbKitHandler.setupKits(this);
-		
 		this.kitHandler = new PbKitHandler();
+
+		loadConfigSettings();
+		
 		this.arenaHandler = new PbArenaHandler(this);
 		this.lobbyHandler = new PbLobbyHandler(this, kitHandler);
 
@@ -129,6 +130,7 @@ public final class PaintballPlugin extends JavaPlugin {
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 		ConfigSettings.loadSettings(getConfig());
+		kitHandler.reloadKits();
 	}
 	
 	private void loadBackup() {
