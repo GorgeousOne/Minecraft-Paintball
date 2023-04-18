@@ -6,6 +6,7 @@ import me.gorgeousone.paintball.team.TeamType;
 import me.gorgeousone.paintball.util.ItemUtil;
 import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
@@ -37,7 +38,6 @@ public class TeamQueue {
 			StringUtil.msg(player, "You un-queued from team %s.", newTeam.displayName);
 		} else {
 			StringUtil.msg(player, "You queued for team %s.", newTeam.displayName);
-			
 		}
 		changeQueuedTeam(player, queuedTeam, newTeam);
 	}
@@ -53,6 +53,7 @@ public class TeamQueue {
 		if (oldTeam != newTeam) {
 			teamQueues.put(playerId, newTeam);
 			ItemUtil.addMagicGlow(inv.getItem(newTeam.ordinal()));
+			player.playSound(player.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 2f);
 		}
 	}
 	

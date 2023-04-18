@@ -53,7 +53,7 @@ public class PlayerStatsCommand extends ArgCommand {
 		File backupFile = ConfigUtil.matchFirstFile(player.getUniqueId().toString(), "player_stats", plugin);
 		
 		if (backupFile == null) {
-			StringUtil.msg(sender, "Player %s never played paintball.", playerName);
+			StringUtil.msg(sender, "Player %s never played paintball.", player.getName());
 			return;
 		}
 		listStats(sender, player.getName(), YamlConfiguration.loadConfiguration(backupFile));
