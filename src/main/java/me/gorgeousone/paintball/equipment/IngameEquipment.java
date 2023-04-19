@@ -2,7 +2,9 @@ package me.gorgeousone.paintball.equipment;
 
 import me.gorgeousone.paintball.kit.KitType;
 import me.gorgeousone.paintball.kit.PbKitHandler;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Consumer;
 
@@ -17,6 +19,9 @@ public class IngameEquipment extends Equipment {
 		this.kitHandler = kitHandler;
 		setItem(GUN_SLOT, KitType.RIFLE.getGun(), onShoot);
 		setItem(WATER_BOMB_SLOT, PbKitHandler.getWaterBombs(), onThrowWaterBomb);
+		//work around for unstacking water bombs
+		setItem(WATER_BOMB_SLOT + 1, new ItemStack(Material.AIR), onThrowWaterBomb);
+		setItem(WATER_BOMB_SLOT + 2, new ItemStack(Material.AIR), onThrowWaterBomb);
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.Inventory;
 
 import java.util.UUID;
@@ -33,11 +34,20 @@ public class InventoryListener implements Listener {
 			event.setCancelled(true);
 		}
 	}
-
+	
 	@EventHandler
 	public void onItemDrop(PlayerDropItemEvent event) {
 		Player player = event.getPlayer();
 
+		if (lobbyHandler.isPlaying(player.getUniqueId())) {
+			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onHandSwap(PlayerSwapHandItemsEvent event) {
+		Player player = event.getPlayer();
+		
 		if (lobbyHandler.isPlaying(player.getUniqueId())) {
 			event.setCancelled(true);
 		}

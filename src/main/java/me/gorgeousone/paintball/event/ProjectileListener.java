@@ -3,6 +3,7 @@ package me.gorgeousone.paintball.event;
 import me.gorgeousone.paintball.game.PbGame;
 import me.gorgeousone.paintball.game.PbLobbyHandler;
 import me.gorgeousone.paintball.kit.PbKitHandler;
+import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -14,6 +15,7 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import java.util.Collection;
 import java.util.UUID;
 
 public class ProjectileListener implements Listener {
@@ -66,8 +68,8 @@ public class ProjectileListener implements Listener {
 		if (game == null || !PbKitHandler.getWaterBombs().isSimilar(potion.getItem())) {
 			return;
 		}
-//		for (Entity entity : getEffectedEntities(potion)) {
-		for (Entity entity : event.getAffectedEntities()) {
+		for (Entity entity : getEffectedEntities(potion)) {
+//		for (Entity entity : event.getAffectedEntities()) {
 			if (entity instanceof Player) {
 				game.healPlayer((Player) entity, player);
 			} else if (entity instanceof ArmorStand) {
@@ -99,10 +101,10 @@ public class ProjectileListener implements Listener {
 		}
 	}
 	
-//	private Collection<Entity> getEffectedEntities(ThrownPotion potion) {
-//		Location pos = potion.getLocation();
-//		Collection<Entity> entities = pos.getWorld().getNearbyEntities(pos, 4, 2, 4);
-//		entities.remove(potion);
-//		return entities;
-//	}
+	private Collection<Entity> getEffectedEntities(ThrownPotion potion) {
+		Location pos = potion.getLocation();
+		Collection<Entity> entities = pos.getWorld().getNearbyEntities(pos, 4, 2, 4);
+		entities.remove(potion);
+		return entities;
+	}
 }

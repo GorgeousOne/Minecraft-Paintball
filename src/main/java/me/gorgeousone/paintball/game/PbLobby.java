@@ -140,6 +140,7 @@ public class PbLobby {
 		if (!game.hasPlayer(playerId)) {
 			throw new IllegalArgumentException("Can't remove player with id: " + playerId + ". They are not in this game");
 		}
+		teamQueue.removePlayer(playerId);
 		game.removePlayer(playerId);
 		ItemUtil.loadInventory(player, plugin);
 		StringUtil.msg(player, "You left lobby %s.", name);
@@ -233,6 +234,7 @@ public class PbLobby {
 	public void returnToLobby() {
 		game.allPlayers(p -> {
 			p.teleport(joinSpawn);
+			p.getInventory().clear();
 			equipment.equip(p);
 			board.addPlayer(p);
 		});

@@ -13,7 +13,9 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +30,7 @@ import java.util.UUID;
 public class PbTeam {
 	
 	private final TeamType teamType;
+	private final JavaPlugin plugin;
 	private final PbKitHandler kitHandler;
 	private final PbGame game;
 	private final ItemStack[] teamArmorSet;
@@ -41,9 +44,10 @@ public class PbTeam {
 	private final Map<UUID, UUID> reviveSkellies;
 	private final Random rng = new Random();
 	
-	public PbTeam(TeamType teamType, PbGame game, PbKitHandler kitHandler) {
+	public PbTeam(TeamType teamType, PbGame game, JavaPlugin plugin, PbKitHandler kitHandler) {
 		this.teamType = teamType;
 		this.game = game;
+		this.plugin = plugin;
 		this.kitHandler = kitHandler;
 		this.players = new HashSet<>();
 		this.alivePlayers = new HashSet<>();
@@ -151,10 +155,16 @@ public class PbTeam {
 		int healthPoints = playerHealth.get(targetId);
 		
 		if (bulletDmg < healthPoints) {
-			target.damage(2 * bulletDmg);
-			playerHealth.put(targetId, healthPoints - bulletDmg);
-			target.setNoDamageTicks(0);
+			int newHealth = healthPoints - bulletDmg;
+			playerHealth.put(targetId, newHealth);
 			paintArmor(targetId);
+			
+			if (target.getNoDamageTicks() > 0) {
+				target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_HURT, 1, 1);
+				target.setHealth(2 * newHealth);
+			} else {
+				target.damage(2 * bulletDmg);
+			}
 		} else {
 			knockoutPlayer(target);
 			game.broadcastKill(target, shooter);

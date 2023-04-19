@@ -5,17 +5,17 @@ countdown:
 game:
     min-players: 2
     max-players: 16
-    player-health-points: 4
+    player-health-points: 8
 chat-prefix:
     alive: "%team-color%<%player%>&r"
     dead: "&7Dead %team-color%<%player%>&r"
 kit-settings:
     rifle:
         bullet-dmg: 3
-        bullet-speed: 1.75
-        bullet-spread: 0.02
+        bullet-speed: 3.0
+        bullet-spread: 0.01
     shotgun:
-        bullet-count: 8
+        bullet-count: 6
         bullet-dmg: 1
         bullet-speed: 1.25
         bullet-spread: 0.35

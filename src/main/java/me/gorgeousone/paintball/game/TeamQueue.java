@@ -58,10 +58,10 @@ public class TeamQueue {
 	}
 	
 	public void assignTeams(Collection<UUID> players, Map<TeamType, PbTeam> teams) {
+		int maxPlayerPerTeam = (int) Math.ceil(players.size() / 2f);
 		List<UUID> unassignedPlayers = new LinkedList<>(players);
 		List<UUID> queuedPlayers = new LinkedList<>(teamQueues.keySet());
 		Collections.shuffle(queuedPlayers);
-		int maxPlayerPerTeam = (int) Math.ceil(players.size() / 2f);
 		
 		for (UUID playerId : queuedPlayers) {
 			PbTeam team = teams.get(teamQueues.get(playerId));
@@ -71,16 +71,19 @@ public class TeamQueue {
 				unassignedPlayers.remove(playerId);
 			}
 		}
+		List<PbTeam> shuffledTeams = new LinkedList<>(teams.values());
+		Collections.shuffle(shuffledTeams);
 		Collections.shuffle(unassignedPlayers);
 		
-		for (UUID playerId : unassignedPlayers) {
-			for (PbTeam team : teams.values()) {
-				if (team.size() < maxPlayerPerTeam) {
-					team.addPlayer(Bukkit.getPlayer(playerId));
-					break;
-				}
+		for (PbTeam team : shuffledTeams) {
+			while (team.size() < maxPlayerPerTeam && unassignedPlayers.size() > 0) {
+				team.addPlayer(Bukkit.getPlayer(unassignedPlayers.remove(0)));
 			}
 		}
 		teamQueues.clear();
+	}
+	
+	public void removePlayer(UUID playerId) {
+		teamQueues.remove(playerId);
 	}
 }

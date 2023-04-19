@@ -55,7 +55,7 @@ public class ConfigSettings {
 		SHOTGUN_BULLET_SPREAD = clamp((float) kitSettingsSection.getDouble("shotgun.bullet-spread"), 0f, 1f);
 		MACHINE_GUN_BULLET_DMG = clamp(kitSettingsSection.getInt("machine-gun.bullet-dmg"), 1, 100);
 		MACHINE_GUN_BULLET_SPEED = clamp((float) kitSettingsSection.getDouble("machine-gun.bullet-speed"), 0f, 5f);
-		MACHINE_GUN_MAX_BULLET_SPREAD = clamp((float) kitSettingsSection.getDouble("machine-gun.,ax-bullet-spread"), 0f, 1f);
+		MACHINE_GUN_MAX_BULLET_SPREAD = clamp((float) kitSettingsSection.getDouble("machine-gun.max-bullet-spread"), 0f, 1f);
 	}
 	
 	public static <T extends Comparable<T>> T clamp(T val, T min, T max) {

@@ -54,7 +54,7 @@ public class PbGame {
 		this.teams = new HashMap<>();
 		
 		for (TeamType teamType : TeamType.values()) {
-			teams.put(teamType, new PbTeam(teamType, this, this.kitHandler));
+			teams.put(teamType, new PbTeam(teamType, this, plugin, this.kitHandler));
 		}
 		equipment = new IngameEquipment(this::onShoot, this::onThrowWaterBomb, kitHandler);
 	}
@@ -220,7 +220,7 @@ public class PbGame {
 		PbTeam team = getTeam(target.getUniqueId());
 		UUID shooterId = shooter.getUniqueId();
 		
-		if (!team.hasPlayer(shooterId)) {
+		if (!team.hasPlayer(shooterId) || bulletDmg == 9001) {
 			team.damagePlayer(target, shooter, bulletDmg);
 			gameStats.addBulletHit(shooterId);
 		}
