@@ -40,7 +40,7 @@ public class PbGame {
 	private GameBoard gameBoard;
 	private final Runnable onGameEnd;
 	private final Equipment equipment;
-	private PbArena arena;
+	private PbArena playedArena;
 	
 	private GameStats gameStats;
 	
@@ -124,7 +124,7 @@ public class PbGame {
 			StringUtil.msg(p, "Playing map %s!", ChatColor.WHITE + arenaToPlay.getSpacedName() + StringUtil.MSG_COLOR);
 			gameStats.addPlayer(p.getUniqueId(), kitHandler.getKitType(p.getUniqueId()));
 		});
-		arena = arenaToPlay;
+		playedArena = arenaToPlay;
 		state = GameState.COUNTING_DOWN;
 	}
 	
@@ -299,7 +299,7 @@ public class PbGame {
 				teams.values().forEach(PbTeam::reset);
 				allPlayers(p -> {
 					gameBoard.removePlayer(p);
-					arena.resetSchem();
+					playedArena.resetSchem();
 					onGameEnd.run();
 				});
 			}
@@ -341,5 +341,9 @@ public class PbGame {
 		for (UUID playerId : players) {
 			consumer.accept(Bukkit.getPlayer(playerId));
 		}
+	}
+	
+	public PbArena getPlayedArena() {
+		return playedArena;
 	}
 }
