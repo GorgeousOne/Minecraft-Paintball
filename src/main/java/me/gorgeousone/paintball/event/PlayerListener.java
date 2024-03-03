@@ -1,9 +1,11 @@
 package me.gorgeousone.paintball.event;
 
 import me.gorgeousone.paintball.game.GameState;
+import me.gorgeousone.paintball.game.PbGame;
 import me.gorgeousone.paintball.kit.PbKitHandler;
 import me.gorgeousone.paintball.game.PbLobbyHandler;
 import me.gorgeousone.paintball.game.PbLobby;
+import me.gorgeousone.paintball.team.PbTeam;
 import me.gorgeousone.paintball.util.ItemUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -44,8 +46,16 @@ public class PlayerListener implements Listener {
 		}
 		event.setCancelled(true);
 		
-		if (dmgCause == EntityDamageEvent.DamageCause.VOID && lobby.getGame().getState() == GameState.LOBBYING) {
+		if (dmgCause != EntityDamageEvent.DamageCause.VOID) {
+			return;
+		}
+		PbGame game = lobby.getGame();
+		
+		if (game.getState() == GameState.LOBBYING) {
 			player.teleport(lobby.getJoinSpawn());
+		} else {
+			PbTeam team = game.getTeam(player.getUniqueId());
+			player.teleport(game.getPlayedArena().getSpawns(team.getType()).get(0));
 		}
 	}
 	
