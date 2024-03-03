@@ -8,6 +8,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Consumer;
 
+/**
+ * Class to manage hotbar items with custom click functions for players in a paintball game.
+ */
 public class IngameEquipment extends Equipment {
 
 	public static final int GUN_SLOT = 0;

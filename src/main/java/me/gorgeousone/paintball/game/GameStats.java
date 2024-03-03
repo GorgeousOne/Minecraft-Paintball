@@ -11,6 +11,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Class to keep track of the stats of a game and save them to the player's stats file after the game is over.
+ */
 public class GameStats {
 	
 	private final HashMap<UUID, KitType> playerGuns;

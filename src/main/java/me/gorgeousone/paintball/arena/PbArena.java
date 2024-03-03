@@ -19,6 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+/**
+ * A class to store and manage the settings of a paintball arena.
+ * Like the schematic file, the spawn points for the teams and the position of the schematic in the world.
+ */
 public class PbArena {
 
 	private final JavaPlugin plugin;

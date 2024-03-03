@@ -13,6 +13,9 @@ import org.bukkit.scoreboard.Team;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class to create a scoreboard with a title and indexed lines.
+ */
 public class GameBoard {
 
 	private final Scoreboard board;

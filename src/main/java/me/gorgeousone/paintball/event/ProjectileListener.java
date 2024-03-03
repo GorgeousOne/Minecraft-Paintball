@@ -18,6 +18,9 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import java.util.Collection;
 import java.util.UUID;
 
+/**
+ * Listener to handle gun shots and revive potion splashes in games.
+ */
 public class ProjectileListener implements Listener {
 	
 	private final PbLobbyHandler lobbyHandler;
@@ -101,6 +104,12 @@ public class ProjectileListener implements Listener {
 		}
 	}
 	
+	/**
+	 * Custom method to get all entities effected by a thrown potion.
+	 * Because there were some issues with armorstands not being included in the event.getAffectedEntities() method(?)
+	 * @param potion
+	 * @return
+	 */
 	private Collection<Entity> getEffectedEntities(ThrownPotion potion) {
 		Location pos = potion.getLocation();
 		Collection<Entity> entities = pos.getWorld().getNearbyEntities(pos, 4, 2, 4);

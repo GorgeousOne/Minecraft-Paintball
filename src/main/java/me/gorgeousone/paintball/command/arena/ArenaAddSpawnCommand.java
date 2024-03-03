@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * OP command to add a spawn point to an arena for a specific team.
+ */
 public class ArenaAddSpawnCommand extends ArgCommand {
 	
 	private final PbArenaHandler arenaHandler;

@@ -12,6 +12,9 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * Enum to represent the two teams to choose from in the game with their respective projectile type, armor color and prefixes.
+ */
 public enum TeamType {
 	
 	EMBER("Ember", EnderPearl.class, Color.RED, ChatColor.RED, Particle.ITEM_CRACK, new ItemStack(Material.REDSTONE_BLOCK)),

@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Class for creating a kit selection UI and storing the selected kits of players.
+ */
 public class PbKitHandler {
 
 	public static final String KIT_SELECT_UI_TITLE = "Select a kit";

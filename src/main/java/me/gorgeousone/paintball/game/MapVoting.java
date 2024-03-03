@@ -17,6 +17,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+/**
+ * Class to keep track of the map votes for the next game and to pick the map with the most votes.
+ */
 public class MapVoting {
 	
 	public static final String MAP_VOTE_UI_TITLE = "Vote a map";

@@ -20,7 +20,12 @@ public class LocationUtil {
 	public static Vector faceToDirection(BlockFace face) {
 		return new Vector(face.getModX(), face.getModY(), face.getModZ());
 	}
-
+	
+	/**
+	 * Returns location centered to the middle of the block and facing rounded to the nearest cardinal direction.
+	 * @param spawn
+	 * @return
+	 */
 	public static Location cleanSpawn(Location spawn) {
 		Vector direction = faceToDirection(yawToFace(spawn.getYaw()));
 		spawn.setDirection(direction);

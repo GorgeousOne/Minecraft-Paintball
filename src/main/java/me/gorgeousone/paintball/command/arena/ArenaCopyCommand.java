@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * OP command to copy and paste an existing arena to a new location.
+ */
 public class ArenaCopyCommand extends ArgCommand {
 
 	private final PbArenaHandler arenaHandler;

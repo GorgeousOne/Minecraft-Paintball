@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * OP command to list all spawn points of an arena.
+ */
 public class ArenaListSpawnsCommand extends ArgCommand {
 
 	private final PbArenaHandler arenaHandler;

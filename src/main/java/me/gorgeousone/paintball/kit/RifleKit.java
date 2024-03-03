@@ -5,6 +5,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+/**
+ * Class for the rifle kit, which shoots a single high-range and accurate bullet.
+ */
 public class RifleKit extends AbstractKit {
 	
 	public RifleKit() {

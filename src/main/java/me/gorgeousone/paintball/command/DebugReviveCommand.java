@@ -10,6 +10,9 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
+/**
+ * Debug command to revive yourself in a game.
+ */
 public class DebugReviveCommand extends BaseCommand {
 	
 	private final PbLobbyHandler lobbyHandler;

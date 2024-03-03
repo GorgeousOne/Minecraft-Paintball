@@ -15,6 +15,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * A class to load and manage arenas placed in all worlds.
+ */
 public class PbArenaHandler {
 
 	private final JavaPlugin plugin;

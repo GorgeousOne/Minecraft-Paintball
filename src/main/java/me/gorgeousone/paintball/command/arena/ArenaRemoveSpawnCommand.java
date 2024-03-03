@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * OP command to remove a spawn point from an arena for a specific team.
+ */
 public class ArenaRemoveSpawnCommand extends ArgCommand {
 	
 	private final PbArenaHandler arenaHandler;

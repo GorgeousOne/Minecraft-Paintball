@@ -9,6 +9,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+/**
+ * Listener to keep players at spawn positions in the countdown phase of a game.
+ */
 public class MovementListener implements Listener {
 
 	private final PbLobbyHandler lobbyHandler;

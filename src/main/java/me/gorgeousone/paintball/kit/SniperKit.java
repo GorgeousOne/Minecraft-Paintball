@@ -6,6 +6,9 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
+/**
+ * Class for the sniper kit, which fires a hitscan bullet if sneak-scoped. With increasing damage if scoped for longer.
+ */
 public class SniperKit extends AbstractKit {
 	
 	public SniperKit() {

@@ -12,6 +12,9 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.UUID;
 
+/**
+ * Listener to format player prefixes in in-game chat for teams and dead players.
+ */
 public class ChatListener implements Listener {
 	
 	private final PbLobbyHandler lobbyHandler;

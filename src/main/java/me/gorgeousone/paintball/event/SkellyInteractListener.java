@@ -16,6 +16,10 @@ import org.bukkit.inventory.PlayerInventory;
 
 import java.util.UUID;
 
+/**
+ * Listener to manually throw water bombs when right-clicking a skelly.
+ * Because splash potions only get thrown when right-clicking the air and that's unintuitive.
+ */
 public class SkellyInteractListener implements Listener {
 	
 	private final PbLobbyHandler lobbyHandler;

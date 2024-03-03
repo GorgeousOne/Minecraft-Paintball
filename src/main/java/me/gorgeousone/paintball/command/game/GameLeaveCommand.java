@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Command to leave a paintball game and teleport back to the lobby.
+ */
 public class GameLeaveCommand extends ArgCommand {
 
 	private final PbLobbyHandler lobbyHandler;

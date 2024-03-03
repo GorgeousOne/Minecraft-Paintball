@@ -21,6 +21,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
 
+/**
+ * Main class to register commands, listeners, load config settings and trigger loading/saving of arenas and lobbies.
+ */
 public final class PaintballPlugin extends JavaPlugin {
 	
 	private PbLobbyHandler lobbyHandler;

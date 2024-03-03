@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * OP command to reset an arena for a new game.
+ */
 public class ArenaResetCommand extends ArgCommand {
 
 	private final PbArenaHandler arenaHandler;

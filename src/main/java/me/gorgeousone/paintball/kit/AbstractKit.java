@@ -13,6 +13,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+/**
+ * Abstract class that stores basic properties and functions for gun kits.
+ */
 public abstract class AbstractKit {
 	
 	protected final KitType kitType;

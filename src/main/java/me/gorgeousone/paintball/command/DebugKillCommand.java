@@ -6,6 +6,9 @@ import me.gorgeousone.paintball.cmdframework.command.BaseCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * Debug command to paint yourself in a game.
+ */
 public class DebugKillCommand extends BaseCommand {
 	
 	private final PbLobbyHandler lobbyHandler;

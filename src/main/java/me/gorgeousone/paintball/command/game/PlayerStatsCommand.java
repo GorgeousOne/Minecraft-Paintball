@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Command to display your or another player's paintball stats.
+ */
 public class PlayerStatsCommand extends ArgCommand {
 	
 	private final JavaPlugin plugin;

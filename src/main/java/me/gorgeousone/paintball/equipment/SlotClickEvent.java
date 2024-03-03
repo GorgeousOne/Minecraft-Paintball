@@ -3,6 +3,9 @@ package me.gorgeousone.paintball.equipment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * Wrapper class for a click event on a hotbar item.
+ */
 public class SlotClickEvent {
 
 	private final Player player;

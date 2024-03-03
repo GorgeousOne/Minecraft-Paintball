@@ -16,6 +16,9 @@ import org.bukkit.inventory.Inventory;
 
 import java.util.UUID;
 
+/**
+ * Listener to cancel inventory changes by players in lobbies and game.
+ */
 public class InventoryListener implements Listener {
 
 	private final PbLobbyHandler lobbyHandler;

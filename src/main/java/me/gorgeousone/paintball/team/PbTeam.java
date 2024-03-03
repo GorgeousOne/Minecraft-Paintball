@@ -27,6 +27,13 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Class to manage the players of a team. It
+ * equips team armor on game start,
+ * tracks health (and visualizes it on armor),
+ * spawns revive armorstands and
+ * manages spectating states.
+ */
 public class PbTeam {
 	
 	private final TeamType teamType;

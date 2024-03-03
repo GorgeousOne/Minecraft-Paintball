@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * Class to create and manage hotbar items with custom click functionality for players.
+ */
 public class Equipment {
 
 	protected final Map<Integer, ItemStack> items;

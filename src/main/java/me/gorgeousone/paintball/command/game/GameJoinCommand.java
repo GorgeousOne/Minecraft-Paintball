@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Command to join a player to a paintball lobby.
+ */
 public class GameJoinCommand extends ArgCommand {
 
 	private final PbLobbyHandler lobbyHandler;

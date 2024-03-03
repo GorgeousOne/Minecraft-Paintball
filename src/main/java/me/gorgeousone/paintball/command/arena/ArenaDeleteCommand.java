@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * OP command to delete an existing arena.
+ */
 public class ArenaDeleteCommand extends ArgCommand {
 
 	private final PbArenaHandler arenaHandler;

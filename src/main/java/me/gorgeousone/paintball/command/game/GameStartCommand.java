@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * OP command to start a paintball game in a lobby before the start timer runs out.
+ */
 public class GameStartCommand extends ArgCommand {
 
 	private final PbLobbyHandler lobbyHandler;

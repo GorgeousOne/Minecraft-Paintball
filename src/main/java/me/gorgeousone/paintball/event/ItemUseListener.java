@@ -13,6 +13,9 @@ import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.UUID;
 
+/**
+ * Listener to route hotbar item clicks to the equipment class.
+ */
 public class ItemUseListener implements Listener {
 	
 	private final PbLobbyHandler lobbyHandler;

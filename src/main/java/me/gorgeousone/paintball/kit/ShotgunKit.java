@@ -9,6 +9,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Collection;
 
+/**
+ * Class for the shotgun kit, which is a pump action gun that shoots a cloud of bullets with low range and accuracy.
+ */
 public class ShotgunKit extends AbstractKit {
 	
 	private final JavaPlugin plugin;

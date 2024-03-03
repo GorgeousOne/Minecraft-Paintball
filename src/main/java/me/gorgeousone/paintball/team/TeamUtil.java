@@ -21,6 +21,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Utility class to create colored armor sets, revive skeletons and create colored blocks for gunshots.
+ */
 public class TeamUtil {
 	
 	public static final ItemStack[] DEATH_ARMOR_SET = createColoredArmoSet(TeamType.DEATH_COLOR, "");

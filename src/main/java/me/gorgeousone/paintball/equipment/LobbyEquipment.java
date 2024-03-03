@@ -12,6 +12,9 @@ import org.bukkit.inventory.PlayerInventory;
 
 import java.util.function.Consumer;
 
+/**
+ * Class to manage hotbar items with custom click functions for players in the paintball lobby.
+ */
 public class LobbyEquipment extends Equipment {
 
 	private static final String LOBBY_ITEM_NAME = ChatColor.WHITE + "%s" + ChatColor.GRAY + " (Right Click)";

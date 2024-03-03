@@ -7,6 +7,9 @@ import me.gorgeousone.paintball.util.LocationUtil;
 import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.command.CommandSender;
 
+/**
+ * OP command to list all arenas and their schematic positions.
+ */
 public class ListArenasCommand extends BaseCommand {
 	
 	private final PbArenaHandler arenaHandler;

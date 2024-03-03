@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Class to keep track of players that queued for a team and to assign them to the teams when the game starts.
+ */
 public class TeamQueue {
 	
 	private final Map<UUID, TeamType> teamQueues;

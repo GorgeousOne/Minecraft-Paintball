@@ -17,6 +17,9 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * OP command to create a new arena with a schematic file from FAWE or Worldedit schematics folder.
+ */
 public class ArenaCreateCommand extends ArgCommand {
 	
 	private final PbArenaHandler arenaHandler;

@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * OP command to move an arena to a new location (schematic and spawn points).
+ */
 public class ArenaMoveCommand extends ArgCommand {
 
 	private final PbArenaHandler arenaHandler;

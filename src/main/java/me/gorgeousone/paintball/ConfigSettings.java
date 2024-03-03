@@ -7,6 +7,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.io.File;
 import java.util.logging.Level;
 
+/**
+ * A class to store and load settings from the plugin's config file.
+ */
 public class ConfigSettings {
 	
 	public static String SCHEM_FOLDER;

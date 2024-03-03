@@ -29,6 +29,9 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+/**
+ * Class to manage players joined in a lobby and to run a game start countdown when enough players are in the lobby.
+ */
 public class PbLobby {
 	
 	private static final Set<Integer> ANNOUNCEMENT_INTERVALS = Set.of(300, 240, 180, 120, 60, 30, 20, 10, 3, 2, 1);

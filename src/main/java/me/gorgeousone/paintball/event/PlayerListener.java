@@ -20,6 +20,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
 
+/**
+ * Listener to cancel survival related events for players in lobbies and games.
+ * Also handles players joining and leaving the server regarding inventory saving.
+ */
 public class PlayerListener implements Listener {
 
 	private final JavaPlugin plugin;

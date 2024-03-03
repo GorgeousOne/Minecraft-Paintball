@@ -30,6 +30,13 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+/**
+ * Class to run all logic in a paintball game, like
+ * running start/end timers,
+ * player joining/leaving,
+ * triggering game mechanics and
+ * broadcasting game events.
+ */
 public class PbGame {
 	
 	private final JavaPlugin plugin;

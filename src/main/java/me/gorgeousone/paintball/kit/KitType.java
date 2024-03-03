@@ -8,6 +8,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 
+/**
+ * Enum to store the different types of paintball guns.
+ */
 public enum KitType {
 	
 	RIFLE("Paintball Rifle", "Semi-automatic paintball rifle.\nHigh range and accuracy."),
