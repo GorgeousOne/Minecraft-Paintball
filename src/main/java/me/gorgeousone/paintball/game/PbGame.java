@@ -129,7 +129,7 @@ public class PbGame {
 		gameStats = new GameStats();
 		
 		allPlayers(p -> {
-			Message.LINE_31.send(p, ChatColor.WHITE + arenaToPlay.getSpacedName() + StringUtil.MSG_COLOR);
+			Message.MAP_ANNOUNCE.send(p, ChatColor.WHITE + arenaToPlay.getSpacedName() + StringUtil.MSG_COLOR);
 			gameStats.addPlayer(p.getUniqueId(), kitHandler.getKitType(p.getUniqueId()));
 		});
 		playedArena = arenaToPlay;
@@ -263,7 +263,7 @@ public class PbGame {
 		
 		TeamType targetTeam = getTeam(targetId).getType();
 		TeamType shooterTeam = getTeam(shooterId).getType();
-		allPlayers(p -> Message.LINE_24.send(p,
+		allPlayers(p -> Message.PLAYER_PAINT.send(p,
 				targetTeam.prefixColor + target.getDisplayName() + ChatColor.WHITE,
 				shooterTeam.prefixColor + shooter.getDisplayName()));
 		

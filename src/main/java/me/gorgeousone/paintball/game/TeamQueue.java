@@ -38,9 +38,9 @@ public class TeamQueue {
 		TeamType queuedTeam = teamQueues.getOrDefault(playerId, null);
 		
 		if (newTeam == queuedTeam) { //I hope it's not possible to queue for team null :D
-			Message.LINE_36.send(player, newTeam.displayName);
+			Message.TEAM_UNQUEUE.send(player, newTeam.displayName);
 		} else {
-			Message.LINE_37.send(player, newTeam.displayName);
+			Message.TEAM_QUEUE.send(player, newTeam.displayName);
 		}
 		changeQueuedTeam(player, queuedTeam, newTeam);
 	}

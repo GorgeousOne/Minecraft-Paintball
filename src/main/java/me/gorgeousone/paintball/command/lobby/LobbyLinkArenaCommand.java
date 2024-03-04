@@ -36,7 +36,7 @@ public class LobbyLinkArenaCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
 		
 		if (lobby == null) {
-			Message.LINE_18.send(sender, lobbyName);
+			Message.LOBBY_MISSING.send(sender, lobbyName);
 			return;
 		}
 		for (int i = 1; i < argValues.size(); ++i) {
@@ -44,12 +44,12 @@ public class LobbyLinkArenaCommand extends ArgCommand {
 			PbArena arena = arenaHandler.getArena(arenaName);
 			
 			if (arena == null) {
-				Message.LINE_02.send(sender, arenaName);
+				Message.ARENA_MISSING.send(sender, arenaName);
 				continue;
 			}
 			try {
 				lobbyHandler.linkArena(lobby, arena);
-				Message.LINE_26.send(sender, arenaName, lobbyName);
+				Message.LOBBY_ARENA_LINK.send(sender, arenaName, lobbyName);
 			} catch (IllegalArgumentException e) {
 				sender.sendMessage(e.getMessage());
 			}

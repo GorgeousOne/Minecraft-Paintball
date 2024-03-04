@@ -38,7 +38,7 @@ public class GameJoinCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
 		
 		if (lobby == null) {
-			Message.LINE_18.send(sender, lobbyName);
+			Message.LOBBY_MISSING.send(sender, lobbyName);
 			return;
 		}
 		String playerName = argValues.get(1).get();
@@ -50,7 +50,7 @@ public class GameJoinCommand extends ArgCommand {
 			player = Bukkit.getPlayer(playerName);
 			
 			if (player == null) {
-				Message.LINE_19.send(sender, playerName);
+				Message.PLAYER_NOT_ONLINE.send(sender, playerName);
 				return;
 			}
 		}

@@ -38,7 +38,7 @@ public class ArenaCreateCommand extends ArgCommand {
 		String arenaName = argValues.get(0).get();
 		
 		if (arenaHandler.containsArena(arenaName)) {
-			Message.LINE_07.send(sender, arenaName);
+			Message.ARENA_EXISTS.send(sender, arenaName);
 			return;
 		}
 		String schemFileName = argValues.get(1).get() + ".schem";
@@ -52,7 +52,7 @@ public class ArenaCreateCommand extends ArgCommand {
 		}
 		try {
 			PbArena arena = arenaHandler.createArena(arenaName, schemFile, player.getLocation());
-			Message.LINE_08.send(sender, arenaName, LocationUtil.humanBlockPos(arena.getSchemPos()));
+			Message.ARENA_CREATE.send(sender, arenaName, LocationUtil.humanBlockPos(arena.getSchemPos()));
 		} catch (IllegalArgumentException e) {
 			sender.sendMessage(e.getMessage());
 		}

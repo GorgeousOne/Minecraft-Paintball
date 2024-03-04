@@ -104,7 +104,7 @@ public class PbTeam {
 	public void addPlayer(Player player) {
 		UUID playerId = player.getUniqueId();
 		players.add(playerId);
-		Message.LINE_38.send(player, teamType.displayName);
+		Message.TEAM_JOIN.send(player, teamType.displayName);
 	}
 	
 	public void removePlayer(UUID playerId) {

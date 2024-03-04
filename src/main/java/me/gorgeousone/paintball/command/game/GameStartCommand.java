@@ -40,14 +40,14 @@ public class GameStartCommand extends ArgCommand {
 			lobby = lobbyHandler.getLobby(player.getUniqueId());
 			
 			if (lobby == null) {
-				Message.LINE_21.send(sender);
+				Message.LOBBY_NOT_JOINED.send(sender);
 				return;
 			}
 		} else {
 			lobby = lobbyHandler.getLobby(lobbyName);
 			
 			if (lobby == null) {
-				Message.LINE_18.send(sender, lobbyName);
+				Message.LOBBY_MISSING.send(sender, lobbyName);
 				return;
 			}
 		}

@@ -38,7 +38,7 @@ public class ArenaListSpawnsCommand extends ArgCommand {
 		PbArena arena = arenaHandler.getArena(arenaName);
 		
 		if (arena == null) {
-			Message.LINE_02.send(sender, arenaName);
+			Message.ARENA_MISSING.send(sender, arenaName);
 			return;
 		}
 		StringUtil.msg(sender, "Spawn points of arena %s:", arenaName);

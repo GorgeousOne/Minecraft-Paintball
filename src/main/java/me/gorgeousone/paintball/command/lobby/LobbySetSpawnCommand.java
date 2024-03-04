@@ -33,12 +33,12 @@ public class LobbySetSpawnCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
 		
 		if (lobby == null) {
-			Message.LINE_18.send(sender, lobbyName);
+			Message.LOBBY_MISSING.send(sender, lobbyName);
 			return;
 		}
 		Player player = (Player) sender;
 		lobby.setJoinSpawn(player.getLocation());
-		Message.LINE_29.send(sender, lobby.getName(), LocationUtil.humanBlockPos(lobby.getJoinSpawn()));
+		Message.LOBBY_SPAWN_SET.send(sender, lobby.getName(), LocationUtil.humanBlockPos(lobby.getJoinSpawn()));
 	}
 	
 	@Override

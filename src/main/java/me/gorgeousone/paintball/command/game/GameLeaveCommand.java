@@ -31,7 +31,7 @@ public class GameLeaveCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(playerId);
 		
 		if (lobby == null) {
-			Message.LINE_20.send(sender);
+			Message.NOT_IN_LOBBY.send(sender);
 			return;
 		}
 		lobby.removePlayer(player);

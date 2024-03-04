@@ -123,7 +123,7 @@ public class PbLobby {
 		}
 		ItemUtil.saveInventory(player, getExitSpawn(), plugin);
 		player.setGameMode(GameMode.ADVENTURE);
-		Message.LINE_32.send(player, name);
+		Message.PLAYER_JOIN.send(player, name);
 		player.teleport(joinSpawn);
 		equipment.equip(player);
 		board.addPlayer(player);
@@ -134,7 +134,7 @@ public class PbLobby {
 			countdown.start(ConfigSettings.COUNTDOWN_SECS);
 		}
 		if (arenas.size() == 0) {
-			Message.LINE_33.send(player, name);
+			Message.LOBBY_ARENA_MISSING.send(player, name);
 		}
 	}
 	
@@ -151,7 +151,7 @@ public class PbLobby {
 		teamQueue.removePlayer(playerId);
 		game.removePlayer(playerId);
 		ItemUtil.loadInventory(player, plugin);
-		Message.LINE_34.send(player, name);
+		Message.PLAYER_LEAVE.send(player, name);
 		if (!game.isRunning()) {
 			board.removePlayer(player);
 			updateLobbyBoard();
@@ -207,7 +207,7 @@ public class PbLobby {
 		
 		if (ANNOUNCEMENT_INTERVALS.contains(secondsLeft)) {
 			game.allPlayers(p -> {
-				Message.LINE_39.send(p, secondsLeft);
+				Message.LOBBY_COUNTDOWN.send(p, secondsLeft);
 				p.playSound(p.getLocation(), SoundUtil.COUNTDOWN_SOUND, .5f, 1f);
 			});
 		}
@@ -254,7 +254,7 @@ public class PbLobby {
 	public void reset() {
 		game.allPlayers(p -> {
 			ItemUtil.loadInventory(p, plugin);
-			Message.LINE_35.send(p, name);
+			Message.LOBBY_CLOSE.send(p, name);
 		});
 		game.reset();
 	}

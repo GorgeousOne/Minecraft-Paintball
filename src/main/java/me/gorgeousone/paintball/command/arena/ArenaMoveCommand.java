@@ -37,7 +37,7 @@ public class ArenaMoveCommand extends ArgCommand {
 		PbArena arena = arenaHandler.getArena(arenaName);
 		
 		if (arena == null) {
-			Message.LINE_02.send(sender, arenaName);
+			Message.ARENA_MISSING.send(sender, arenaName);
 			return;
 		}
 		try {
@@ -45,7 +45,7 @@ public class ArenaMoveCommand extends ArgCommand {
 		} catch (IllegalArgumentException e) {
 			sender.sendMessage(e.getMessage());
 		}
-		Message.LINE_12.send(sender, arenaName, LocationUtil.humanBlockPos(arena.getSchemPos()));
+		Message.ARENA_MOVE.send(sender, arenaName, LocationUtil.humanBlockPos(arena.getSchemPos()));
 	}
 	
 	@Override

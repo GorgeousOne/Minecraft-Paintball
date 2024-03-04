@@ -39,7 +39,7 @@ public class ArenaRemoveSpawnCommand extends ArgCommand {
 		String arenaName = argValues.get(0).get();
 		
 		if (!arenaHandler.containsArena(arenaName)) {
-			Message.LINE_02.send(sender, arenaName);
+			Message.ARENA_MISSING.send(sender, arenaName);
 			return;
 		}
 		TeamType teamType;
@@ -48,24 +48,24 @@ public class ArenaRemoveSpawnCommand extends ArgCommand {
 		try {
 			teamType = TeamType.valueOf(teamName.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			Message.LINE_03.send(sender, teamName);
+			Message.TEAM_MISSING.send(sender, teamName);
 			return;
 		}
 		PbArena arena = arenaHandler.getArena(arenaName);
 		List<Location> spawns = arena.getSpawns(teamType);
 		
 		if (spawns.isEmpty()) {
-			Message.LINE_13.send(sender, teamType.displayName, arenaName);
+			Message.TEAM_SPAWN_MISSING.send(sender, teamType.displayName, arenaName);
 			return;
 		}
 		int spawnIndex = argValues.get(2).getInt();
 		
 		if (spawnIndex < 1 || spawnIndex > spawns.size()) {
-			Message.LINE_14.send(sender, spawnIndex, teamType.displayName, spawns.size(), arenaName);
+			Message.TEAM_SPAWN_BAD_INDEX.send(sender, spawnIndex, teamType.displayName, spawns.size(), arenaName);
 			return;
 		}
 		Location spawnPos = spawns.remove(spawnIndex - 1);
-		Message.LINE_15.send(sender, spawnIndex, teamType.displayName, arenaName, LocationUtil.humanBlockPos(spawnPos));
+		Message.TEAM_SPAWN_REMOVE.send(sender, spawnIndex, teamType.displayName, arenaName, LocationUtil.humanBlockPos(spawnPos));
 	}
 	
 	@Override

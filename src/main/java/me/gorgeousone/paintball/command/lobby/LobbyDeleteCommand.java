@@ -31,7 +31,7 @@ public class LobbyDeleteCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
 		
 		if (lobby == null) {
-			Message.LINE_18.send(sender, lobbyName);
+			Message.LOBBY_MISSING.send(sender, lobbyName);
 			return;
 		}
 		lobbyHandler.deleteLobby(lobby);

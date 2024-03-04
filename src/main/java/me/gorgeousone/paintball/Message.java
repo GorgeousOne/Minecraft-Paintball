@@ -9,40 +9,39 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class Message {
 	
 	public static Message
-			LINE_02,
-			LINE_03,
-			LINE_04,
-			LINE_06,
-			LINE_07,
-			LINE_08,
-			LINE_09,
-			LINE_12,
-			LINE_13,
-			LINE_14,
-			LINE_15,
-			LINE_16,
-			LINE_18,
-			LINE_19,
-			LINE_20,
-			LINE_21,
-			LINE_22,
-			LINE_23,
-			LINE_24,
-			LINE_25,
-			LINE_26,
-			LINE_28,
-			LINE_29,
-			LINE_30,
-			LINE_31,
-			LINE_32,
-			LINE_33,
-			LINE_34,
-			LINE_35,
-			LINE_36,
-			LINE_37,
-			LINE_38,
-			LINE_39
-					;
+			ARENA_ADD_SPAWN,
+			ARENA_COPY,
+			ARENA_CREATE,
+			ARENA_EXISTS,
+			ARENA_MISSING,
+			ARENA_MOVE,
+			ARENA_REMOVE,
+			ARENA_RESET,
+			LOBBY_ARENA_DETACH,
+			LOBBY_ARENA_LINK,
+			LOBBY_ARENA_MISSING,
+			LOBBY_CLOSE,
+			LOBBY_COUNTDOWN,
+			LOBBY_CREATE,
+			LOBBY_EXIT_SET,
+			LOBBY_MISSING,
+			LOBBY_NOT_JOINED,
+			LOBBY_SPAWN_SET,
+			MAP_ANNOUNCE,
+			NOT_IN_LOBBY,
+			PLAYER_JOIN,
+			PLAYER_LEAVE,
+			PLAYER_NOT_ONLINE,
+			PLAYER_PAINT,
+			STATS_PLAYER_MISSING,
+			STATS_PLAYER_REQUIRED,
+			TEAM_JOIN,
+			TEAM_MISSING,
+			TEAM_QUEUE,
+			TEAM_SPAWN_BAD_INDEX,
+			TEAM_SPAWN_MISSING,
+			TEAM_SPAWN_REMOVE,
+			TEAM_UNQUEUE;
 	
 	private final String text;
 	private final String[] tokens;
@@ -69,39 +68,40 @@ public class Message {
 	}
 	
 	public static void loadLanguage(FileConfiguration config) {
-		LINE_02 = create(config, "config.arena-missing", "arena-name");
-		LINE_03 = create(config, "config.team-missing", "team-name");
-		LINE_04 = create(config, "config.arena-added-spawn", "spawn-point", "arena-name", "team-name");
-		LINE_06 = create(config, "config.arena-copied", "new-arena", "destination-arena");
-		LINE_07 = create(config, "config.arena-already-exists", "arena-name");
-		LINE_08 = create(config, "config.arena-created", "new-arena", "location");
-		LINE_09 = create(config, "config.arena-removed", "arena-name");
-		LINE_12 = create(config, "config.arena-moved", "source-arena", "destination-arena");
-		LINE_13 = create(config, "config.team-spawn-missing", "team-name", "arena-name");
-		LINE_14 = create(config, "config.team-spawn-index", "spawn-number", "team-name", "max-spawns", "arena-name");
-		LINE_15 = create(config, "config.team-spawn-removed", "spawn-number", "team-name", "arena-name", "previous-spawn");
-		LINE_16 = create(config, "config.arena-reset", "arena-name");
-		LINE_18 = create(config, "game.lobby-missing", "lobby-name");
-		LINE_19 = create(config, "game.player-not-online", "player-name");
-		LINE_20 = create(config, "game.lobby-already-left");
-		LINE_21 = create(config, "game.lobby-not-joined");
-		LINE_22 = create(config, "game.stats-player-required");
-		LINE_23 = create(config, "game.stats-player-missing", "player-name");
-		LINE_24 = create(config, "game.player-painted", false, "target-player", "shooter-player");
-		LINE_25 = create(config, "config.lobby-created", "new-lobby", "location");
-		LINE_26 = create(config, "config.lobby-arena-linked", "arena-name", "lobby-name");
-		LINE_28 = create(config, "config.lobby-set-exit", "lobby-name", "exit-point");
-		LINE_29 = create(config, "config.lobby-set-spawn", "lobby-name", "spawn-point");
-		LINE_30 = create(config, "config.lobby-arena-detached", "arena-name", "lobby-name");
-		LINE_31 = create(config, "game.map-announce", "map-name");
-		LINE_32 = create(config, "game.player-joined", "lobby-name");
-		LINE_33 = create(config, "game.lobby-arena-missing", "lobby-name", "arena-name");
-		LINE_34 = create(config, "game.player-left", "lobby-name");
-		LINE_35 = create(config, "game.lobby-closed", "lobby-name");
-		LINE_36 = create(config, "game.team-unqueued", "team-name");
-		LINE_37 = create(config, "game.team-queued", "team-name");
-		LINE_38 = create(config, "game.team-joined", "team-name");
-		LINE_39 = create(config, "game.lobby-countdown", false, "seconds-left");
+		ARENA_ADD_SPAWN = create(config, "config.arena-added-spawn", "spawn-point", "arena-name", "team-name");
+		ARENA_COPY = create(config, "config.arena-copied", "new-arena", "destination-arena");
+		ARENA_CREATE = create(config, "config.arena-created", "new-arena", "location");
+		ARENA_EXISTS = create(config, "config.arena-exists", "arena-name");
+		ARENA_MISSING = create(config, "config.arena-missing", "arena-name");
+		ARENA_MOVE = create(config, "config.arena-moved", "source-arena", "destination-arena");
+		ARENA_REMOVE = create(config, "config.arena-removed", "arena-name");
+		ARENA_RESET = create(config, "config.arena-reset", "arena-name");
+		LOBBY_ARENA_DETACH = create(config, "config.lobby-arena-detached", "arena-name", "lobby-name");
+		LOBBY_ARENA_LINK = create(config, "config.lobby-arena-linked", "arena-name", "lobby-name");
+		LOBBY_CREATE = create(config, "config.lobby-created", "new-lobby", "location");
+		LOBBY_EXIT_SET = create(config, "config.lobby-set-exit", "lobby-name", "exit-point");
+		LOBBY_SPAWN_SET = create(config, "config.lobby-set-spawn", "lobby-name", "spawn-point");
+		TEAM_MISSING = create(config, "config.team-missing", "team-name");
+		TEAM_SPAWN_BAD_INDEX = create(config, "config.team-spawn-bad-index", "spawn-number", "team-name", "max-spawns", "arena-name");
+		TEAM_SPAWN_MISSING = create(config, "config.team-spawn-missing", "team-name", "arena-name");
+		TEAM_SPAWN_REMOVE = create(config, "config.team-spawn-removed", "spawn-number", "team-name", "arena-name", "previous-spawn");
+		
+		LOBBY_ARENA_MISSING = create(config, "game.lobby-arena-missing", "lobby-name", "arena-name");
+		LOBBY_CLOSE = create(config, "game.lobby-closed", "lobby-name");
+		LOBBY_COUNTDOWN = create(config, "game.lobby-countdown", false, "seconds-left");
+		LOBBY_MISSING = create(config, "game.lobby-missing", "lobby-name");
+		LOBBY_NOT_JOINED = create(config, "game.lobby-not-joined");
+		PLAYER_NOT_ONLINE = create(config, "game.player-not-online", "player-name");
+		STATS_PLAYER_MISSING = create(config, "game.stats-player-missing", "player-name");
+		STATS_PLAYER_REQUIRED = create(config, "game.stats-player-required");
+		MAP_ANNOUNCE = create(config, "game.map-announce", "map-name");
+		NOT_IN_LOBBY = create(config, "game.not-in-lobby");
+		PLAYER_JOIN = create(config, "game.player-joined", "lobby-name");
+		PLAYER_LEAVE = create(config, "game.player-left", "lobby-name");
+		PLAYER_PAINT = create(config, "game.player-painted", false, "target-player", "shooter-player");
+		TEAM_JOIN = create(config, "game.team-joined", "team-name");
+		TEAM_QUEUE = create(config, "game.team-queued", "team-name");
+		TEAM_UNQUEUE = create(config, "game.team-unqueued", "team-name");
 	}
 	
 	private static Message create(ConfigurationSection section,

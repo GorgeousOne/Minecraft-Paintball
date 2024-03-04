@@ -40,7 +40,7 @@ public class ArenaAddSpawnCommand extends ArgCommand {
 		String arenaName = argValues.get(0).get();
 		
 		if (!arenaHandler.containsArena(arenaName)) {
-			Message.LINE_02.send(sender, arenaName);
+			Message.ARENA_MISSING.send(sender, arenaName);
 			return;
 		}
 		TeamType teamType;
@@ -49,13 +49,13 @@ public class ArenaAddSpawnCommand extends ArgCommand {
 		try {
 			teamType = TeamType.valueOf(teamName.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			Message.LINE_03.send(sender, teamName);
+			Message.TEAM_MISSING.send(sender, teamName);
 			return;
 		}
 		PbArena arena = arenaHandler.getArena(arenaName);
 		Location spawnPos = player.getLocation();
 		arena.addSpawn(teamType, spawnPos);
-		Message.LINE_04.send(sender, LocationUtil.humanBlockPos(spawnPos), arenaName, teamType.displayName);
+		Message.ARENA_ADD_SPAWN.send(sender, LocationUtil.humanBlockPos(spawnPos), arenaName, teamType.displayName);
 	}
 	
 	@Override

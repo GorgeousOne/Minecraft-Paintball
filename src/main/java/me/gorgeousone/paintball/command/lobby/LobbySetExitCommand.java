@@ -33,12 +33,12 @@ public class LobbySetExitCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
 		
 		if (lobby == null) {
-			Message.LINE_18.send(sender, lobbyName);
+			Message.LOBBY_MISSING.send(sender, lobbyName);
 			return;
 		}
 		Player player = (Player) sender;
 		lobby.setExitSpawn(player.getLocation());
-		Message.LINE_28.send(sender, lobby.getName(), LocationUtil.humanBlockPos(lobby.getJoinSpawn()));
+		Message.LOBBY_EXIT_SET.send(sender, lobby.getName(), LocationUtil.humanBlockPos(lobby.getJoinSpawn()));
 	}
 	
 	@Override

@@ -41,7 +41,7 @@ public class PlayerStatsCommand extends ArgCommand {
 		
 		if (playerName.equals("~")) {
 			if (!(sender instanceof Player)) {
-				Message.LINE_22.send(sender);
+				Message.STATS_PLAYER_REQUIRED.send(sender);
 				return;
 			}
 			player = (Player) sender;
@@ -49,14 +49,14 @@ public class PlayerStatsCommand extends ArgCommand {
 			player = Bukkit.getOfflinePlayer(playerName);
 			
 			if (player == null) {
-				Message.LINE_23.send(sender, playerName);
+				Message.STATS_PLAYER_MISSING.send(sender, playerName);
 				return;
 			}
 		}
 		File backupFile = ConfigUtil.matchFirstFile(player.getUniqueId().toString(), "player_stats", plugin);
 		
 		if (backupFile == null) {
-			Message.LINE_23.send(sender, player.getName());
+			Message.STATS_PLAYER_MISSING.send(sender, player.getName());
 			return;
 		}
 		listStats(sender, player.getName(), YamlConfiguration.loadConfiguration(backupFile));

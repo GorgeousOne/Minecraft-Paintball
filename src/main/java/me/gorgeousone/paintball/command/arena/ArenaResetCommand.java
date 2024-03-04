@@ -34,12 +34,12 @@ public class ArenaResetCommand extends ArgCommand {
 		String arenaName = argValues.get(0).get();
 		
 		if (!arenaHandler.containsArena(arenaName)) {
-			Message.LINE_02.send(sender, arenaName);
+			Message.ARENA_MISSING.send(sender, arenaName);
 			return;
 		}
 		PbArena arena = arenaHandler.getArena(arenaName);
 		arena.resetSchem();
-		Message.LINE_16.send(sender, arenaName);
+		Message.ARENA_RESET.send(sender, arenaName);
 	}
 	
 	@Override
