@@ -1,6 +1,7 @@
 package me.gorgeousone.paintball.kit;
 
 import me.gorgeousone.paintball.ConfigSettings;
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.util.ItemUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -23,7 +24,6 @@ import java.util.UUID;
  */
 public class PbKitHandler {
 	
-	public static final String KIT_SELECT_UI_TITLE = "Select a kit";
 	private static final int KITS_START_SLOT = 12;
 	private static Map<KitType, AbstractKit> KITS;
 	private static ItemStack WATER_BOMBS;
@@ -85,7 +85,7 @@ public class PbKitHandler {
 	}
 	
 	public void openKitSelectUI(Player player) {
-		Inventory selector = Bukkit.createInventory(null, 3 * 9, KIT_SELECT_UI_TITLE);
+		Inventory selector = Bukkit.createInventory(null, 3 * 9, Message.KIT_SELECT);
 		int itemSlot = KITS_START_SLOT;
 		
 		for (KitType kitType : KitType.values()) {

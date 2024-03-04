@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.equipment;
 
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.kit.KitType;
 import me.gorgeousone.paintball.kit.PbKitHandler;
 import me.gorgeousone.paintball.team.TeamType;
@@ -35,14 +36,14 @@ public class LobbyEquipment extends Equipment {
 		
 		for (TeamType teamType : TeamType.values()) {
 			ItemStack teamItem = teamType.getJoinItem();
-			ItemUtil.nameItem(teamItem, String.format(LOBBY_ITEM_NAME, "Team " + teamType.displayName));
+			ItemUtil.nameItem(teamItem, Message.LOBBY_ITEM_NAME.format(Message.TEAM + " " + teamType.displayName));
 			
 			setItem(i, teamItem, onTeamSelect);
 			++i;
 		}
-		setItem(MAP_SLOT, ItemUtil.nameItem(new ItemStack(Material.BOOK), String.format(LOBBY_ITEM_NAME, "Vote Map")), onMapVote);
+		setItem(MAP_SLOT, ItemUtil.nameItem(new ItemStack(Material.BOOK), Message.LOBBY_ITEM_NAME.format(Message.VOTE_MAP)), onMapVote);
 		setItem(KIT_SLOT, KitType.RIFLE.getGun(), onKitSelect);
-		setItem(LEAVE_SLOT, ItemUtil.nameItem(new ItemStack(Material.CLOCK), String.format(LOBBY_ITEM_NAME, "Quit")), onLobbyLeave);
+		setItem(LEAVE_SLOT, ItemUtil.nameItem(new ItemStack(Material.CLOCK), Message.LOBBY_ITEM_NAME.format(Message.QUIT)), onLobbyLeave);
 	}
 	
 	@Override
@@ -53,7 +54,7 @@ public class LobbyEquipment extends Equipment {
 	
 	public void changeKit(Player player, KitType newKit) {
 		ItemStack kitItem = newKit.getGun();
-		ItemUtil.nameItem(kitItem, String.format(LOBBY_ITEM_NAME, "Kit " + newKit.gunName));
+		ItemUtil.nameItem(kitItem, Message.LOBBY_ITEM_NAME.format(Message.KIT + " " + newKit.gunName));
 		
 		PlayerInventory inv = player.getInventory();
 		inv.setItem(KIT_SLOT, kitItem);

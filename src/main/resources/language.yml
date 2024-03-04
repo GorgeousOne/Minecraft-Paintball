@@ -1,35 +1,53 @@
 config:
-    arena-added-spawn: Added spawn %spawn-point% in arena %arena-name% for team %team-name%.
+    arena-added-spawn: Added spawn %spawn-point% in arena %arena% for team %team%.
+    arena-already-linked: Arena %arena% already linked to lobby %lobby%.
     arena-copied: Copied new arena %new-arena% to %destination-arena%
     arena-created: Created new arena %new-arena% at %location%.
-    arena-exists: Arena %arena-name% already exists!
-    arena-missing: Arena %arena-name% does not exist!
+    arena-exists: Arena %arena% already exists!
+    arena-missing: Arena %arena% does not exist!
     arena-moved: Moved arena %source-arena% to %destination-arena%
-    arena-removed: Removed arena %arena-name%.
-    arena-reset: Reset arena %arena-name% for a new game.
-    lobby-arena-detached: Arena %arena-name% is now detached from lobby %lobby-name%.
-    lobby-arena-linked: Arena %arena-name% is now playable in lobby %lobby-name%.
+    arena-removed: Removed arena %arena%.
+    arena-reset: Reset arena %arena% for a new game.
+    lobby-arena-detached: Arena %arena% is now detached from lobby %lobby%.
+    lobby-arena-linked: Arena %arena% is now playable in lobby %lobby%.
     lobby-created: Created new lobby %new-lobby% at %location%
-    lobby-set-exit: Set lobby %lobby-name% exit point to %exit-point%
-    lobby-set-spawn: Set lobby %lobby-name% spawn point to %spawn-point%
-    team-missing: Team %team-name% does not exist!
-    team-spawn-bad-index: 'Spawn #%spawn-number% for %team-name% does not exist! Team %team-name% has spawn points 1 to %max-spawns% in arena %arena-name%.'
-    team-spawn-missing: Team %team-name% does not have spawn points in arena %arena-name%.
-    team-spawn-removed: 'Removed spawn point #%spawn-number% of team %team-name% in arena %arena-name% (was %previous-spawn%).'
+    lobby-set-exit: Set lobby %lobby% exit point to %exit-point%
+    lobby-set-spawn: Set lobby %lobby% spawn point to %spawn-point%
+    team-missing: Team %team% does not exist!
+    team-spawn-bad-index: 'Spawn #%spawn-number% for %team% does not exist! Team %team% has spawn points 1 to %max-spawns% in arena %arena%.'
+    team-spawn-missing: Team %team% does not have spawn points in arena %arena%.
+    team-spawn-removed: 'Removed spawn point #%spawn-number% of team %team% in arena %arena% (was %previous-spawn%).'
 game:
-    lobby-arena-missing: Lobby %lobby-name% cannot start a game because no arenas to play are linked to it. /pb link %lobby-name% <arena-name>
-    lobby-closed: Lobby %lobby-name% closed.
+    lobby-arena-missing: Lobby %lobby% cannot start a game because no arenas to play are linked to it. /pb link %lobby% <arena>
+    lobby-closed: Lobby %lobby% closed.
     lobby-countdown: Game starts in %seconds-left% seconds.
-    lobby-missing: Lobby %lobby-name% does not exist!
+    lobby-missing: Lobby %lobby% does not exist!
+    lobby-player-joined: %player%
     lobby-not-joined: You are not in a lobby right now. Join a lobby or specify which lobby to start.
+    map-announce: Playing map %map%!
     not-in-lobby: You are not in a paintball lobby.
-    map-announce: Playing map %map-name%!
-    player-joined: Joined lobby %lobby-name%.
-    player-left: You left lobby %lobby-name%.
-    player-not-online: Player %player-name% is not online!
-    player-painted: '%target-player% was painted by %shooter-player%'
-    stats-player-missing: Player %player-name% never played paintball.
+    player-joined: Joined lobby %lobby%.
+    player-left: You left lobby %lobby%.
+    player-not-online: Player %player% is not online!
+    player-painted: '%target% was painted by %shooter%'
+    stats-player-missing: Player %player% never played paintball.
     stats-player-required: Please enter a player name.
-    team-joined: You are in team %team-name%.
-    team-queued: You queued for team %team-name%.
-    team-unqueued: You un-queued from team %team-name%.
+    team-joined: You are in team %team%.
+    team-queued: You queued for team %team%.
+    team-unqueued: You un-queued from team %team%.
+names:
+    team-red: Ember
+    team-blue: Ice
+    lore-rifle: Paintball Rifle
+    gun-shotgun: Paintball Shotgun
+    gun-machine: Paintball Machine Gun
+    lore-gun-rifle: Semi-automatic paintball rifle.\nHigh range and accuracy.
+    lore-gun-shotgun: Pump action paintball shotgun.\nShoots a cloud of bullets with\nlow range and accuracy.
+    lore-gun-machine: Full-automatic paintball gun.\nAccuracy drops with longer use.
+items:
+    kit: Kit
+    kit-select: Select a kit
+    right-click: Right Click
+    team: Team
+    vote-map: Vote a Map
+    quit: Quit

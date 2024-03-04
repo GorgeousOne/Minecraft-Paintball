@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.kit;
 
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.util.version.VersionUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -13,18 +14,16 @@ import java.util.Arrays;
  */
 public enum KitType {
 	
-	RIFLE("Paintball Rifle", "Semi-automatic paintball rifle.\nHigh range and accuracy."),
-	SHOTGUN("Paintball Shotgun", "Pump action paintball shotgun.\nShoots a cloud of bullets with\nlow range and accuracy."),
-	MACHINE_GUN("Paintball Machine Gun", "Full-automatic paintball gun.\nAccuracy drops with longer use."),
-	//	SNIPER(ChatColor.YELLOW + "Paintball Sniper", "Long range sniper rifle.", "Higher damage the longer scoped (sneak).")
-	;
+	RIFLE, SHOTGUN, MACHINE_GUN; //	SNIPER;
 	
-	public final String gunName;
-	public final String[] gunLore;
+	public String gunName;
+	public String[] gunLore;
 	public Material gunMaterial;
 	private ItemStack gunItem;
 	
-	KitType(String displayName, String lore) {
+	KitType() {}
+	
+	private void setDescription(String displayName, String lore) {
 		this.gunName = ChatColor.YELLOW + displayName;
 		this.gunLore = lore.split("\n");
 		
@@ -48,10 +47,15 @@ public enum KitType {
 	
 	//kinda uncool for an enum but i cant set the item before loading plugin version
 	public static void setup() {
+		RIFLE.setDescription(Message.NAME_RIFLE, Message.LORE_RIFLE);
+		SHOTGUN.setDescription(Message.NAME_SHOTGUN, Message.LORE_SHOTGUN);
+		MACHINE_GUN.setDescription(Message.NAME_MACHINE_GUN, Message.LORE_MACHINE_GUN);
+//		 SNIPER_RILE.setDescription(ChatColor.YELLOW + "Paintball Sniper", "Long range sniper rifle.", "Higher damage the longer scoped (sneak).")
+
 		RIFLE.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("IRON_BARDING") : Material.valueOf("IRON_HORSE_ARMOR"));
 		SHOTGUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("GOLD_BARDING") : Material.valueOf("GOLDEN_HORSE_ARMOR"));
 		MACHINE_GUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("DIAMOND_BARDING") : Material.valueOf("DIAMOND_HORSE_ARMOR"));
-		//		SNIPER.setGunMaterial(Material.DIAMOND_HOE);
+//		SNIPER.setGunMaterial(Material.DIAMOND_HOE);
 	}
 	
 	public static KitType valueOf(ItemStack itemStack) {

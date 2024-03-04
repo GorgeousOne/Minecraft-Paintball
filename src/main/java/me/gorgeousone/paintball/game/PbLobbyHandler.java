@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.game;
 
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.arena.PbArena;
 import me.gorgeousone.paintball.arena.PbArenaHandler;
 import me.gorgeousone.paintball.kit.PbKitHandler;
@@ -39,7 +40,7 @@ public class PbLobbyHandler {
 	
 	public PbLobby createLobby(String name, Location spawn) {
 		if (lobbies.containsKey(name)) {
-			throw new IllegalArgumentException(StringUtil.format("Lobby with name %s already exists.", name));
+			throw new IllegalArgumentException(Message.LOBBY_EXISTS.format(name));
 		}
 		PbLobby lobby = new PbLobby(name, spawn, plugin, this, kitHandler);
 		lobbies.put(lobby.getName(), lobby);
@@ -51,7 +52,7 @@ public class PbLobbyHandler {
 		String name = lobby.getName();
 		
 		if (lobbies.containsKey(name)) {
-			throw new IllegalArgumentException(StringUtil.format("Lobby with name %s already exists.", name));
+			throw new IllegalArgumentException(Message.LOBBY_EXISTS.format(name));
 		}
 		lobbies.put(name, lobby);
 	}
@@ -115,7 +116,7 @@ public class PbLobbyHandler {
 	public void linkArena(PbLobby lobby, PbArena arena) {
 		for (PbLobby other : lobbies.values()) {
 			if (other.getArenas().contains(arena)) {
-				throw new IllegalArgumentException(StringUtil.format("Arena %s already linked to lobby %s", arena.getName(), lobby.getName()));
+				throw new IllegalArgumentException(Message.ARENA_ALREADY_LINKED.format(arena.getName(), lobby.getName()));
 			}
 		}
 		lobby.linkArena(arena);

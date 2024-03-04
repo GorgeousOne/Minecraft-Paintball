@@ -82,7 +82,7 @@ public class PbGame {
 	public void joinPlayer(UUID playerId) {
 		players.add(playerId);
 		String playerName = Bukkit.getOfflinePlayer(playerId).getName();
-		allPlayers(p -> StringUtil.msg(p, playerName + " joined."));
+		allPlayers(p -> Message.LOBBY_PLAYER_JOIN.send(p, playerName));
 	}
 	
 	public void removePlayer(UUID playerId) {
