@@ -22,7 +22,6 @@ import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 
@@ -35,7 +34,10 @@ public class SchemUtil {
 		pasteClipboard(clipboard, origin, true);
 	}
 	
-	public static void pasteSchemWithBackup(File file, Location origin, String backupName, JavaPlugin plugin) throws IOException {
+	public static void pasteSchemWithBackup(File file,
+			Location origin,
+			String backupName,
+			JavaPlugin plugin) throws IOException {
 		Clipboard clipboard = loadClipboard(file);
 		World weWorld = BukkitAdapter.adapt(origin.getWorld());
 		BlockVector3 originVec = BlockVector3.at(origin.getBlockX(), origin.getBlockY(), origin.getBlockZ());

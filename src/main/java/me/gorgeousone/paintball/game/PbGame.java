@@ -1,6 +1,7 @@
 package me.gorgeousone.paintball.game;
 
 import me.gorgeousone.paintball.GameBoard;
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.arena.PbArena;
 import me.gorgeousone.paintball.equipment.Equipment;
 import me.gorgeousone.paintball.equipment.IngameEquipment;
@@ -122,13 +123,13 @@ public class PbGame {
 		}
 		teamQueue.assignTeams(players, teams);
 		teams.values().forEach(t -> t.startGame(arenaToPlay.getSpawns(t.getType()), maxHealthPoints));
-
+		
 		createScoreboard();
 		startCountdown();
 		gameStats = new GameStats();
 		
 		allPlayers(p -> {
-			StringUtil.msg(p, "Playing map %s!", ChatColor.WHITE + arenaToPlay.getSpacedName() + StringUtil.MSG_COLOR);
+			Message.LINE_31.send(p, ChatColor.WHITE + arenaToPlay.getSpacedName() + StringUtil.MSG_COLOR);
 			gameStats.addPlayer(p.getUniqueId(), kitHandler.getKitType(p.getUniqueId()));
 		});
 		playedArena = arenaToPlay;
@@ -262,8 +263,10 @@ public class PbGame {
 		
 		TeamType targetTeam = getTeam(targetId).getType();
 		TeamType shooterTeam = getTeam(shooterId).getType();
-		String message = targetTeam.prefixColor + target.getDisplayName() + ChatColor.WHITE + " was painted by " + shooterTeam.prefixColor + shooter.getDisplayName() + ".";
-		allPlayers(p -> StringUtil.msgPlain(p, message));
+		allPlayers(p -> Message.LINE_24.send(p,
+				targetTeam.prefixColor + target.getDisplayName() + ChatColor.WHITE,
+				shooterTeam.prefixColor + shooter.getDisplayName()));
+		
 		gameStats.addKill(shooterId, targetId);
 	}
 	
@@ -311,7 +314,7 @@ public class PbGame {
 				});
 			}
 		};
-		restartTimer.runTaskLater(plugin, 8*20);
+		restartTimer.runTaskLater(plugin, 8 * 20);
 	}
 	
 	public void updateAliveScores() {

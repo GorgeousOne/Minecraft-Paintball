@@ -16,14 +16,14 @@ import java.util.function.Consumer;
  * Class to manage hotbar items with custom click functions for players in the paintball lobby.
  */
 public class LobbyEquipment extends Equipment {
-
+	
 	private static final String LOBBY_ITEM_NAME = ChatColor.WHITE + "%s" + ChatColor.GRAY + " (Right Click)";
 	private final PbKitHandler kitHandler;
 	
 	private static final int MAP_SLOT = 4;
 	private static final int KIT_SLOT = 5;
 	private static final int LEAVE_SLOT = 8;
-
+	
 	public LobbyEquipment(
 			Consumer<SlotClickEvent> onTeamSelect,
 			Consumer<SlotClickEvent> onMapVote,
@@ -32,11 +32,11 @@ public class LobbyEquipment extends Equipment {
 			PbKitHandler kitHandler) {
 		this.kitHandler = kitHandler;
 		int i = 0;
-
+		
 		for (TeamType teamType : TeamType.values()) {
 			ItemStack teamItem = teamType.getJoinItem();
 			ItemUtil.nameItem(teamItem, String.format(LOBBY_ITEM_NAME, "Team " + teamType.displayName));
-
+			
 			setItem(i, teamItem, onTeamSelect);
 			++i;
 		}
@@ -44,17 +44,17 @@ public class LobbyEquipment extends Equipment {
 		setItem(KIT_SLOT, KitType.RIFLE.getGun(), onKitSelect);
 		setItem(LEAVE_SLOT, ItemUtil.nameItem(new ItemStack(Material.CLOCK), String.format(LOBBY_ITEM_NAME, "Quit")), onLobbyLeave);
 	}
-
+	
 	@Override
 	public void equip(Player player) {
 		super.equip(player);
 		changeKit(player, kitHandler.getKitType(player.getUniqueId()));
 	}
-
+	
 	public void changeKit(Player player, KitType newKit) {
 		ItemStack kitItem = newKit.getGun();
 		ItemUtil.nameItem(kitItem, String.format(LOBBY_ITEM_NAME, "Kit " + newKit.gunName));
-
+		
 		PlayerInventory inv = player.getInventory();
 		inv.setItem(KIT_SLOT, kitItem);
 	}

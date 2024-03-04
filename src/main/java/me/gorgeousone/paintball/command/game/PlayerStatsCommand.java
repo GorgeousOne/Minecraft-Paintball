@@ -1,12 +1,12 @@
 package me.gorgeousone.paintball.command.game;
 
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.cmdframework.argument.ArgType;
 import me.gorgeousone.paintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.paintball.cmdframework.argument.Argument;
 import me.gorgeousone.paintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.paintball.kit.KitType;
 import me.gorgeousone.paintball.util.ConfigUtil;
-import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -41,7 +41,7 @@ public class PlayerStatsCommand extends ArgCommand {
 		
 		if (playerName.equals("~")) {
 			if (!(sender instanceof Player)) {
-				StringUtil.msg(sender, "Please enter a player name.");
+				Message.LINE_22.send(sender);
 				return;
 			}
 			player = (Player) sender;
@@ -49,14 +49,14 @@ public class PlayerStatsCommand extends ArgCommand {
 			player = Bukkit.getOfflinePlayer(playerName);
 			
 			if (player == null) {
-				StringUtil.msg(sender, "Player %s never played paintball.", playerName);
+				Message.LINE_23.send(sender, playerName);
 				return;
 			}
 		}
 		File backupFile = ConfigUtil.matchFirstFile(player.getUniqueId().toString(), "player_stats", plugin);
 		
 		if (backupFile == null) {
-			StringUtil.msg(sender, "Player %s never played paintball.", player.getName());
+			Message.LINE_23.send(sender, player.getName());
 			return;
 		}
 		listStats(sender, player.getName(), YamlConfiguration.loadConfiguration(backupFile));
@@ -79,7 +79,7 @@ public class PlayerStatsCommand extends ArgCommand {
 		int kills = statsConfig.getInt("kills");
 		int deaths = statsConfig.getInt("deaths");
 		int revives = statsConfig.getInt("revives");
-		float kdRatio = deaths == 0 ? kills : 1f * kills/deaths;
+		float kdRatio = deaths == 0 ? kills : 1f * kills / deaths;
 		sender.sendMessage(String.format(gamesData, playerName, gamesPlayed, gamesWon, gamesPlayed - gamesWon, kills, deaths, kdRatio, revives));
 		
 		for (KitType kitType : KitType.values()) {

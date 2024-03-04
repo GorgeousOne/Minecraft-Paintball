@@ -24,7 +24,6 @@ public class ListArenasCommand extends BaseCommand {
 	@Override
 	protected void onCommand(CommandSender sender, String[] args) {
 		StringUtil.msg(sender, "List of arenas:");
-		
 		for (PbArena arena : arenaHandler.getArenas()) {
 			StringUtil.msgPlain(sender, "%s " + LocationUtil.humanBlockPos(arena.getSchemPos()), arena.getName());
 		}

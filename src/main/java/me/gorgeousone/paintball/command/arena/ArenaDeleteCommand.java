@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.command.arena;
 
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.arena.PbArena;
 import me.gorgeousone.paintball.arena.PbArenaHandler;
 import me.gorgeousone.paintball.cmdframework.argument.ArgType;
@@ -7,7 +8,6 @@ import me.gorgeousone.paintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.paintball.cmdframework.argument.Argument;
 import me.gorgeousone.paintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.paintball.game.PbLobbyHandler;
-import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.command.CommandSender;
 
 import java.util.LinkedList;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * OP command to delete an existing arena.
  */
 public class ArenaDeleteCommand extends ArgCommand {
-
+	
 	private final PbArenaHandler arenaHandler;
 	private final PbLobbyHandler lobbyHandler;
 	
@@ -34,16 +34,16 @@ public class ArenaDeleteCommand extends ArgCommand {
 	@Override
 	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
 		String arenaName = argValues.get(0).get();
-
+		
 		try {
 			lobbyHandler.unlinkArena(arenaHandler.getArena(arenaName));
 			arenaHandler.removeArena(arenaName);
-			StringUtil.msg(sender, "Removed arena %s.", arenaName);
+			Message.LINE_09.send(sender, arenaName);
 		} catch (IllegalArgumentException e) {
 			sender.sendMessage(e.getMessage());
 		}
 	}
-
+	
 	@Override
 	protected List<String> onTabComplete(CommandSender sender, String[] stringArgs) {
 		if (stringArgs.length == 1) {

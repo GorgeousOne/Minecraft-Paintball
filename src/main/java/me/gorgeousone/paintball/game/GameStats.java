@@ -76,11 +76,11 @@ public class GameStats {
 		}
 	}
 	
-	private void updatePlayerStats(UUID playerId, JavaPlugin plugin)  {
+	private void updatePlayerStats(UUID playerId, JavaPlugin plugin) {
 		String filePath = "player_stats/" + Bukkit.getOfflinePlayer(playerId).getName() + playerId;
 		YamlConfiguration statsConfig = ConfigUtil.loadConfig(filePath, "player_stats", plugin);
 		Map<String, Integer> statsToAdd = new LinkedHashMap<>();
-
+		
 		String gunKey = "gun-stats." + playerGuns.get(playerId).name().toLowerCase().replace("_", "-");
 		statsToAdd.put("games-played", 1);
 		statsToAdd.put("games-won", isWin.get(playerId) ? 1 : 0);

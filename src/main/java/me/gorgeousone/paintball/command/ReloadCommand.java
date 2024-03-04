@@ -17,7 +17,7 @@ public class ReloadCommand extends BaseCommand {
 		addAlias("rl");
 		setPlayerRequired(false);
 		setPermission("paintball.configure");
-
+		
 		this.plugin = plugin;
 	}
 	

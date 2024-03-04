@@ -12,15 +12,15 @@ import java.util.function.Consumer;
  * Class to create and manage hotbar items with custom click functionality for players.
  */
 public class Equipment {
-
+	
 	protected final Map<Integer, ItemStack> items;
 	protected final Map<Integer, Consumer<SlotClickEvent>> onClicks;
-
+	
 	public Equipment() {
 		this.items = new HashMap<>();
 		this.onClicks = new HashMap<>();
 	}
-
+	
 	public void equip(Player player) {
 		PlayerInventory inv = player.getInventory();
 		
@@ -34,7 +34,7 @@ public class Equipment {
 			}
 		}
 	}
-
+	
 	public void setItem(int slot, ItemStack item, Consumer<SlotClickEvent> onClick) {
 		if (slot < 0 || slot > 8) {
 			throw new IllegalArgumentException("Slot must be on hotbar between 0 and 8");
@@ -42,13 +42,13 @@ public class Equipment {
 		items.put(slot, item);
 		onClicks.put(slot, onClick);
 	}
-
+	
 	public SlotClickEvent onClickSlot(Player player, int slot) {
 		if (!items.containsKey(slot)) {
 			return null;
 		}
 		Consumer<SlotClickEvent> onClick = onClicks.get(slot);
-
+		
 		if (onClick != null) {
 			SlotClickEvent event = new SlotClickEvent(player, slot, items.get(slot).clone());
 			onClick.accept(event);

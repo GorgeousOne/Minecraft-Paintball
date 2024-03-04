@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.command.lobby;
 
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.arena.PbArena;
 import me.gorgeousone.paintball.cmdframework.argument.ArgType;
 import me.gorgeousone.paintball.cmdframework.argument.ArgValue;
@@ -17,7 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class LobbyListArenasCommand extends ArgCommand {
-
+	
 	private final PbLobbyHandler lobbyHandler;
 	
 	public LobbyListArenasCommand(PbLobbyHandler lobbyHandler) {
@@ -33,7 +34,7 @@ public class LobbyListArenasCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
 		
 		if (lobby == null) {
-			StringUtil.msg(sender, "Lobby %s does not exits!", lobbyName);
+			Message.LINE_18.send(sender, lobbyName);
 			return;
 		}
 		StringUtil.msg(sender, "Arenas linked to lobby %s:", lobbyName);
@@ -42,7 +43,7 @@ public class LobbyListArenasCommand extends ArgCommand {
 			StringUtil.msgPlain(sender, "  " + arena.getName() + ":  " + LocationUtil.humanBlockPos(arena.getSchemPos()));
 		}
 	}
-
+	
 	@Override
 	protected List<String> onTabComplete(CommandSender sender, String[] stringArgs) {
 		if (stringArgs.length == 1) {

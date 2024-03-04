@@ -24,19 +24,19 @@ import java.util.logging.Logger;
  * Class to load and manage lobbies
  */
 public class PbLobbyHandler {
-
+	
 	private final JavaPlugin plugin;
 	private final YamlConfiguration backupConfig;
 	private final PbKitHandler kitHandler;
 	private final Map<String, PbLobby> lobbies;
-
+	
 	public PbLobbyHandler(JavaPlugin plugin, PbKitHandler kitHandler) {
 		this.plugin = plugin;
 		this.backupConfig = ConfigUtil.loadConfig("lobbies", plugin);
 		this.kitHandler = kitHandler;
 		this.lobbies = new HashMap<>();
 	}
-
+	
 	public PbLobby createLobby(String name, Location spawn) {
 		if (lobbies.containsKey(name)) {
 			throw new IllegalArgumentException(StringUtil.format("Lobby with name %s already exists.", name));
@@ -46,34 +46,34 @@ public class PbLobbyHandler {
 		saveLobby(lobby);
 		return lobby;
 	}
-
+	
 	private void registerLobby(PbLobby lobby) {
 		String name = lobby.getName();
-
+		
 		if (lobbies.containsKey(name)) {
 			throw new IllegalArgumentException(StringUtil.format("Lobby with name %s already exists.", name));
 		}
 		lobbies.put(name, lobby);
 	}
-
+	
 	public void deleteLobby(PbLobby lobby) {
 		String name = lobby.getName();
-
+		
 		if (!lobbies.containsKey(name)) {
 			return;
 		}
 		lobby.reset();
 		lobbies.remove(name);
-
+		
 		ConfigurationSection lobbiesSection = backupConfig.getConfigurationSection("lobbies");
 		lobbiesSection.set(name, null);
 		ConfigUtil.saveConfig(backupConfig, "lobbies", plugin);
 	}
-
+	
 	public PbLobby getLobby(String lobbyName) {
 		return lobbies.getOrDefault(lobbyName, null);
 	}
-
+	
 	public PbLobby getLobby(UUID playerId) {
 		for (PbLobby lobby : lobbies.values()) {
 			if (lobby.hasPlayer(playerId)) {
@@ -150,7 +150,7 @@ public class PbLobbyHandler {
 		logger.log(Level.INFO, "  Loading lobbies:");
 		ConfigUtil.assertKeyExists(backupConfig, "lobbies");
 		ConfigurationSection lobbySection = backupConfig.getConfigurationSection("lobbies");
-
+		
 		for (String name : lobbySection.getKeys(false)) {
 			try {
 				PbLobby lobby = PbLobby.fromYml(name, lobbySection, plugin, this, arenaHandler, kitHandler);

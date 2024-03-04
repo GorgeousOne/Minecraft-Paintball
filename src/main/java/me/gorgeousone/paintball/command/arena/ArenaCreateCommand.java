@@ -1,15 +1,15 @@
 package me.gorgeousone.paintball.command.arena;
 
 import me.gorgeousone.paintball.ConfigSettings;
-import me.gorgeousone.paintball.arena.PbArenaHandler;
-import me.gorgeousone.paintball.util.LocationUtil;
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.arena.PbArena;
+import me.gorgeousone.paintball.arena.PbArenaHandler;
 import me.gorgeousone.paintball.cmdframework.argument.ArgType;
 import me.gorgeousone.paintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.paintball.cmdframework.argument.Argument;
 import me.gorgeousone.paintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.paintball.util.ConfigUtil;
-import me.gorgeousone.paintball.util.StringUtil;
+import me.gorgeousone.paintball.util.LocationUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -23,7 +23,7 @@ import java.util.Set;
 public class ArenaCreateCommand extends ArgCommand {
 	
 	private final PbArenaHandler arenaHandler;
-
+	
 	public ArenaCreateCommand(PbArenaHandler arenaHandler) {
 		super("create");
 		this.addArg(new Argument("arena name", ArgType.STRING));
@@ -38,22 +38,22 @@ public class ArenaCreateCommand extends ArgCommand {
 		String arenaName = argValues.get(0).get();
 		
 		if (arenaHandler.containsArena(arenaName)) {
-			StringUtil.msg(sender, "Arena %s already exists!", arenaName);
+			Message.LINE_07.send(sender, arenaName);
 			return;
 		}
 		String schemFileName = argValues.get(1).get() + ".schem";
 		File schemFile;
-
+		
 		try {
 			schemFile = ConfigUtil.schemFileFromYml(schemFileName, ConfigSettings.SCHEM_FOLDER);
-		}catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			sender.sendMessage(e.getMessage());
 			return;
 		}
 		try {
 			PbArena arena = arenaHandler.createArena(arenaName, schemFile, player.getLocation());
-			StringUtil.msg(sender, "Created new arena %s at %s", arenaName, LocationUtil.humanBlockPos(arena.getSchemPos()));
-		}catch (IllegalArgumentException e) {
+			Message.LINE_08.send(sender, arenaName, LocationUtil.humanBlockPos(arena.getSchemPos()));
+		} catch (IllegalArgumentException e) {
 			sender.sendMessage(e.getMessage());
 		}
 	}

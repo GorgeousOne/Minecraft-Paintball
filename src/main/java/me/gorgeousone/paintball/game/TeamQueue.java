@@ -1,10 +1,10 @@
 package me.gorgeousone.paintball.game;
 
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.equipment.SlotClickEvent;
 import me.gorgeousone.paintball.team.PbTeam;
 import me.gorgeousone.paintball.team.TeamType;
 import me.gorgeousone.paintball.util.ItemUtil;
-import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -38,9 +38,9 @@ public class TeamQueue {
 		TeamType queuedTeam = teamQueues.getOrDefault(playerId, null);
 		
 		if (newTeam == queuedTeam) { //I hope it's not possible to queue for team null :D
-			StringUtil.msg(player, "You un-queued from team %s.", newTeam.displayName);
+			Message.LINE_36.send(player, newTeam.displayName);
 		} else {
-			StringUtil.msg(player, "You queued for team %s.", newTeam.displayName);
+			Message.LINE_37.send(player, newTeam.displayName);
 		}
 		changeQueuedTeam(player, queuedTeam, newTeam);
 	}

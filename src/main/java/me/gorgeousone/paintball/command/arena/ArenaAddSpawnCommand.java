@@ -1,14 +1,14 @@
 package me.gorgeousone.paintball.command.arena;
 
-import me.gorgeousone.paintball.arena.PbArenaHandler;
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.arena.PbArena;
+import me.gorgeousone.paintball.arena.PbArenaHandler;
 import me.gorgeousone.paintball.cmdframework.argument.ArgType;
 import me.gorgeousone.paintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.paintball.cmdframework.argument.Argument;
 import me.gorgeousone.paintball.cmdframework.command.ArgCommand;
-import me.gorgeousone.paintball.util.LocationUtil;
 import me.gorgeousone.paintball.team.TeamType;
-import me.gorgeousone.paintball.util.StringUtil;
+import me.gorgeousone.paintball.util.LocationUtil;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -38,26 +38,26 @@ public class ArenaAddSpawnCommand extends ArgCommand {
 	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
 		Player player = (Player) sender;
 		String arenaName = argValues.get(0).get();
-
+		
 		if (!arenaHandler.containsArena(arenaName)) {
-			StringUtil.msg(sender, "Arena %s does not exist!", arenaName);
+			Message.LINE_02.send(sender, arenaName);
 			return;
 		}
 		TeamType teamType;
 		String teamName = argValues.get(1).get();
-
+		
 		try {
 			teamType = TeamType.valueOf(teamName.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			StringUtil.msg(sender, "Team %s does not exist!", teamName);
+			Message.LINE_03.send(sender, teamName);
 			return;
 		}
 		PbArena arena = arenaHandler.getArena(arenaName);
 		Location spawnPos = player.getLocation();
 		arena.addSpawn(teamType, spawnPos);
-		StringUtil.msg(sender, "Added spawn %s in arena %s for team %s.", LocationUtil.humanBlockPos(spawnPos), arenaName, teamType.displayName);
+		Message.LINE_04.send(sender, LocationUtil.humanBlockPos(spawnPos), arenaName, teamType.displayName);
 	}
-
+	
 	@Override
 	protected List<String> onTabComplete(CommandSender sender, String[] stringArgs) {
 		switch (stringArgs.length) {

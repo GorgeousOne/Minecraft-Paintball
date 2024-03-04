@@ -22,14 +22,14 @@ import java.util.UUID;
  * Class for creating a kit selection UI and storing the selected kits of players.
  */
 public class PbKitHandler {
-
+	
 	public static final String KIT_SELECT_UI_TITLE = "Select a kit";
 	private static final int KITS_START_SLOT = 12;
 	private static Map<KitType, AbstractKit> KITS;
 	private static ItemStack WATER_BOMBS;
-
+	
 	private final Map<UUID, KitType> playerKits;
-
+	
 	public PbKitHandler() {
 		this.playerKits = new HashMap<>();
 	}
@@ -39,7 +39,7 @@ public class PbKitHandler {
 		KITS.put(KitType.RIFLE, new RifleKit());
 		KITS.put(KitType.SHOTGUN, new ShotgunKit(plugin));
 		KITS.put(KitType.MACHINE_GUN, new MachineGunKit(plugin));
-//		KITS.put(KitType.SNIPER, new SniperKit());
+		//		KITS.put(KitType.SNIPER, new SniperKit());
 		WATER_BOMBS = createWaterBombs();
 	}
 	
@@ -62,7 +62,7 @@ public class PbKitHandler {
 		removePlayer(playerId);
 		playerKits.put(playerId, kitType);
 	}
-
+	
 	public void removePlayer(UUID playerId) {
 		if (!playerKits.containsKey(playerId)) {
 			return;
@@ -70,7 +70,7 @@ public class PbKitHandler {
 		getKit(playerKits.get(playerId)).removePlayer(playerId);
 		playerKits.remove(playerId);
 	}
-
+	
 	public static ItemStack getWaterBombs() {
 		return WATER_BOMBS.clone();
 	}
@@ -83,11 +83,11 @@ public class PbKitHandler {
 		waterBombs.setItemMeta(meta);
 		return waterBombs;
 	}
-
+	
 	public void openKitSelectUI(Player player) {
-		Inventory selector = Bukkit.createInventory(null, 3*9, KIT_SELECT_UI_TITLE);
+		Inventory selector = Bukkit.createInventory(null, 3 * 9, KIT_SELECT_UI_TITLE);
 		int itemSlot = KITS_START_SLOT;
-
+		
 		for (KitType kitType : KitType.values()) {
 			ItemStack gunItem = kitType.getGun();
 			selector.setItem(itemSlot, gunItem);
@@ -96,10 +96,10 @@ public class PbKitHandler {
 		highlightKit(selector, null, getKitType(player.getUniqueId()));
 		player.openInventory(selector);
 	}
-
+	
 	public boolean onSelectKit(Player player, Inventory inv, int slot) {
 		int kitIndex = slot - KITS_START_SLOT;
-
+		
 		if (kitIndex < 0 || kitIndex >= KitType.values().length) {
 			return false;
 		}
@@ -107,7 +107,7 @@ public class PbKitHandler {
 		KitType oldKitType = getKitType(playerId);
 		KitType newKitType = KitType.values()[kitIndex];
 		player.playSound(player.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 2f);
-
+		
 		if (newKitType == oldKitType) {
 			return false;
 		}
@@ -115,7 +115,7 @@ public class PbKitHandler {
 		highlightKit(inv, oldKitType, newKitType);
 		return true;
 	}
-
+	
 	private static void highlightKit(Inventory inv, KitType oldKit, KitType newKit) {
 		if (oldKit != null) {
 			int oldSlot = KITS_START_SLOT + oldKit.ordinal();

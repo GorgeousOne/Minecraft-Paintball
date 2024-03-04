@@ -1,8 +1,8 @@
 package me.gorgeousone.paintball.arena;
 
-import me.gorgeousone.paintball.util.LocationUtil;
 import me.gorgeousone.paintball.team.TeamType;
 import me.gorgeousone.paintball.util.ConfigUtil;
+import me.gorgeousone.paintball.util.LocationUtil;
 import me.gorgeousone.paintball.util.SchemUtil;
 import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.Bukkit;
@@ -24,14 +24,14 @@ import java.util.logging.Level;
  * Like the schematic file, the spawn points for the teams and the position of the schematic in the world.
  */
 public class PbArena {
-
+	
 	private final JavaPlugin plugin;
 	private final PbArenaHandler arenaHandler;
 	private final String name;
-	private File schemFile;
+	private final File schemFile;
 	private Location schemPos;
 	private final Map<TeamType, List<Location>> teamSpawns;
-
+	
 	public PbArena(String name, File schemFile, Location schemPos, JavaPlugin plugin, PbArenaHandler arenaHandler) {
 		this.plugin = plugin;
 		this.arenaHandler = arenaHandler;
@@ -39,16 +39,16 @@ public class PbArena {
 		this.schemFile = schemFile;
 		this.schemPos = LocationUtil.cleanSpawn(schemPos);
 		this.teamSpawns = new HashMap<>();
-
+		
 		schemPos.setX(schemPos.getBlockX());
 		schemPos.setY(schemPos.getBlockY());
 		schemPos.setZ(schemPos.getBlockZ());
-
+		
 		for (TeamType teamType : TeamType.values()) {
 			teamSpawns.put(teamType, new LinkedList<>());
 		}
 	}
-
+	
 	public PbArena(PbArena other, String name, Location schemPos) {
 		this.plugin = other.plugin;
 		this.arenaHandler = other.arenaHandler;
@@ -70,7 +70,7 @@ public class PbArena {
 			teamSpawns.put(teamType, spawns);
 		}
 	}
-
+	
 	public String getName() {
 		return name;
 	}
@@ -142,10 +142,10 @@ public class PbArena {
 		section.set("schematic", schemFile.getName());
 		section.set("position", ConfigUtil.blockPosToYmlString(schemPos));
 		ConfigurationSection spawnsSection = section.createSection("spawns");
-
+		
 		for (TeamType teamType : teamSpawns.keySet()) {
 			List<String> spawnStrings = new ArrayList<>();
-
+			
 			for (Location spawn : teamSpawns.get(teamType)) {
 				spawnStrings.add(ConfigUtil.spawnToYmlString(spawn, false));
 			}
@@ -153,7 +153,11 @@ public class PbArena {
 		}
 	}
 	
-	public static PbArena fromYml(String name, ConfigurationSection parentSection, String schemFolder, JavaPlugin plugin, PbArenaHandler arenaHandler) {
+	public static PbArena fromYml(String name,
+			ConfigurationSection parentSection,
+			String schemFolder,
+			JavaPlugin plugin,
+			PbArenaHandler arenaHandler) {
 		ConfigurationSection section = parentSection.getConfigurationSection(name);
 		PbArena arena;
 		try {
@@ -167,7 +171,7 @@ public class PbArena {
 			throw new IllegalArgumentException(String.format("Could not load arena %s: %s", name, e.getMessage()));
 		}
 		ConfigurationSection spawnsSection = section.getConfigurationSection("spawns");
-
+		
 		for (String teamName : spawnsSection.getKeys(false)) {
 			TeamType teamType;
 			List<String> spawnStrings;

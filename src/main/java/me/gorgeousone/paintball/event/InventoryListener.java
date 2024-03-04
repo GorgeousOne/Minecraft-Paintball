@@ -20,19 +20,19 @@ import java.util.UUID;
  * Listener to cancel inventory changes by players in lobbies and game.
  */
 public class InventoryListener implements Listener {
-
+	
 	private final PbLobbyHandler lobbyHandler;
 	private final PbKitHandler kitHandler;
-
+	
 	public InventoryListener(PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
 		this.lobbyHandler = lobbyHandler;
 		this.kitHandler = kitHandler;
 	}
-
+	
 	@EventHandler
 	public void onPickup(PlayerPickupItemEvent event) {
 		Player player = event.getPlayer();
-
+		
 		if (lobbyHandler.isPlaying(player.getUniqueId())) {
 			event.setCancelled(true);
 		}
@@ -41,7 +41,7 @@ public class InventoryListener implements Listener {
 	@EventHandler
 	public void onItemDrop(PlayerDropItemEvent event) {
 		Player player = event.getPlayer();
-
+		
 		if (lobbyHandler.isPlaying(player.getUniqueId())) {
 			event.setCancelled(true);
 		}
@@ -55,18 +55,18 @@ public class InventoryListener implements Listener {
 			event.setCancelled(true);
 		}
 	}
-
+	
 	@EventHandler
 	public void onInventoryEdit(InventoryClickEvent event) {
 		HumanEntity entity = event.getWhoClicked();
-
+		
 		if (!(entity instanceof Player)) {
 			return;
 		}
 		Player player = (Player) entity;
 		UUID playerId = player.getUniqueId();
 		PbLobby lobby = lobbyHandler.getLobby(playerId);
-
+		
 		if (lobby == null) {
 			return;
 		}

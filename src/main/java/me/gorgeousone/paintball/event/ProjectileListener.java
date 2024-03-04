@@ -72,7 +72,7 @@ public class ProjectileListener implements Listener {
 			return;
 		}
 		for (Entity entity : getEffectedEntities(potion)) {
-//		for (Entity entity : event.getAffectedEntities()) {
+			//		for (Entity entity : event.getAffectedEntities()) {
 			if (entity instanceof Player) {
 				game.healPlayer((Player) entity, player);
 			} else if (entity instanceof ArmorStand) {
@@ -107,6 +107,7 @@ public class ProjectileListener implements Listener {
 	/**
 	 * Custom method to get all entities effected by a thrown potion.
 	 * Because there were some issues with armorstands not being included in the event.getAffectedEntities() method(?)
+	 *
 	 * @param potion
 	 * @return
 	 */

@@ -1,13 +1,13 @@
 package me.gorgeousone.paintball.command.lobby;
 
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.cmdframework.argument.ArgType;
 import me.gorgeousone.paintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.paintball.cmdframework.argument.Argument;
 import me.gorgeousone.paintball.cmdframework.command.ArgCommand;
-import me.gorgeousone.paintball.util.LocationUtil;
 import me.gorgeousone.paintball.game.PbLobby;
 import me.gorgeousone.paintball.game.PbLobbyHandler;
-import me.gorgeousone.paintball.util.StringUtil;
+import me.gorgeousone.paintball.util.LocationUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -31,7 +31,7 @@ public class LobbyCreateCommand extends ArgCommand {
 		String lobbyName = argValues.get(0).get();
 		try {
 			PbLobby lobby = lobbyHandler.createLobby(lobbyName, player.getLocation());
-			StringUtil.msg(sender, "Created new lobby %s at %s", lobbyName, LocationUtil.humanBlockPos(lobby.getJoinSpawn()));
+			Message.LINE_25.send(sender, lobbyName, LocationUtil.humanBlockPos(lobby.getJoinSpawn()));
 		} catch (Exception e) {
 			sender.sendMessage(e.getMessage());
 		}

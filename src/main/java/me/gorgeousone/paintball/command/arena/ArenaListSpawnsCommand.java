@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.command.arena;
 
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.arena.PbArena;
 import me.gorgeousone.paintball.arena.PbArenaHandler;
 import me.gorgeousone.paintball.cmdframework.argument.ArgType;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
  * OP command to list all spawn points of an arena.
  */
 public class ArenaListSpawnsCommand extends ArgCommand {
-
+	
 	private final PbArenaHandler arenaHandler;
 	
 	public ArenaListSpawnsCommand(PbArenaHandler arenaHandler) {
@@ -37,7 +38,7 @@ public class ArenaListSpawnsCommand extends ArgCommand {
 		PbArena arena = arenaHandler.getArena(arenaName);
 		
 		if (arena == null) {
-			StringUtil.msg(sender, "Arena %s does not exits!", arenaName);
+			Message.LINE_02.send(sender, arenaName);
 			return;
 		}
 		StringUtil.msg(sender, "Spawn points of arena %s:", arenaName);
@@ -52,7 +53,7 @@ public class ArenaListSpawnsCommand extends ArgCommand {
 			}
 		}
 	}
-
+	
 	@Override
 	protected List<String> onTabComplete(CommandSender sender, String[] stringArgs) {
 		if (stringArgs.length == 1) {

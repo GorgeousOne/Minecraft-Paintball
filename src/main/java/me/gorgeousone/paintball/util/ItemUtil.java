@@ -20,21 +20,21 @@ public abstract class ItemUtil {
 	private static final String BACKUPS_FOLDER = "backups/inventory/";
 	
 	private ItemUtil() {}
-
+	
 	public static ItemStack nameItem(ItemStack item, String displayName) {
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(displayName);
 		item.setItemMeta(meta);
 		return item;
 	}
-
+	
 	public static void addMagicGlow(ItemStack item) {
 		ItemMeta meta = item.getItemMeta();
 		meta.addEnchant(Enchantment.ARROW_INFINITE, 1, false);
 		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		item.setItemMeta(meta);
 	}
-
+	
 	public static void removeMagicGlow(ItemStack item) {
 		ItemMeta meta = item.getItemMeta();
 		meta.removeEnchant(Enchantment.ARROW_INFINITE);
@@ -49,14 +49,14 @@ public abstract class ItemUtil {
 		backup.set("food", player.getFoodLevel());
 		backup.set("xp", player.getLevel() + player.getExp());
 		backup.set("spawn", spawn);
-
+		
 		ConfigurationSection itemSection = backup.createSection("items");
 		PlayerInventory inv = player.getInventory();
 		ItemStack[] contents = inv.getContents();
-
+		
 		for (int i = 0; i < contents.length; ++i) {
 			ItemStack item = contents[i];
-
+			
 			if (item != null) {
 				itemSection.set("" + i, contents[i]);
 			}
@@ -73,7 +73,7 @@ public abstract class ItemUtil {
 	
 	public static boolean loadInventory(Player player, JavaPlugin plugin) {
 		File backupFile = ConfigUtil.matchFirstFile(player.getUniqueId().toString(), BACKUPS_FOLDER, plugin);
-
+		
 		if (backupFile == null) {
 			return false;
 		}
@@ -91,11 +91,11 @@ public abstract class ItemUtil {
 		player.setLevel((int) xp);
 		player.setExp(xp % 1);
 		player.teleport((Location) backup.get("spawn"));
-
+		
 		ConfigurationSection itemSection = backup.getConfigurationSection("items");
 		PlayerInventory inv = player.getInventory();
 		inv.clear();
-
+		
 		for (String slot : itemSection.getKeys(false)) {
 			inv.setItem(Integer.valueOf(slot), (ItemStack) itemSection.get(slot));
 		}

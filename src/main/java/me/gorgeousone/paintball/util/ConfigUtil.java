@@ -46,7 +46,7 @@ public final class ConfigUtil {
 		InputStream defConfigStream = plugin.getResource(configName + ".yml");
 		return YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream));
 	}
-
+	
 	public static void saveConfig(YamlConfiguration config, String configName, JavaPlugin plugin) {
 		try {
 			config.save(plugin.getDataFolder() + "/" + configName + ".yml");
@@ -68,7 +68,7 @@ public final class ConfigUtil {
 		}
 		return null;
 	}
-
+	
 	public static String blockPosToYmlString(Location blockPos) {
 		return String.format("world=%s,x=%d,y=%d,z=%d", blockPos.getWorld().getName(), blockPos.getBlockX(), blockPos.getBlockY(), blockPos.getBlockZ());
 	}
@@ -76,7 +76,7 @@ public final class ConfigUtil {
 	public static Location blockPosFromYmlString(String ymlBlockPos) {
 		Map<String, String> dataMap = getDataMapFromString(ymlBlockPos);
 		assertKeysExist(dataMap, "world", "x", "y", "z");
-
+		
 		try {
 			World world = parseWorld(dataMap, "world");
 			int x = parseInt(dataMap, "x");
@@ -87,7 +87,7 @@ public final class ConfigUtil {
 			throw new IllegalArgumentException(StringUtil.format("Could not load position %s: %s", ymlBlockPos, e.getMessage()));
 		}
 	}
-
+	
 	public static String spawnToYmlString(Location spawn, boolean saveWorld) {
 		if (saveWorld) {
 			return String.format("world=%s,x=%d,y=%d,z=%d,facing=%s", spawn.getWorld().getName(), spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ(), LocationUtil.yawToFace(spawn.getYaw()).name().toLowerCase());
@@ -102,7 +102,7 @@ public final class ConfigUtil {
 	
 	public static Location spawnFromYmlString(String ymlBlockPos, World world) {
 		Map<String, String> dataMap = getDataMapFromString(ymlBlockPos);
-
+		
 		try {
 			if (world == null) {
 				assertKeysExist(dataMap, "world");
@@ -125,7 +125,7 @@ public final class ConfigUtil {
 	
 	private static Map<String, String> getDataMapFromString(String s, char itemSep, char keyValSep) {
 		Map<String, String> dataMap = new HashMap<>();
-
+		
 		if (s == null) {
 			return dataMap;
 		}
@@ -139,12 +139,13 @@ public final class ConfigUtil {
 		}
 		return dataMap;
 	}
-
+	
 	public static void assertKeyExists(ConfigurationSection section, String key) {
 		if (!section.contains(key)) {
 			throw new IllegalArgumentException(String.format("Missing or incomplete value for %s.", key));
 		}
 	}
+	
 	private static void assertKeysExist(Map<?, ?> map, Object... keys) {
 		for (Object key : keys) {
 			if (!map.containsKey(key)) {
@@ -152,46 +153,46 @@ public final class ConfigUtil {
 			}
 		}
 	}
-
+	
 	private static World parseWorld(Map<String, String> dataMap, String key) {
 		String value = dataMap.get(key);
 		World world = Bukkit.getWorld(value);
-
+		
 		if (world != null) {
 			return world;
 		}
 		throw new IllegalArgumentException(String.format("Could not find %s with name %s.", key, value));
 	}
-
+	
 	private static int parseInt(Map<String, String> dataMap, String key) {
 		String value = dataMap.get(key);
-
+		
 		try {
 			return Integer.parseInt(value);
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException(String.format("Could not read integer %s for %s.", value, key));
 		}
 	}
-
+	
 	private static BlockFace parseBlockFace(Map<String, String> dataMap, String key) {
 		String value = dataMap.get(key);
-
+		
 		try {
 			return BlockFace.valueOf(value.toUpperCase());
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException(String.format("Could not read %s as %s.", value, key));
 		}
 	}
-
+	
 	public static File schemFileFromYml(String fileName, String schemFolder) {
 		File file = new File(schemFolder + "/" + fileName);
-
+		
 		if (!file.exists()) {
 			throw new IllegalArgumentException(StringUtil.format("Schematic %s does not exist.", fileName));
 		}
 		return file;
 	}
-
+	
 	public static TeamType teamTypeFromYml(String teamName) {
 		try {
 			return TeamType.valueOf(teamName.toUpperCase());

@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.command.arena;
 
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.arena.PbArena;
 import me.gorgeousone.paintball.arena.PbArenaHandler;
 import me.gorgeousone.paintball.cmdframework.argument.ArgType;
@@ -8,7 +9,6 @@ import me.gorgeousone.paintball.cmdframework.argument.Argument;
 import me.gorgeousone.paintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.paintball.team.TeamType;
 import me.gorgeousone.paintball.util.LocationUtil;
-import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 
@@ -37,37 +37,37 @@ public class ArenaRemoveSpawnCommand extends ArgCommand {
 	@Override
 	protected void executeArgs(CommandSender sender, List<ArgValue> argValues, Set<String> usedFlags) {
 		String arenaName = argValues.get(0).get();
-
+		
 		if (!arenaHandler.containsArena(arenaName)) {
-			StringUtil.msg(sender, "Arena %s does not exist!", arenaName);
+			Message.LINE_02.send(sender, arenaName);
 			return;
 		}
 		TeamType teamType;
 		String teamName = argValues.get(1).get();
-
+		
 		try {
 			teamType = TeamType.valueOf(teamName.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			StringUtil.msg(sender, "Team %s does not exist!", teamName);
+			Message.LINE_03.send(sender, teamName);
 			return;
 		}
 		PbArena arena = arenaHandler.getArena(arenaName);
 		List<Location> spawns = arena.getSpawns(teamType);
 		
 		if (spawns.isEmpty()) {
-			StringUtil.msg(sender, "Team %s does not have spawn points in arena %s.", teamType.displayName, arenaName);
+			Message.LINE_13.send(sender, teamType.displayName, arenaName);
 			return;
 		}
 		int spawnIndex = argValues.get(2).getInt();
 		
 		if (spawnIndex < 1 || spawnIndex > spawns.size()) {
-			StringUtil.msg(sender, "Spawn no. %d for does not exist! Team %s has spawn points 1 to %d in arena %s.", spawnIndex, teamType.displayName, spawns.size(), arenaName);
+			Message.LINE_14.send(sender, spawnIndex, teamType.displayName, spawns.size(), arenaName);
 			return;
 		}
 		Location spawnPos = spawns.remove(spawnIndex - 1);
-		StringUtil.msg(sender, "Removed %d. spawn point of team %s in arena %s (was %s).", spawnIndex, teamType.displayName, arenaName, LocationUtil.humanBlockPos(spawnPos));
+		Message.LINE_15.send(sender, spawnIndex, teamType.displayName, arenaName, LocationUtil.humanBlockPos(spawnPos));
 	}
-
+	
 	@Override
 	protected List<String> onTabComplete(CommandSender sender, String[] stringArgs) {
 		switch (stringArgs.length) {

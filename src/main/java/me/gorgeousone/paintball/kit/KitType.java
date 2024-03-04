@@ -16,7 +16,7 @@ public enum KitType {
 	RIFLE("Paintball Rifle", "Semi-automatic paintball rifle.\nHigh range and accuracy."),
 	SHOTGUN("Paintball Shotgun", "Pump action paintball shotgun.\nShoots a cloud of bullets with\nlow range and accuracy."),
 	MACHINE_GUN("Paintball Machine Gun", "Full-automatic paintball gun.\nAccuracy drops with longer use."),
-//	SNIPER(ChatColor.YELLOW + "Paintball Sniper", "Long range sniper rifle.", "Higher damage the longer scoped (sneak).")
+	//	SNIPER(ChatColor.YELLOW + "Paintball Sniper", "Long range sniper rifle.", "Higher damage the longer scoped (sneak).")
 	;
 	
 	public final String gunName;
@@ -51,9 +51,9 @@ public enum KitType {
 		RIFLE.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("IRON_BARDING") : Material.valueOf("IRON_HORSE_ARMOR"));
 		SHOTGUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("GOLD_BARDING") : Material.valueOf("GOLDEN_HORSE_ARMOR"));
 		MACHINE_GUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("DIAMOND_BARDING") : Material.valueOf("DIAMOND_HORSE_ARMOR"));
-//		SNIPER.setGunMaterial(Material.DIAMOND_HOE);
+		//		SNIPER.setGunMaterial(Material.DIAMOND_HOE);
 	}
-
+	
 	public static KitType valueOf(ItemStack itemStack) {
 		for (KitType kitType : values()) {
 			if (kitType.gunItem.isSimilar(itemStack)) {

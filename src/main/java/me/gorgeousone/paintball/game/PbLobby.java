@@ -2,11 +2,13 @@ package me.gorgeousone.paintball.game;
 
 import me.gorgeousone.paintball.ConfigSettings;
 import me.gorgeousone.paintball.GameBoard;
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.arena.PbArena;
 import me.gorgeousone.paintball.arena.PbArenaHandler;
-import me.gorgeousone.paintball.equipment.*;
+import me.gorgeousone.paintball.equipment.Equipment;
+import me.gorgeousone.paintball.equipment.LobbyEquipment;
+import me.gorgeousone.paintball.equipment.SlotClickEvent;
 import me.gorgeousone.paintball.kit.PbKitHandler;
-import me.gorgeousone.paintball.team.PbTeam;
 import me.gorgeousone.paintball.util.ConfigUtil;
 import me.gorgeousone.paintball.util.ItemUtil;
 import me.gorgeousone.paintball.util.LocationUtil;
@@ -50,14 +52,18 @@ public class PbLobby {
 	private final PbCountdown countdown;
 	private GameBoard board;
 	
-	public PbLobby(String name, Location joinSpawn, JavaPlugin plugin, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
+	public PbLobby(String name,
+			Location joinSpawn,
+			JavaPlugin plugin,
+			PbLobbyHandler lobbyHandler,
+			PbKitHandler kitHandler) {
 		this.lobbyHandler = lobbyHandler;
 		this.kitHandler = kitHandler;
 		this.plugin = plugin;
-
+		
 		this.name = name;
 		this.joinSpawn = LocationUtil.cleanSpawn(joinSpawn);
-
+		
 		this.arenas = new LinkedList<>();
 		this.teamQueue = new TeamQueue();
 		this.mapVoting = new MapVoting();
@@ -117,8 +123,7 @@ public class PbLobby {
 		}
 		ItemUtil.saveInventory(player, getExitSpawn(), plugin);
 		player.setGameMode(GameMode.ADVENTURE);
-		StringUtil.msg(player, "Joined lobby %s.", name);
-		
+		Message.LINE_32.send(player, name);
 		player.teleport(joinSpawn);
 		equipment.equip(player);
 		board.addPlayer(player);
@@ -129,7 +134,7 @@ public class PbLobby {
 			countdown.start(ConfigSettings.COUNTDOWN_SECS);
 		}
 		if (arenas.size() == 0) {
-			game.allPlayers(p -> StringUtil.msg(p, "Lobby %s cannot start a game because no arenas to play are linked to it. /pb link %s <arena name>", name, name));
+			Message.LINE_33.send(player, name);
 		}
 	}
 	
@@ -139,15 +144,14 @@ public class PbLobby {
 	
 	public void removePlayer(Player player) {
 		UUID playerId = player.getUniqueId();
-
+		
 		if (!game.hasPlayer(playerId)) {
 			throw new IllegalArgumentException("Can't remove player with id: " + playerId + ". They are not in this game");
 		}
 		teamQueue.removePlayer(playerId);
 		game.removePlayer(playerId);
 		ItemUtil.loadInventory(player, plugin);
-		StringUtil.msg(player, "You left lobby %s.", name);
-		
+		Message.LINE_34.send(player, name);
 		if (!game.isRunning()) {
 			board.removePlayer(player);
 			updateLobbyBoard();
@@ -203,7 +207,7 @@ public class PbLobby {
 		
 		if (ANNOUNCEMENT_INTERVALS.contains(secondsLeft)) {
 			game.allPlayers(p -> {
-				StringUtil.msgPlain(p, "Game starts in %d seconds.", secondsLeft);
+				Message.LINE_39.send(p, secondsLeft);
 				p.playSound(p.getLocation(), SoundUtil.COUNTDOWN_SOUND, .5f, 1f);
 			});
 		}
@@ -223,7 +227,7 @@ public class PbLobby {
 					"Lobby %s cannot start a game because no arenas to play are linked to it. /pb link %s <arena name>", name, name));
 		}
 		if (game.size() < ConfigSettings.MIN_PLAYERS) {
-			throw new IllegalStateException( "Not enough players to start the game.");
+			throw new IllegalStateException("Not enough players to start the game.");
 		}
 		if (game.getState() != GameState.LOBBYING) {
 			throw new IllegalStateException("The game is already running.");
@@ -250,7 +254,7 @@ public class PbLobby {
 	public void reset() {
 		game.allPlayers(p -> {
 			ItemUtil.loadInventory(p, plugin);
-			StringUtil.msg(p, "Lobby %s closed.", name);
+			Message.LINE_35.send(p, name);
 		});
 		game.reset();
 	}
@@ -293,7 +297,7 @@ public class PbLobby {
 			PbArenaHandler arenaHandler,
 			PbKitHandler kitHandler) {
 		ConfigurationSection section = parentSection.getConfigurationSection(name);
-
+		
 		try {
 			ConfigUtil.assertKeyExists(section, "spawn");
 			ConfigUtil.assertKeyExists(section, "arenas");

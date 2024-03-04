@@ -24,7 +24,7 @@ public class ShotgunKit extends AbstractKit {
 	@Override
 	protected void playGunshotSound(Player player, Collection<Player> others, float pitchLow, float pitchHigh) {
 		super.playGunshotSound(player, others, pitchLow, pitchHigh);
-
+		
 		new BukkitRunnable() {
 			@Override
 			public void run() {

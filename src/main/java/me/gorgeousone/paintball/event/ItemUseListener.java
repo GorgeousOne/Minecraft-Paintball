@@ -2,8 +2,8 @@ package me.gorgeousone.paintball.event;
 
 import me.gorgeousone.paintball.equipment.Equipment;
 import me.gorgeousone.paintball.equipment.SlotClickEvent;
-import me.gorgeousone.paintball.game.PbLobbyHandler;
 import me.gorgeousone.paintball.game.PbLobby;
+import me.gorgeousone.paintball.game.PbLobbyHandler;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,7 +19,7 @@ import java.util.UUID;
 public class ItemUseListener implements Listener {
 	
 	private final PbLobbyHandler lobbyHandler;
-
+	
 	public ItemUseListener(PbLobbyHandler lobbyHandler) {
 		this.lobbyHandler = lobbyHandler;
 	}
@@ -37,19 +37,19 @@ public class ItemUseListener implements Listener {
 			return;
 		}
 		Equipment equip = lobby.getEquip();
-
+		
 		if (equip == null) {
 			event.setCancelled(true);
 			return;
 		}
 		int slot = player.getInventory().getHeldItemSlot();
 		SlotClickEvent clickEvent = lobby.getEquip().onClickSlot(player, slot);
-
+		
 		if (clickEvent != null && clickEvent.isCancelled()) {
 			event.setCancelled(true);
 		}
 	}
-
+	
 	private boolean isMainHand(PlayerInteractEvent event) {
 		try {
 			return event.getHand() == EquipmentSlot.HAND;

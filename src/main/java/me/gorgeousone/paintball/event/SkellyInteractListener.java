@@ -42,24 +42,24 @@ public class SkellyInteractListener implements Listener {
 		}
 		event.setCancelled(true);
 		Equipment equip = lobby.getEquip();
-
+		
 		if (equip == null) {
 			return;
 		}
 		PlayerInventory inv = player.getInventory();
 		int slot = inv.getHeldItemSlot();
-
+		
 		//TODO i dont think this is good at all
 		if (slot != IngameEquipment.WATER_BOMB_SLOT) {
 			return;
 		}
 		SlotClickEvent clickEvent = equip.onClickSlot(player, slot);
-
+		
 		if (!clickEvent.isCancelled()) {
 			throwPotion(inv, slot);
 		}
 	}
-
+	
 	private void throwPotion(PlayerInventory inv, int slot) {
 		ItemStack heldItem = inv.getItem(slot);
 		ThrownPotion waterBomb = inv.getHolder().launchProjectile(ThrownPotion.class);

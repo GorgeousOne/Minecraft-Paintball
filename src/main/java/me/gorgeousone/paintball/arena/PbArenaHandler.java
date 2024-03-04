@@ -19,11 +19,11 @@ import java.util.logging.Logger;
  * A class to load and manage arenas placed in all worlds.
  */
 public class PbArenaHandler {
-
+	
 	private final JavaPlugin plugin;
 	private final Map<String, PbArena> arenas;
 	private final YamlConfiguration backupConfig;
-
+	
 	public PbArenaHandler(JavaPlugin plugin) {
 		this.plugin = plugin;
 		this.backupConfig = ConfigUtil.loadConfig("arenas", plugin);
@@ -98,13 +98,13 @@ public class PbArenaHandler {
 	public void loadArenas(String schemFolder) {
 		Logger logger = Bukkit.getLogger();
 		logger.log(Level.INFO, "  Loading arenas:");
-
+		
 		ConfigUtil.assertKeyExists(backupConfig, "arenas");
 		ConfigurationSection arenaSection = backupConfig.getConfigurationSection("arenas");
-
+		
 		for (String name : arenaSection.getKeys(false)) {
 			try {
-				PbArena arena = PbArena.fromYml(name, arenaSection, schemFolder,  plugin,this);
+				PbArena arena = PbArena.fromYml(name, arenaSection, schemFolder, plugin, this);
 				registerArena(arena);
 			} catch (IllegalArgumentException e) {
 				logger.log(Level.WARNING, e.getMessage());
