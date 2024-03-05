@@ -46,6 +46,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.reflect.Field;
 import java.util.logging.Level;
 
 /**
@@ -59,7 +60,7 @@ public final class PaintballPlugin extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
-		setupVersioning();
+		setupVersion();
 		PbKitHandler.setupKits(this);
 		this.kitHandler = new PbKitHandler();
 		
@@ -78,16 +79,44 @@ public final class PaintballPlugin extends JavaPlugin {
 		lobbyHandler.closeLobbies();
 	}
 	
+	public static void printStaticPublicMembers() throws IllegalAccessException {
+		Field[] fields = Message.class.getFields();
+		
+		for (Field field : fields) {
+			int modifiers = field.getModifiers();
+			
+			// Check if the field is static and public
+			if (java.lang.reflect.Modifier.isStatic(modifiers) && java.lang.reflect.Modifier.isPublic(modifiers)) {
+				if (field.getType().equals(String.class)) {
+					System.out.println("Field Name: " + field.getName() + ", Value: " + field.get(null));
+				} else if (field.getType().equals(Message.class)) {
+					Message fieldValue = (Message) field.get(null); // Pass null for static fields
+					System.out.println("Field Name: " + field.getName() + ", Value: " + fieldValue.text);;
+					
+				}
+			}
+		}
+	}
+	
 	public void reload() {
 		loadConfigSettings();
 		loadLanguage();
+		try {
+			printStaticPublicMembers();
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+		
+		TeamType.setup();
+		KitType.setup();
 	}
 	
-	private void setupVersioning() {
+	/**
+	 * Configure materials and sounds depending on legacy or aquatic MC version
+	 */
+	private void setupVersion() {
 		VersionUtil.setup(this);
 		BlockType.setup(VersionUtil.IS_LEGACY_SERVER);
-		KitType.setup();
-		TeamType.setup();
 		SoundUtil.setup();
 	}
 	

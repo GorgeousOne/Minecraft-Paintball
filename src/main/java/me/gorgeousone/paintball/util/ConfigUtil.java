@@ -24,8 +24,8 @@ public final class ConfigUtil {
 		return loadConfig(configName, configName, plugin);
 	}
 	
-	public static YamlConfiguration loadConfig(String configName, String defaultName, JavaPlugin plugin) {
-		File configFile = new File(plugin.getDataFolder() + "/" + configName + ".yml");
+	public static YamlConfiguration loadConfig(String configPath, String defaultName, JavaPlugin plugin) {
+		File configFile = new File(plugin.getDataFolder() + "/" + configPath + ".yml");
 		YamlConfiguration defConfig = loadDefaultConfig(defaultName, plugin);
 		
 		if (!configFile.exists()) {
@@ -39,6 +39,7 @@ public final class ConfigUtil {
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 		config.setDefaults(defConfig);
 		config.options().copyDefaults(true);
+		saveConfig(config, configPath, plugin);
 		return config;
 	}
 	

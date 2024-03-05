@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.arena;
 
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.team.TeamType;
 import me.gorgeousone.paintball.util.ConfigUtil;
 import me.gorgeousone.paintball.util.LocationUtil;
@@ -196,12 +197,11 @@ public class PbArena {
 	
 	public void assertIsPlayable() {
 		if (!schemFile.exists()) {
-			throw new IllegalArgumentException(StringUtil.format("Schematic %s for arena %s does not exist.", schemFile.getName(), name));
+			throw new IllegalArgumentException(Message.ARENA_SCHEM_MISSING.format(schemFile.getName(), name));
 		}
 		for (TeamType teamType : TeamType.values()) {
 			if (!teamSpawns.containsKey(teamType) || teamSpawns.get(teamType).isEmpty()) {
-				throw new IllegalArgumentException(StringUtil.format(
-						"Arena %s does not have any spawn points for team %s. /pb arena add-spawn %s", name, teamType.displayName, teamType.name().toLowerCase()));
+				throw new IllegalArgumentException(Message.TEAM_SPAWN_MISSING.format(name, teamType.displayName));
 			}
 		}
 	}

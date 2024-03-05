@@ -42,8 +42,8 @@ public class ArenaCopyCommand extends ArgCommand {
 		}
 		String newName = argValues.get(1).get();
 		
-		if (arenaHandler.containsArena(oldName)) {
-			Message.ARENA_EXISTS.send(sender);
+		if (arenaHandler.containsArena(newName)) {
+			Message.ARENA_EXISTS.send(sender, newName);
 			return;
 		}
 		PbArena oldArena = arenaHandler.getArena(oldName);

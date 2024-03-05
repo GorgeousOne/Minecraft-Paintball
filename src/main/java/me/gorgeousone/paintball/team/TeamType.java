@@ -18,12 +18,12 @@ import org.bukkit.inventory.ItemStack;
  */
 public enum TeamType {
 	
-	EMBER(EnderPearl.class, Color.RED, ChatColor.RED, Particle.ITEM_CRACK, new ItemStack(Material.REDSTONE_BLOCK)),
-	ICE(Snowball.class, Color.AQUA, ChatColor.AQUA, Particle.ITEM_CRACK, new ItemStack(Material.LAPIS_BLOCK));
+	EMBER("Ember", EnderPearl.class, Color.RED, ChatColor.RED, Particle.ITEM_CRACK, new ItemStack(Material.REDSTONE_BLOCK)),
+	ICE("Ice", Snowball.class, Color.AQUA, ChatColor.AQUA, Particle.ITEM_CRACK, new ItemStack(Material.LAPIS_BLOCK));
 	
 	public static final Color DEATH_COLOR = Color.PURPLE;
 	
-	public String displayName;
+	public final String displayName;
 	public final Class<? extends Projectile> projectileType;
 	public final Color armorColor;
 	public final ChatColor prefixColor;
@@ -32,10 +32,12 @@ public enum TeamType {
 	public final Object particleExtra;
 	private ItemStack joinItem;
 	
-	TeamType(Class<? extends Projectile> projectileType,
+	TeamType(String displayName,
+			Class<? extends Projectile> projectileType,
 			Color garmentColor,
 			ChatColor prefixColor,
 			Particle blockParticle, Object particleExtra) {
+		this.displayName = "" + prefixColor + ChatColor.BOLD + displayName + StringUtil.MSG_COLOR;
 		this.particleExtra = particleExtra;
 		this.projectileType = projectileType;
 		this.armorColor = garmentColor;
@@ -51,9 +53,6 @@ public enum TeamType {
 	 * call setup after BlockType is setup for server version (legacy)
 	 */
 	public static void setup() {
-		EMBER.displayName = "" + EMBER.prefixColor + ChatColor.BOLD + Message.NAME_TEAM_RED + StringUtil.MSG_COLOR;
-		ICE.displayName = "" + ICE.prefixColor + ChatColor.BOLD + Message.NAME_TEAM_BLUE + StringUtil.MSG_COLOR;
-		
 		EMBER.blockColor = BlockType.get("minecraft:red_terracotta", "stained_clay:14");
 		ICE.blockColor = BlockType.get("minecraft:light_blue_terracotta", "stained_clay:3");
 		

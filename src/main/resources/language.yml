@@ -6,27 +6,34 @@ config:
     arena-exists: Arena %arena% already exists!
     arena-missing: Arena %arena% does not exist!
     arena-moved: Moved arena %source-arena% to %destination-arena%
+    arena-not-linked: Arena %% is not linked to this lobby!
     arena-removed: Removed arena %arena%.
+    arena-removed-schematic-missing: Removed arena %arena% but could note find schematic to remove blocks
     arena-reset: Reset arena %arena% for a new game.
+    arena-schematic-missing: Could not find the schematic %file% of arena %arena%.
     lobby-arena-detached: Arena %arena% is now detached from lobby %lobby%.
     lobby-arena-linked: Arena %arena% is now playable in lobby %lobby%.
     lobby-created: Created new lobby %new-lobby% at %location%
+    lobby-exists: Lobby %lobby% already exists!
     lobby-set-exit: Set lobby %lobby% exit point to %exit-point%
     lobby-set-spawn: Set lobby %lobby% spawn point to %spawn-point%
     team-missing: Team %team% does not exist!
     team-spawn-bad-index: 'Spawn #%spawn-number% for %team% does not exist! Team %team% has spawn points 1 to %max-spawns% in arena %arena%.'
-    team-spawn-missing: Team %team% does not have spawn points in arena %arena%.
+    team-spawn-missing: Team %team% does not have spawn points in arena %arena%. /pb arena add-spawn <>
     team-spawn-removed: 'Removed spawn point #%spawn-number% of team %team% in arena %arena% (was %previous-spawn%).'
 game:
+    lobby-already-joined: You already are in lobby %lobby%.
     lobby-arena-missing: Lobby %lobby% cannot start a game because no arenas to play are linked to it. /pb link %lobby% <arena>
     lobby-closed: Lobby %lobby% closed.
     lobby-countdown: Game starts in %seconds-left% seconds.
+    lobby-full: Lobby %lobby% is full!
+    lobby-join: Joined lobby %lobby%
     lobby-missing: Lobby %lobby% does not exist!
-    lobby-player-joined: %player%
     lobby-not-joined: You are not in a lobby right now. Join a lobby or specify which lobby to start.
+    lobby-player-joined: '%player% joined.'
+    lobby-running: The game has already started! Please wait for the next round. (Spectator mode coming soon™"
     map-announce: Playing map %map%!
     not-in-lobby: You are not in a paintball lobby.
-    player-joined: Joined lobby %lobby%.
     player-left: You left lobby %lobby%.
     player-not-online: Player %player% is not online!
     player-painted: '%target% was painted by %shooter%'
@@ -36,18 +43,16 @@ game:
     team-queued: You queued for team %team%.
     team-unqueued: You un-queued from team %team%.
 names:
-    team-red: Ember
-    team-blue: Ice
-    lore-rifle: Paintball Rifle
-    gun-shotgun: Paintball Shotgun
-    gun-machine: Paintball Machine Gun
-    lore-gun-rifle: Semi-automatic paintball rifle.\nHigh range and accuracy.
-    lore-gun-shotgun: Pump action paintball shotgun.\nShoots a cloud of bullets with\nlow range and accuracy.
-    lore-gun-machine: Full-automatic paintball gun.\nAccuracy drops with longer use.
-items:
+    rifle: Paintball Rifle
+    shotgun: Paintball Shotgun
+    machine-gun: Paintball Machine Gun
+    lore-rifle: Semi-automatic paintball rifle.\nHigh range and accuracy.
+    lore-shotgun: Pump action paintball shotgun.\nShoots a cloud of bullets with\nlow range and accuracy.
+    lore-machine-gun: Full-automatic paintball gun.\nAccuracy drops with longer use.
     kit: Kit
     kit-select: Select a kit
     right-click: Right Click
     team: Team
     vote-map: Vote a Map
     quit: Quit
+

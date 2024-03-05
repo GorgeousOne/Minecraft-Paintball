@@ -112,14 +112,14 @@ public class PbLobby {
 		UUID playerId = player.getUniqueId();
 		
 		if (game.hasPlayer(playerId)) {
-			throw new IllegalArgumentException(StringUtil.format("You already are in lobby %s.", name));
+			throw new IllegalArgumentException(Message.LOBBY_ALREADY_JOINED.format(name));
 		}
 		//TODO join as spectator?
 		if (game.isRunning()) {
-			throw new IllegalStateException(StringUtil.format("The game has already started! Please wait for the next round."));
+			throw new IllegalStateException(Message.LOBBY_RUNNING.format());
 		}
 		if (game.size() >= ConfigSettings.MAX_PLAYERS) {
-			throw new IllegalStateException(StringUtil.format("Lobby %s is full!", name));
+			throw new IllegalStateException(Message.LOBBY_FULL.format(name));
 		}
 		ItemUtil.saveInventory(player, getExitSpawn(), plugin);
 		player.setGameMode(GameMode.ADVENTURE);
@@ -185,7 +185,7 @@ public class PbLobby {
 	
 	public void linkArena(PbArena arena) {
 		if (arenas.contains(arena)) {
-			throw new IllegalArgumentException(StringUtil.format("Arena %s already linked to this lobby!", arena.getName()));
+			throw new IllegalArgumentException(Message.ARENA_ALREADY_LINKED.format(arena.getName(), name));
 		}
 		arenas.add(arena);
 		
@@ -196,7 +196,7 @@ public class PbLobby {
 	
 	public void unlinkArena(PbArena arena) {
 		if (!arenas.contains(arena)) {
-			throw new IllegalArgumentException(StringUtil.format("Arena %s is not linked to this lobby!", arena.getName()));
+			throw new IllegalArgumentException(Message.ARENA_NOT_LINKED.format(arena.getName()));
 		}
 		arenas.remove(arena);
 		lobbyHandler.saveLobby(this);

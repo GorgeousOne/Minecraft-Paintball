@@ -46,11 +46,15 @@ public enum KitType {
 	}
 	
 	//kinda uncool for an enum but i cant set the item before loading plugin version
+	
+	/**
+	 * Creates items for the guns dependent on MC version AND LANGUAGE
+	 */
 	public static void setup() {
 		RIFLE.setDescription(Message.NAME_RIFLE, Message.LORE_RIFLE);
 		SHOTGUN.setDescription(Message.NAME_SHOTGUN, Message.LORE_SHOTGUN);
 		MACHINE_GUN.setDescription(Message.NAME_MACHINE_GUN, Message.LORE_MACHINE_GUN);
-//		 SNIPER_RILE.setDescription(ChatColor.YELLOW + "Paintball Sniper", "Long range sniper rifle.", "Higher damage the longer scoped (sneak).")
+//		SNIPER_RILE.setDescription(ChatColor.YELLOW + "Paintball Sniper", "Long range sniper rifle.", "Higher damage the longer scoped (sneak).")
 
 		RIFLE.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("IRON_BARDING") : Material.valueOf("IRON_HORSE_ARMOR"));
 		SHOTGUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("GOLD_BARDING") : Material.valueOf("GOLDEN_HORSE_ARMOR"));
