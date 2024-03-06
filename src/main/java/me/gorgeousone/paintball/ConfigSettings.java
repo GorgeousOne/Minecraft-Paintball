@@ -19,16 +19,22 @@ public class ConfigSettings {
 	public static int PLAYER_HEALTH_POINTS;
 	public static String CHAT_PREFIX_ALIVE;
 	public static String CHAT_PREFIX_DEAD;
+	
 	public static int RIFLE_BULLET_DMG;
 	public static float RIFLE_BULLET_SPEED;
 	public static float RIFLE_BULLET_SPREAD;
+	public static int RIFLE_PLAYER_SPEED;
+	
 	public static int SHOTGUN_BULLET_COUNT;
 	public static int SHOTGUN_BULLET_DMG;
 	public static float SHOTGUN_BULLET_SPEED;
 	public static float SHOTGUN_BULLET_SPREAD;
+	public static int MACHINE_GUN_PLAYER_SPEED;
+
 	public static int MACHINE_GUN_BULLET_DMG;
 	public static float MACHINE_GUN_BULLET_SPEED;
 	public static float MACHINE_GUN_MAX_BULLET_SPREAD;
+	public static int SHOTGUN_PLAYER_SPEED;
 	
 	public static void loadSettings(FileConfiguration config) {
 		COUNTDOWN_SECS = clamp(config.getInt("countdown.seconds"), 5, 600);
@@ -52,13 +58,18 @@ public class ConfigSettings {
 		RIFLE_BULLET_DMG = clamp(kitSettingsSection.getInt("rifle.bullet-dmg"), 1, 100);
 		RIFLE_BULLET_SPEED = clamp((float) kitSettingsSection.getDouble("rifle.bullet-speed"), 0f, 5f);
 		RIFLE_BULLET_SPREAD = clamp((float) kitSettingsSection.getDouble("rifle.bullet-spread"), 0f, 1f);
+		RIFLE_PLAYER_SPEED = clamp(kitSettingsSection.getInt("rifle.player-speed"), 0, 3) - 1;
+		
 		SHOTGUN_BULLET_COUNT = clamp(kitSettingsSection.getInt("shotgun.bullet-count"), 1, 100);
 		SHOTGUN_BULLET_DMG = clamp(kitSettingsSection.getInt("shotgun.bullet-dmg"), 1, 100);
 		SHOTGUN_BULLET_SPEED = clamp((float) kitSettingsSection.getDouble("shotgun.bullet-speed"), 0f, 5f);
 		SHOTGUN_BULLET_SPREAD = clamp((float) kitSettingsSection.getDouble("shotgun.bullet-spread"), 0f, 1f);
+		SHOTGUN_PLAYER_SPEED = clamp(kitSettingsSection.getInt("shotgun.player-speed"), 0, 3) - 1;
+		
 		MACHINE_GUN_BULLET_DMG = clamp(kitSettingsSection.getInt("machine-gun.bullet-dmg"), 1, 100);
 		MACHINE_GUN_BULLET_SPEED = clamp((float) kitSettingsSection.getDouble("machine-gun.bullet-speed"), 0f, 5f);
 		MACHINE_GUN_MAX_BULLET_SPREAD = clamp((float) kitSettingsSection.getDouble("machine-gun.max-bullet-spread"), 0f, 1f);
+		MACHINE_GUN_PLAYER_SPEED = clamp(kitSettingsSection.getInt("machine-gun.player-speed"), 0, 3) - 1;
 	}
 	
 	public static <T extends Comparable<T>> T clamp(T val, T min, T max) {

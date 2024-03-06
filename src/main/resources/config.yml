@@ -14,12 +14,15 @@ kit-settings:
         bullet-dmg: 3
         bullet-speed: 3.0
         bullet-spread: 0.01
+        player-speed: 1
     shotgun:
         bullet-count: 6
         bullet-dmg: 1
         bullet-speed: 1.25
         bullet-spread: 0.35
+        player-speed: 1
     machine-gun:
         bullet-dmg: 1
         bullet-speed: 2.25
         max-bullet-spread: 0.2
+        player-speed: 1

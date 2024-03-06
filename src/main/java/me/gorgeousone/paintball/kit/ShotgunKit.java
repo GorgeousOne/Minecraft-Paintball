@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.kit;
 
+import me.gorgeousone.paintball.ConfigSettings;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -35,6 +36,8 @@ public class ShotgunKit extends AbstractKit {
 	
 	@Override
 	public void prepPlayer(Player player) {
-		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999, 0, false, false, false));
+		if (ConfigSettings.SHOTGUN_PLAYER_SPEED > -1) {
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999, ConfigSettings.SHOTGUN_PLAYER_SPEED, false, false, false));
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.kit;
 
+import me.gorgeousone.paintball.ConfigSettings;
 import me.gorgeousone.paintball.team.PbTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -101,6 +102,8 @@ public class MachineGunKit extends AbstractKit {
 	
 	@Override
 	public void prepPlayer(Player player) {
-		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999, 0, false, false, false));
+		if (ConfigSettings.MACHINE_GUN_PLAYER_SPEED > -1) {
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999, ConfigSettings.MACHINE_GUN_PLAYER_SPEED, false, false, false));
+		}
 	}
 }

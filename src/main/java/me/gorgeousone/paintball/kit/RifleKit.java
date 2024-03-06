@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.kit;
 
+import me.gorgeousone.paintball.ConfigSettings;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -16,6 +17,8 @@ public class RifleKit extends AbstractKit {
 	
 	@Override
 	public void prepPlayer(Player player) {
-		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999, 0, false, false, false));
+		if (ConfigSettings.RIFLE_PLAYER_SPEED > -1) {
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999, ConfigSettings.RIFLE_PLAYER_SPEED, false, false, false));
+		}
 	}
 }
