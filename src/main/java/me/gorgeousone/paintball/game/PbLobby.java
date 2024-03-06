@@ -123,7 +123,7 @@ public class PbLobby {
 		}
 		ItemUtil.saveInventory(player, getExitSpawn(), plugin);
 		player.setGameMode(GameMode.ADVENTURE);
-		Message.PLAYER_JOIN.send(player, name);
+		Message.LOBBY_YOU_JOIN.send(player, name);
 		player.teleport(joinSpawn);
 		equipment.equip(player);
 		board.addPlayer(player);
@@ -223,14 +223,13 @@ public class PbLobby {
 	
 	public void startGame() {
 		if (arenas.isEmpty()) {
-			throw new IllegalStateException(StringUtil.format(
-					"Lobby %s cannot start a game because no arenas to play are linked to it. /pb link %s <arena name>", name, name));
+			throw new IllegalStateException(Message.LOBBY_ARENA_MISSING.format(name, name));
 		}
 		if (game.size() < ConfigSettings.MIN_PLAYERS) {
-			throw new IllegalStateException("Not enough players to start the game.");
+			throw new IllegalStateException(Message.LOBBY_UNDERFULL.format(game.size(), ConfigSettings.MIN_PLAYERS));
 		}
 		if (game.getState() != GameState.LOBBYING) {
-			throw new IllegalStateException("The game is already running.");
+			throw new IllegalStateException(Message.LOBBY_RUNNING.format());
 		}
 		countdown.cancel();
 		PbArena arenaToPlay = mapVoting.pickArena(arenas);
@@ -261,19 +260,19 @@ public class PbLobby {
 	
 	private void createGameBoard() {
 		board = new GameBoard(7);
-		board.setTitle(ChatColor.BOLD + "Waiting for Players");
-		board.setLine(6, "" + ChatColor.GREEN + ChatColor.BOLD + "Players");
+		board.setTitle(Message.UI_WAIT_FOR_PLAYERS);
+		board.setLine(6, Message.UI_PLAYERS);
 		board.setLine(5, game.size() + "/" + ConfigSettings.MAX_PLAYERS);
-		board.setLine(3, "" + ChatColor.GREEN + ChatColor.BOLD + "Lobby");
+		board.setLine(3, Message.UI_LOBBY);
 		board.setLine(2, name);
 	}
 	
 	private void updateLobbyBoard() {
 		if (game.size() < ConfigSettings.MIN_PLAYERS) {
-			board.setTitle(ChatColor.BOLD + "Waiting for Players");
+			board.setTitle(Message.UI_WAIT_FOR_PLAYERS);
 			
 		} else {
-			board.setTitle(ChatColor.BOLD + "Starting Game in " + ChatColor.GOLD + countdown.getSecondsLeft() + " Seconds");
+			board.setTitle(Message.UI_COUNTDOWN.format(countdown.getSecondsLeft()));
 		}
 		board.setLine(5, game.size() + "/" + ConfigSettings.MAX_PLAYERS);
 	}

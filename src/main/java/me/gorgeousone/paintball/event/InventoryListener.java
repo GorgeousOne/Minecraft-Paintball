@@ -1,7 +1,6 @@
 package me.gorgeousone.paintball.event;
 
 import me.gorgeousone.paintball.Message;
-import me.gorgeousone.paintball.game.MapVoting;
 import me.gorgeousone.paintball.game.PbLobby;
 import me.gorgeousone.paintball.game.PbLobbyHandler;
 import me.gorgeousone.paintball.kit.PbKitHandler;
@@ -76,13 +75,13 @@ public class InventoryListener implements Listener {
 		Inventory inv = event.getInventory();
 		int clickedSlot = event.getSlot();
 		
-		if (title.equals(Message.KIT_SELECT)) {
+		if (title.equals(Message.UI_KIT_SELECT)) {
 			boolean changedKit = kitHandler.onSelectKit(player, inv, clickedSlot);
 			
 			if (changedKit) {
 				lobby.getEquip().equip(player);
 			}
-		} else if (title.equals(Message.VOTE_MAP)) {
+		} else if (title.equals(Message.UI_VOTE_MAP)) {
 			lobby.addMapVote(player, inv, clickedSlot);
 		}
 	}

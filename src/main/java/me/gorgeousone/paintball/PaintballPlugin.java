@@ -3,8 +3,8 @@ package me.gorgeousone.paintball;
 import me.gorgeousone.paintball.arena.PbArenaHandler;
 import me.gorgeousone.paintball.cmdframework.command.ParentCommand;
 import me.gorgeousone.paintball.cmdframework.handler.CommandHandler;
-import me.gorgeousone.paintball.command.DebugKillCommand;
-import me.gorgeousone.paintball.command.DebugReviveCommand;
+import me.gorgeousone.paintball.command.debug.DebugKillCommand;
+import me.gorgeousone.paintball.command.debug.DebugReviveCommand;
 import me.gorgeousone.paintball.command.ReloadCommand;
 import me.gorgeousone.paintball.command.arena.ArenaAddSpawnCommand;
 import me.gorgeousone.paintball.command.arena.ArenaCopyCommand;
@@ -46,7 +46,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.lang.reflect.Field;
 import java.util.logging.Level;
 
 /**
@@ -61,7 +60,8 @@ public final class PaintballPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		setupVersion();
-		PbKitHandler.setupKits(this);
+		
+		PbKitHandler.createKits(this);
 		this.kitHandler = new PbKitHandler();
 		
 		reload();
@@ -79,36 +79,14 @@ public final class PaintballPlugin extends JavaPlugin {
 		lobbyHandler.closeLobbies();
 	}
 	
-	public static void printStaticPublicMembers() throws IllegalAccessException {
-		Field[] fields = Message.class.getFields();
-		
-		for (Field field : fields) {
-			int modifiers = field.getModifiers();
-			
-			// Check if the field is static and public
-			if (java.lang.reflect.Modifier.isStatic(modifiers) && java.lang.reflect.Modifier.isPublic(modifiers)) {
-				if (field.getType().equals(String.class)) {
-					System.out.println("Field Name: " + field.getName() + ", Value: " + field.get(null));
-				} else if (field.getType().equals(Message.class)) {
-					Message fieldValue = (Message) field.get(null); // Pass null for static fields
-					System.out.println("Field Name: " + field.getName() + ", Value: " + fieldValue.text);;
-					
-				}
-			}
-		}
-	}
-	
 	public void reload() {
 		loadConfigSettings();
 		loadLanguage();
-		try {
-			printStaticPublicMembers();
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
 		
-		TeamType.setup();
-		KitType.setup();
+		kitHandler.updateConfigKitVals();
+		KitType.updateLanguage();
+		KitType.updateItems();
+		TeamType.updateItems();
 	}
 	
 	/**
@@ -190,7 +168,6 @@ public final class PaintballPlugin extends JavaPlugin {
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 		ConfigSettings.loadSettings(getConfig());
-		kitHandler.reloadKits();
 	}
 	
 	private void loadLanguage() {

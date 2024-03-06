@@ -25,7 +25,7 @@ public enum KitType {
 	
 	private void setDescription(String displayName, String lore) {
 		this.gunName = ChatColor.YELLOW + displayName;
-		this.gunLore = lore.split("\n");
+		this.gunLore = lore.split("\\\\n");
 		
 		for (int i = 0; i < gunLore.length; ++i) {
 			gunLore[i] = ChatColor.GRAY + gunLore[i];
@@ -50,16 +50,18 @@ public enum KitType {
 	/**
 	 * Creates items for the guns dependent on MC version AND LANGUAGE
 	 */
-	public static void setup() {
+	public static void updateLanguage() {
 		RIFLE.setDescription(Message.NAME_RIFLE, Message.LORE_RIFLE);
 		SHOTGUN.setDescription(Message.NAME_SHOTGUN, Message.LORE_SHOTGUN);
 		MACHINE_GUN.setDescription(Message.NAME_MACHINE_GUN, Message.LORE_MACHINE_GUN);
 //		SNIPER_RILE.setDescription(ChatColor.YELLOW + "Paintball Sniper", "Long range sniper rifle.", "Higher damage the longer scoped (sneak).")
-
+	}
+	
+	public static void updateItems() {
 		RIFLE.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("IRON_BARDING") : Material.valueOf("IRON_HORSE_ARMOR"));
 		SHOTGUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("GOLD_BARDING") : Material.valueOf("GOLDEN_HORSE_ARMOR"));
 		MACHINE_GUN.setGunMaterial(VersionUtil.IS_LEGACY_SERVER ? Material.valueOf("DIAMOND_BARDING") : Material.valueOf("DIAMOND_HORSE_ARMOR"));
-//		SNIPER.setGunMaterial(Material.DIAMOND_HOE);
+		//		SNIPER.setGunMaterial(Material.DIAMOND_HOE);
 	}
 	
 	public static KitType valueOf(ItemStack itemStack) {

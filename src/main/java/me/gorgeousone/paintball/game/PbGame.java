@@ -119,7 +119,7 @@ public class PbGame {
 	
 	public void start(PbArena arenaToPlay, TeamQueue teamQueue, int maxHealthPoints) {
 		if (state != GameState.LOBBYING) {
-			throw new IllegalStateException("The game is already running.");
+			throw new IllegalStateException(Message.LOBBY_RUNNING.format());
 		}
 		teamQueue.assignTeams(players, teams);
 		teams.values().forEach(t -> t.startGame(arenaToPlay.getSpawns(t.getType()), maxHealthPoints));
@@ -153,7 +153,7 @@ public class PbGame {
 				Player player = Bukkit.getPlayer(playerId);
 				boardTeam.addEntry(player.getName());
 			}
-			gameBoard.setLine(i, "" + ChatColor.BOLD + team.getAlivePlayers().size() + " Alive" + StringUtil.pad(i));
+			gameBoard.setLine(i, Message.UI_ALIVE_PLAYERS.format(team.getAlivePlayers().size()) + StringUtil.pad(i));
 			gameBoard.setLine(i + 1, teamType.displayName);
 			i += 3;
 		}
@@ -168,9 +168,9 @@ public class PbGame {
 			@Override
 			public void run() {
 				if (time == 80) {
-					allPlayers(p -> p.sendTitle("Shoot enemies", "to paint them"));
+					allPlayers(p -> p.sendTitle(Message.UI_TITLE_GUNS[0], Message.UI_TITLE_GUNS[1]));
 				} else if (time == 40) {
-					allPlayers(p -> p.sendTitle("Throw water bombs", "to revive team mates"));
+					allPlayers(p -> p.sendTitle(Message.UI_TITLE_WATER_BOMBS[0], Message.UI_TITLE_WATER_BOMBS[1]));
 				}
 				time -= 1;
 				
@@ -265,7 +265,7 @@ public class PbGame {
 		TeamType shooterTeam = getTeam(shooterId).getType();
 		allPlayers(p -> Message.PLAYER_PAINT.send(p,
 				targetTeam.prefixColor + target.getDisplayName() + ChatColor.WHITE,
-				shooterTeam.prefixColor + shooter.getDisplayName()));
+				shooterTeam.prefixColor + shooter.getDisplayName() + ChatColor.WHITE));
 		
 		gameStats.addKill(shooterId, targetId);
 	}
@@ -294,7 +294,7 @@ public class PbGame {
 		state = GameState.OVER;
 		
 		if (winningTeam != null) {
-			allPlayers(p -> p.sendTitle(String.format("Team %s wins!", winningTeam.getType().displayName + ChatColor.WHITE), ""));
+			allPlayers(p -> p.sendTitle(Message.UI_TITLE_WINNER.format(winningTeam.getType().displayName + ChatColor.WHITE), ""));
 		} else {
 			allPlayers(p -> p.sendTitle("It's a draw?", ""));
 		}
@@ -325,7 +325,8 @@ public class PbGame {
 		
 		for (TeamType teamType : teams.keySet()) {
 			PbTeam team = teams.get(teamType);
-			gameBoard.setLine(i, "" + ChatColor.BOLD + team.getAlivePlayers().size() + " Alive" + StringUtil.pad(i));
+			//padding is for creating unique text :(
+			gameBoard.setLine(i, Message.UI_ALIVE_PLAYERS.format(team.getAlivePlayers().size()) + StringUtil.pad(i));
 			i += 3;
 		}
 	}

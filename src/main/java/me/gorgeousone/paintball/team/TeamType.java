@@ -1,6 +1,5 @@
 package me.gorgeousone.paintball.team;
 
-import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.util.StringUtil;
 import me.gorgeousone.paintball.util.blocktype.BlockType;
 import me.gorgeousone.paintball.util.version.VersionUtil;
@@ -52,7 +51,7 @@ public enum TeamType {
 	/**
 	 * call setup after BlockType is setup for server version (legacy)
 	 */
-	public static void setup() {
+	public static void updateItems() {
 		EMBER.blockColor = BlockType.get("minecraft:red_terracotta", "stained_clay:14");
 		ICE.blockColor = BlockType.get("minecraft:light_blue_terracotta", "stained_clay:3");
 		

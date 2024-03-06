@@ -4,7 +4,6 @@ import me.gorgeousone.paintball.ConfigSettings;
 import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.util.ItemUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -34,19 +33,19 @@ public class PbKitHandler {
 		this.playerKits = new HashMap<>();
 	}
 	
-	public static void setupKits(JavaPlugin plugin) {
+	public static void createKits(JavaPlugin plugin) {
 		KITS = new HashMap<>();
 		KITS.put(KitType.RIFLE, new RifleKit());
 		KITS.put(KitType.SHOTGUN, new ShotgunKit(plugin));
 		KITS.put(KitType.MACHINE_GUN, new MachineGunKit(plugin));
 		//		KITS.put(KitType.SNIPER, new SniperKit());
-		WATER_BOMBS = createWaterBombs();
 	}
 	
-	public void reloadKits() {
+	public void updateConfigKitVals() {
 		getKit(KitType.RIFLE).reload(1, ConfigSettings.RIFLE_BULLET_DMG, ConfigSettings.RIFLE_BULLET_SPEED, ConfigSettings.RIFLE_BULLET_SPREAD);
 		getKit(KitType.SHOTGUN).reload(ConfigSettings.SHOTGUN_BULLET_COUNT, ConfigSettings.SHOTGUN_BULLET_DMG, ConfigSettings.SHOTGUN_BULLET_SPEED, ConfigSettings.SHOTGUN_BULLET_SPREAD);
 		getKit(KitType.MACHINE_GUN).reload(1, ConfigSettings.MACHINE_GUN_BULLET_DMG, ConfigSettings.MACHINE_GUN_BULLET_SPEED, ConfigSettings.MACHINE_GUN_MAX_BULLET_SPREAD);
+		WATER_BOMBS = createWaterBombs();
 	}
 	
 	public static AbstractKit getKit(KitType kitType) {
@@ -78,14 +77,14 @@ public class PbKitHandler {
 	private static ItemStack createWaterBombs() {
 		ItemStack waterBombs = new ItemStack(Material.SPLASH_POTION, 3);
 		PotionMeta meta = (PotionMeta) waterBombs.getItemMeta();
-		meta.setDisplayName(ChatColor.YELLOW + "Water Bomb");
+		meta.setDisplayName(Message.UI_WATER_BOMB);
 		meta.setBasePotionData(new PotionData(PotionType.AWKWARD));
 		waterBombs.setItemMeta(meta);
 		return waterBombs;
 	}
 	
 	public void openKitSelectUI(Player player) {
-		Inventory selector = Bukkit.createInventory(null, 3 * 9, Message.KIT_SELECT);
+		Inventory selector = Bukkit.createInventory(null, 3 * 9, Message.UI_KIT_SELECT);
 		int itemSlot = KITS_START_SLOT;
 		
 		for (KitType kitType : KitType.values()) {

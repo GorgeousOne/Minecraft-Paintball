@@ -1,4 +1,4 @@
-package me.gorgeousone.paintball.command;
+package me.gorgeousone.paintball.command.debug;
 
 import me.gorgeousone.paintball.cmdframework.command.BaseCommand;
 import me.gorgeousone.paintball.game.PbGame;
