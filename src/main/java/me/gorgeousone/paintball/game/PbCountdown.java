@@ -5,6 +5,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.function.Consumer;
 
+/**
+ * Class to create a countdown where custom actions can be performed each second and when the countdown is over.
+ */
 public class PbCountdown {
 	
 	private final JavaPlugin plugin;

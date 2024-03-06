@@ -1,14 +1,13 @@
 package me.gorgeousone.paintball.command.arena;
 
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.arena.PbArena;
 import me.gorgeousone.paintball.arena.PbArenaHandler;
 import me.gorgeousone.paintball.cmdframework.argument.ArgType;
 import me.gorgeousone.paintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.paintball.cmdframework.argument.Argument;
 import me.gorgeousone.paintball.cmdframework.command.ArgCommand;
-import me.gorgeousone.paintball.game.PbLobbyHandler;
 import me.gorgeousone.paintball.util.LocationUtil;
-import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -17,8 +16,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * OP command to move an arena to a new location (schematic and spawn points).
+ */
 public class ArenaMoveCommand extends ArgCommand {
-
+	
 	private final PbArenaHandler arenaHandler;
 	
 	public ArenaMoveCommand(PbArenaHandler arenaHandler) {
@@ -35,7 +37,7 @@ public class ArenaMoveCommand extends ArgCommand {
 		PbArena arena = arenaHandler.getArena(arenaName);
 		
 		if (arena == null) {
-			StringUtil.msg(sender, "Arena %s does not exits!", arenaName);
+			Message.ARENA_MISSING.send(sender, arenaName);
 			return;
 		}
 		try {
@@ -43,9 +45,9 @@ public class ArenaMoveCommand extends ArgCommand {
 		} catch (IllegalArgumentException e) {
 			sender.sendMessage(e.getMessage());
 		}
-		StringUtil.msg(sender, "Moved arena %s: to %s", arenaName, LocationUtil.humanBlockPos(arena.getSchemPos()));
+		Message.ARENA_MOVE.send(sender, arenaName, LocationUtil.humanBlockPos(arena.getSchemPos()));
 	}
-
+	
 	@Override
 	protected List<String> onTabComplete(CommandSender sender, String[] stringArgs) {
 		if (stringArgs.length == 1) {

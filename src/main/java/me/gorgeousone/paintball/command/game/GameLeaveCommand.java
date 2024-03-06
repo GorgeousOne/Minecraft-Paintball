@@ -1,10 +1,10 @@
 package me.gorgeousone.paintball.command.game;
 
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.paintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.paintball.game.PbLobby;
 import me.gorgeousone.paintball.game.PbLobbyHandler;
-import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -12,10 +12,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Command to leave a paintball game and teleport back to the lobby.
+ */
 public class GameLeaveCommand extends ArgCommand {
-
+	
 	private final PbLobbyHandler lobbyHandler;
-
+	
 	public GameLeaveCommand(PbLobbyHandler lobbyHandler) {
 		super("leave");
 		this.lobbyHandler = lobbyHandler;
@@ -26,9 +29,9 @@ public class GameLeaveCommand extends ArgCommand {
 		Player player = (Player) sender;
 		UUID playerId = player.getUniqueId();
 		PbLobby lobby = lobbyHandler.getLobby(playerId);
-
+		
 		if (lobby == null) {
-			StringUtil.msg(sender, "You are not in a paintball game.");
+			Message.NOT_IN_LOBBY.send(sender);
 			return;
 		}
 		lobby.removePlayer(player);

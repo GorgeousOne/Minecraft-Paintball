@@ -1,9 +1,11 @@
 package me.gorgeousone.paintball.event;
 
 import me.gorgeousone.paintball.game.GameState;
-import me.gorgeousone.paintball.kit.PbKitHandler;
-import me.gorgeousone.paintball.game.PbLobbyHandler;
+import me.gorgeousone.paintball.game.PbGame;
 import me.gorgeousone.paintball.game.PbLobby;
+import me.gorgeousone.paintball.game.PbLobbyHandler;
+import me.gorgeousone.paintball.kit.PbKitHandler;
+import me.gorgeousone.paintball.team.PbTeam;
 import me.gorgeousone.paintball.util.ItemUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,12 +20,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
 
+/**
+ * Listener to cancel survival related events for players in lobbies and games.
+ * Also handles players joining and leaving the server regarding inventory saving.
+ */
 public class PlayerListener implements Listener {
-
+	
 	private final JavaPlugin plugin;
 	private final PbLobbyHandler lobbyHandler;
 	private final PbKitHandler kitHandler;
-
+	
 	public PlayerListener(JavaPlugin plugin, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
 		this.plugin = plugin;
 		this.lobbyHandler = lobbyHandler;
@@ -44,8 +50,16 @@ public class PlayerListener implements Listener {
 		}
 		event.setCancelled(true);
 		
-		if (dmgCause == EntityDamageEvent.DamageCause.VOID && lobby.getGame().getState() == GameState.LOBBYING) {
+		if (dmgCause != EntityDamageEvent.DamageCause.VOID) {
+			return;
+		}
+		PbGame game = lobby.getGame();
+		
+		if (game.getState() == GameState.LOBBYING) {
 			player.teleport(lobby.getJoinSpawn());
+		} else {
+			PbTeam team = game.getTeam(player.getUniqueId());
+			player.teleport(game.getPlayedArena().getSpawns(team.getType()).get(0));
 		}
 	}
 	
@@ -76,25 +90,25 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerExpGain(PlayerExpChangeEvent event) {
 		Player player = event.getPlayer();
-
+		
 		if (lobbyHandler.isPlaying(player.getUniqueId())) {
 			event.setAmount(0);
 		}
 	}
-
+	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		//TODO check if file searching is expensive
 		ItemUtil.loadInventory(event.getPlayer(), plugin);
 	}
-
+	
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 		UUID playerId = player.getUniqueId();
 		PbLobby lobby = lobbyHandler.getLobby(playerId);
 		kitHandler.removePlayer(playerId);
-
+		
 		if (lobby != null) {
 			lobby.removePlayer(player);
 		}

@@ -1,11 +1,14 @@
-package me.gorgeousone.paintball.command;
+package me.gorgeousone.paintball.command.debug;
 
+import me.gorgeousone.paintball.cmdframework.command.BaseCommand;
 import me.gorgeousone.paintball.game.PbGame;
 import me.gorgeousone.paintball.game.PbLobbyHandler;
-import me.gorgeousone.paintball.cmdframework.command.BaseCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * Debug command to paint yourself in a game.
+ */
 public class DebugKillCommand extends BaseCommand {
 	
 	private final PbLobbyHandler lobbyHandler;
@@ -13,7 +16,7 @@ public class DebugKillCommand extends BaseCommand {
 	public DebugKillCommand(PbLobbyHandler lobbyHandler) {
 		super("kill");
 		setPermission("paintball.debug");
-
+		
 		this.lobbyHandler = lobbyHandler;
 	}
 	

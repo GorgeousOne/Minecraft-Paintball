@@ -1,0 +1,68 @@
+commands:
+    arena-added-spawn: Added spawn %spawn-point% in arena %arena% for team %team%.
+    arena-already-linked: Arena %arena% already linked to lobby %lobby%.
+    arena-copied: Copied new arena %new-arena% to %destination-arena%
+    arena-created: Created new arena %new-arena% at %location%.
+    arena-exists: Arena %arena% already exists!
+    arena-missing: Arena %arena% does not exist!
+    arena-moved: Moved arena %source-arena% to %destination-arena%
+    arena-not-linked: Arena %% is not linked to this lobby!
+    arena-removed: Removed arena %arena%.
+    arena-removed-schematic-missing: Removed arena %arena% but could note find schematic to remove blocks
+    arena-reset: Reset arena %arena% for a new game.
+    arena-schematic-missing: Could not find the schematic %file% of arena %arena%.
+    lobby-arena-detached: Arena %arena% is now detached from lobby %lobby%.
+    lobby-arena-linked: Arena %arena% is now playable in lobby %lobby%.
+    lobby-created: Created new lobby %new-lobby% at %location%
+    lobby-exists: Lobby %lobby% already exists!
+    lobby-set-exit: Set lobby %lobby% exit point to %exit-point%
+    lobby-set-spawn: Set lobby %lobby% spawn point to %spawn-point%
+    team-missing: Team %team% does not exist!
+    team-spawn-bad-index: 'Spawn #%spawn-number% for %team% does not exist! Team %team% has spawn points 1 to %max-spawns% in arena %arena%.'
+    team-spawn-missing: Team %team% does not have spawn points in arena %arena%. /pb arena add-spawn <>
+    team-spawn-removed: 'Removed spawn point #%spawn-number% of team %team% in arena %arena% (was %previous-spawn%).'
+game:
+    lobby-already-joined: You already are in lobby %lobby%.
+    lobby-arena-missing: Lobby %lobby% cannot start a game because no arenas to play are linked to it. /pb link %lobby% <arena>
+    lobby-closed: Lobby %lobby% closed.
+    lobby-countdown: Game starts in %seconds-left% seconds.
+    lobby-full: Lobby %lobby% is full!
+    lobby-missing: Lobby %lobby% does not exist!
+    lobby-not-joined: You are not in a lobby right now. Join a lobby or specify which lobby to start.
+    lobby-player-joined: '%player% joined.'
+    lobby-running: The game has already started! Please wait for the next round. (Spectator mode coming soon™"
+    lobby-underfull: Not enough players to start the game. (%current-players%/%needed-players%)
+    lobby-you-joined: Joined lobby %lobby%.
+    map-announce: Playing map %map%!
+    not-in-lobby: You are not in a paintball lobby.
+    player-left: You left lobby %lobby%.
+    player-not-online: Player %player% is not online!
+    player-painted: '%target% was painted by %shooter%'
+    stats-player-missing: Player %player% never played paintball.
+    stats-player-required: Please enter a player name.
+    team-joined: You are in team %team%.
+    team-queued: You queued for team %team%.
+    team-unqueued: You un-queued from team %team%.
+guns:
+    rifle: Paintball Rifle
+    shotgun: Paintball Shotgun
+    machine-gun: Paintball Machine Gun
+    lore-rifle: Semi-automatic paintball rifle.\nHigh range and accuracy.
+    lore-shotgun: Pump action paintball shotgun.\nShoots a cloud of bullets with\nlow range and accuracy.
+    lore-machine-gun: Full-automatic paintball gun.\nAccuracy drops with longer use.
+ui:
+    alive-players: '%alive-players% Alive'
+    countdown: Starting Game in %seconds% Seconds
+    kit: Kit
+    kit-select: Select a kit
+    lobby: Lobby
+    players: Players
+    quit: Quit
+    right-click: Right Click
+    team: Team
+    title-guns: Shoot enemies\nto paint them
+    title-winner: Team %team% wins!
+    title-water-bombs: Throw water bombs\nto revive team mates
+    vote-map: Vote a Map
+    waiting-for-players: Waiting for Players
+    water-bomb: Water Bomb

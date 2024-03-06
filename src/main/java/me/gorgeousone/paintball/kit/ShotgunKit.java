@@ -9,6 +9,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Collection;
 
+/**
+ * Class for the shotgun kit, which is a pump action gun that shoots a cloud of bullets with low range and accuracy.
+ */
 public class ShotgunKit extends AbstractKit {
 	
 	private final JavaPlugin plugin;
@@ -21,7 +24,7 @@ public class ShotgunKit extends AbstractKit {
 	@Override
 	protected void playGunshotSound(Player player, Collection<Player> others, float pitchLow, float pitchHigh) {
 		super.playGunshotSound(player, others, pitchLow, pitchHigh);
-
+		
 		new BukkitRunnable() {
 			@Override
 			public void run() {

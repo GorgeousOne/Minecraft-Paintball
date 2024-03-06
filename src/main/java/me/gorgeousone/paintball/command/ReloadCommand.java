@@ -5,6 +5,9 @@ import me.gorgeousone.paintball.cmdframework.command.BaseCommand;
 import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.command.CommandSender;
 
+/**
+ * Command to reload the plugin's config values.
+ */
 public class ReloadCommand extends BaseCommand {
 	
 	private final PaintballPlugin plugin;
@@ -14,7 +17,7 @@ public class ReloadCommand extends BaseCommand {
 		addAlias("rl");
 		setPlayerRequired(false);
 		setPermission("paintball.configure");
-
+		
 		this.plugin = plugin;
 	}
 	

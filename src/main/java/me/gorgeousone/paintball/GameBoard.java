@@ -13,18 +13,21 @@ import org.bukkit.scoreboard.Team;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class to create a scoreboard with a title and indexed lines.
+ */
 public class GameBoard {
-
+	
 	private final Scoreboard board;
 	private final Objective objective;
 	private final Map<Integer, String> lines;
-
+	
 	public GameBoard(int size) {
 		this.board = Bukkit.getScoreboardManager().getNewScoreboard();
 		this.objective = board.registerNewObjective("paintball", "dummy");
 		this.objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 		this.lines = new HashMap<>();
-
+		
 		for (int lineIdx = 1; lineIdx <= size; ++lineIdx) {
 			String blank = StringUtil.pad(lineIdx);
 			Score line = objective.getScore(blank);
@@ -36,21 +39,21 @@ public class GameBoard {
 	public void setTitle(String text) {
 		objective.setDisplayName(text);
 	}
-
+	
 	public void addPlayer(Player player) {
 		player.setScoreboard(board);
 	}
-
+	
 	public void removePlayer(Player player) {
 		player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 	}
-
+	
 	public Team createTeam(String name, ChatColor chatColor) {
 		Team team = board.registerNewTeam(name);
 		team.setColor(chatColor);
 		return team;
 	}
-
+	
 	public void setLine(int lineIdx, String text) {
 		if (lineIdx < 1 || lineIdx > lines.size()) {
 			throw new IllegalArgumentException("Line index must be between 0 and " + lines.size());

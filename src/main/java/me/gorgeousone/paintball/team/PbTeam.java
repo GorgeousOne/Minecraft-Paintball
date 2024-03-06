@@ -1,9 +1,9 @@
 package me.gorgeousone.paintball.team;
 
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.game.PbGame;
 import me.gorgeousone.paintball.kit.KitType;
 import me.gorgeousone.paintball.kit.PbKitHandler;
-import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -15,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +26,13 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Class to manage the players of a team. It
+ * equips team armor on game start,
+ * tracks health (and visualizes it on armor),
+ * spawns revive armorstands and
+ * manages spectating states.
+ */
 public class PbTeam {
 	
 	private final TeamType teamType;
@@ -60,7 +66,7 @@ public class PbTeam {
 	public void startGame(List<Location> spawns, int maxHealthPoints) {
 		this.maxHealthPoints = maxHealthPoints;
 		int i = 0;
-
+		
 		for (UUID playerId : players) {
 			Player player = Bukkit.getPlayer(playerId);
 			player.teleport(spawns.get(i % spawns.size()));
@@ -78,29 +84,29 @@ public class PbTeam {
 	public Set<UUID> getPlayers() {
 		return new HashSet<>(players);
 	}
-
+	
 	public int size() {
 		return players.size();
 	}
-
+	
 	public boolean hasPlayer(UUID playerId) {
 		return players.contains(playerId);
 	}
-
+	
 	public Set<UUID> getAlivePlayers() {
 		return new HashSet<>(alivePlayers);
 	}
-
+	
 	public boolean isAlive(UUID playerId) {
 		return alivePlayers.contains(playerId);
 	}
-
+	
 	public void addPlayer(Player player) {
 		UUID playerId = player.getUniqueId();
 		players.add(playerId);
-		StringUtil.msg(player, "You are in team %s.", teamType.displayName);
+		Message.TEAM_JOIN.send(player, teamType.displayName);
 	}
-
+	
 	public void removePlayer(UUID playerId) {
 		if (!players.contains(playerId)) {
 			throw new IllegalArgumentException("Can't remove player with id: " + playerId + ". They are not in this team.");
@@ -114,7 +120,7 @@ public class PbTeam {
 		playerHealth.remove(playerId);
 		uncoloredArmorSlots.remove(playerId);
 		UUID skellyId = getReviveSkellyId(playerId);
-
+		
 		if (skellyId != null) {
 			Bukkit.getEntity(skellyId).remove();
 			reviveSkellies.remove(skellyId);
@@ -123,7 +129,7 @@ public class PbTeam {
 			game.onTeamKill(this);
 		}
 	}
-
+	
 	public void reset() {
 		for (UUID playerId : players) {
 			Player player = Bukkit.getPlayer(playerId);
@@ -140,11 +146,11 @@ public class PbTeam {
 		reviveSkellies.keySet().forEach(id -> Bukkit.getEntity(id).remove());
 		reviveSkellies.clear();
 	}
-
+	
 	public void paintBlock(Block shotBlock) {
 		TeamUtil.paintBlot(shotBlock, teamType, 5, 1);
 	}
-
+	
 	public void damagePlayer(Player target, Player shooter, int bulletDmg) {
 		UUID targetId = target.getUniqueId();
 		
@@ -187,7 +193,7 @@ public class PbTeam {
 			game.onTeamKill(this);
 		}
 	}
-
+	
 	private void paintArmor(UUID playerId) {
 		Player player = Bukkit.getPlayer(playerId);
 		PlayerInventory inv = player.getInventory();
@@ -204,12 +210,12 @@ public class PbTeam {
 		}
 		inv.setArmorContents(playerAmor);
 	}
-
+	
 	private void setSpectator(Player player, boolean isSpectator) {
 		player.setCollidable(!isSpectator);
 		player.setAllowFlight(isSpectator);
 		player.setFlying(isSpectator);
-
+		
 		if (isSpectator) {
 			player.teleport(player.getLocation().add(0, 1, 0));
 			game.hidePlayer(player);
@@ -217,11 +223,11 @@ public class PbTeam {
 			game.showPlayer(player);
 		}
 	}
-
+	
 	public boolean hasReviveSkelly(ArmorStand reviveSkelly) {
 		return reviveSkellies.containsKey(reviveSkelly.getUniqueId());
 	}
-
+	
 	public UUID getReviveSkellyId(UUID playerId) {
 		for (UUID skellyId : reviveSkellies.keySet()) {
 			if (reviveSkellies.get(skellyId) == playerId) {
@@ -230,20 +236,20 @@ public class PbTeam {
 		}
 		return null;
 	}
-
+	
 	public void revivePlayer(ArmorStand skelly) {
 		UUID skellyId = skelly.getUniqueId();
-
+		
 		if (!reviveSkellies.containsKey(skelly.getUniqueId())) {
 			return;
 		}
 		UUID playerId = reviveSkellies.get(skellyId);
 		Player player = Bukkit.getPlayer(playerId);
-
+		
 		setSpectator(player, false);
 		player.teleport(skelly.getLocation());
 		skelly.remove();
-
+		
 		reviveSkellies.remove(skellyId);
 		playerHealth.put(playerId, maxHealthPoints);
 		alivePlayers.add(playerId);
@@ -255,7 +261,7 @@ public class PbTeam {
 		player.setMaxHealth(2 * maxHealthPoints);
 		player.setHealth(2 * maxHealthPoints);
 		player.getInventory().setArmorContents(teamArmorSet);
-
+		
 		UUID playerId = player.getUniqueId();
 		playerHealth.put(player.getUniqueId(), maxHealthPoints);
 		uncoloredArmorSlots.put(playerId, new ArrayList<>(Arrays.asList(0, 1, 2, 3)));

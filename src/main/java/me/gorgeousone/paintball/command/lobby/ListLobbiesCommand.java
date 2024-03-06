@@ -20,8 +20,7 @@ public class ListLobbiesCommand extends BaseCommand {
 	
 	@Override
 	protected void onCommand(CommandSender sender, String[] args) {
-		StringUtil.msg(sender, "List of lobbys:");
-		
+		StringUtil.msg(sender, "List of lobbies:");
 		for (PbLobby lobby : lobbyHandler.getLobbies()) {
 			StringUtil.msgPlain(sender, "%s " + LocationUtil.humanBlockPos(lobby.getJoinSpawn()), lobby.getName());
 		}

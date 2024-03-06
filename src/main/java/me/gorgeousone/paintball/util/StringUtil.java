@@ -13,7 +13,7 @@ public abstract class StringUtil {
 			ChatColor.GRAY;
 	
 	private StringUtil() {}
-
+	
 	public static void msg(CommandSender sender, String message, Object... args) {
 		sender.sendMessage(format(message, args));
 	}
@@ -37,6 +37,7 @@ public abstract class StringUtil {
 	public static String format(String message, Object... args) {
 		return format(message, true, args);
 	}
+	
 	public static String format(String message, boolean withPrefix, Object... args) {
 		message = message.replaceAll("%-?\\d*\\.?\\d*[a-zA-D]", ChatColor.RESET + "$0" + MSG_COLOR);
 		return (withPrefix ? PLUGIN_PREFIX : "") + ChatColor.GRAY + String.format(message, args);

@@ -62,7 +62,7 @@ public class ParentCommand extends BaseCommand {
 	@Override
 	protected List<String> onTabComplete(CommandSender sender, String[] arguments) {
 		List<String> tabList = new LinkedList<>();
-
+		
 		if (arguments.length == 1) {
 			for (BaseCommand child : getChildren()) {
 				if (child.passesPermission(sender)) {

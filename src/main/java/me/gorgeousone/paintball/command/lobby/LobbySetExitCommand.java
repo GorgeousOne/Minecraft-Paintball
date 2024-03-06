@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.command.lobby;
 
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.cmdframework.argument.ArgType;
 import me.gorgeousone.paintball.cmdframework.argument.ArgValue;
 import me.gorgeousone.paintball.cmdframework.argument.Argument;
@@ -7,7 +8,6 @@ import me.gorgeousone.paintball.cmdframework.command.ArgCommand;
 import me.gorgeousone.paintball.game.PbLobby;
 import me.gorgeousone.paintball.game.PbLobbyHandler;
 import me.gorgeousone.paintball.util.LocationUtil;
-import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class LobbySetExitCommand extends ArgCommand {
-
+	
 	private final PbLobbyHandler lobbyHandler;
 	
 	public LobbySetExitCommand(PbLobbyHandler lobbyHandler) {
@@ -33,14 +33,14 @@ public class LobbySetExitCommand extends ArgCommand {
 		PbLobby lobby = lobbyHandler.getLobby(lobbyName);
 		
 		if (lobby == null) {
-			StringUtil.msg(sender, "Lobby %s does not exits!", lobbyName);
+			Message.LOBBY_MISSING.send(sender, lobbyName);
 			return;
 		}
 		Player player = (Player) sender;
 		lobby.setExitSpawn(player.getLocation());
-		StringUtil.msg(sender, "Set lobby %s exit point to %s", lobby.getName(), LocationUtil.humanBlockPos(lobby.getJoinSpawn()));
+		Message.LOBBY_EXIT_SET.send(sender, lobby.getName(), LocationUtil.humanBlockPos(lobby.getJoinSpawn()));
 	}
-
+	
 	@Override
 	protected List<String> onTabComplete(CommandSender sender, String[] stringArgs) {
 		if (stringArgs.length == 1) {

@@ -1,7 +1,6 @@
 package me.gorgeousone.paintball.team;
 
 import me.gorgeousone.paintball.kit.KitType;
-import me.gorgeousone.paintball.util.blocktype.BlockType;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -21,6 +20,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Utility class to create colored armor sets, revive skeletons and create colored blocks for gunshots.
+ */
 public class TeamUtil {
 	
 	public static final ItemStack[] DEATH_ARMOR_SET = createColoredArmoSet(TeamType.DEATH_COLOR, "");
@@ -45,12 +47,15 @@ public class TeamUtil {
 		return new ItemStack[]{boots, legs, chest, helmet};
 	}
 	
-	public static ArmorStand createSkelly(ItemStack[] deathArmorSet, Player player, TeamType teamType, KitType kitType) {
+	public static ArmorStand createSkelly(ItemStack[] deathArmorSet,
+			Player player,
+			TeamType teamType,
+			KitType kitType) {
 		Location deathLoc = player.getLocation();
 		String name = "" +
-				ChatColor.BOLD + ChatColor.MAGIC + "XX" + ChatColor.RESET +
-				ChatColor.BOLD + teamType.prefixColor + player.getName() + ChatColor.RESET +
-				ChatColor.BOLD + ChatColor.MAGIC + "XX";
+		              ChatColor.BOLD + ChatColor.MAGIC + "XX" + ChatColor.RESET +
+		              ChatColor.BOLD + teamType.prefixColor + player.getName() + ChatColor.RESET +
+		              ChatColor.BOLD + ChatColor.MAGIC + "XX";
 		
 		ArmorStand stand = (ArmorStand) player.getWorld().spawnEntity(deathLoc, EntityType.ARMOR_STAND);
 		stand.getEquipment().setArmorContents(deathArmorSet);

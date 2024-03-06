@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.game;
 
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.arena.PbArena;
 import me.gorgeousone.paintball.util.ItemUtil;
 import org.bukkit.Bukkit;
@@ -17,9 +18,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+/**
+ * Class to keep track of the map votes for the next game and to pick the map with the most votes.
+ */
 public class MapVoting {
-	
-	public static final String MAP_VOTE_UI_TITLE = "Vote a map";
 	
 	private final Map<UUID, PbArena> votes;
 	private final Random rng = new Random();
@@ -60,7 +62,7 @@ public class MapVoting {
 	
 	public static void openMapVoteUI(Player player, List<PbArena> arenas, int oldArenaIdx) {
 		int rows = Math.max(1, (int) Math.ceil(arenas.size() / 9f));
-		Inventory mapVoter = Bukkit.createInventory(null, rows * 9, MAP_VOTE_UI_TITLE);
+		Inventory mapVoter = Bukkit.createInventory(null, rows * 9, Message.UI_VOTE_MAP);
 		int slot = 0;
 		
 		for (PbArena map : arenas) {

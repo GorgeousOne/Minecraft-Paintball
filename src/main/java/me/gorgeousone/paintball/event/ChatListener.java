@@ -12,6 +12,9 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.UUID;
 
+/**
+ * Listener to format player prefixes in in-game chat for teams and dead players.
+ */
 public class ChatListener implements Listener {
 	
 	private final PbLobbyHandler lobbyHandler;
@@ -30,7 +33,7 @@ public class ChatListener implements Listener {
 		PbTeam team = game.getTeam(playerId);
 		String format = team.isAlive(playerId) ? ConfigSettings.CHAT_PREFIX_ALIVE : ConfigSettings.CHAT_PREFIX_DEAD;
 		format = StringUtil.replace(format, "player", "%1$s");
-		format = StringUtil.replace(format, "team-color", team.getType().prefixColor.toString() );
+		format = StringUtil.replace(format, "team-color", team.getType().prefixColor.toString());
 		event.setFormat(format + " %2$s");
 	}
 }

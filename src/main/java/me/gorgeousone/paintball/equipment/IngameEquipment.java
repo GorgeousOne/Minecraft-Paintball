@@ -8,14 +8,19 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Consumer;
 
+/**
+ * Class to manage hotbar items with custom click functions for players in a paintball game.
+ */
 public class IngameEquipment extends Equipment {
-
+	
 	public static final int GUN_SLOT = 0;
 	public static final int WATER_BOMB_SLOT = 1;
-
+	
 	private final PbKitHandler kitHandler;
-
-	public IngameEquipment(Consumer<SlotClickEvent> onShoot, Consumer<SlotClickEvent> onThrowWaterBomb, PbKitHandler kitHandler) {
+	
+	public IngameEquipment(Consumer<SlotClickEvent> onShoot,
+			Consumer<SlotClickEvent> onThrowWaterBomb,
+			PbKitHandler kitHandler) {
 		this.kitHandler = kitHandler;
 		setItem(GUN_SLOT, KitType.RIFLE.getGun(), onShoot);
 		setItem(WATER_BOMB_SLOT, PbKitHandler.getWaterBombs(), onThrowWaterBomb);
@@ -23,7 +28,7 @@ public class IngameEquipment extends Equipment {
 		setItem(WATER_BOMB_SLOT + 1, new ItemStack(Material.AIR), onThrowWaterBomb);
 		setItem(WATER_BOMB_SLOT + 2, new ItemStack(Material.AIR), onThrowWaterBomb);
 	}
-
+	
 	@Override
 	public void equip(Player player) {
 		//workaround .-. change gun item in equipment each time a player is being equipped

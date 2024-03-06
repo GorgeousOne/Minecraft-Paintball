@@ -2,11 +2,13 @@ package me.gorgeousone.paintball.game;
 
 import me.gorgeousone.paintball.ConfigSettings;
 import me.gorgeousone.paintball.GameBoard;
+import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.arena.PbArena;
 import me.gorgeousone.paintball.arena.PbArenaHandler;
-import me.gorgeousone.paintball.equipment.*;
+import me.gorgeousone.paintball.equipment.Equipment;
+import me.gorgeousone.paintball.equipment.LobbyEquipment;
+import me.gorgeousone.paintball.equipment.SlotClickEvent;
 import me.gorgeousone.paintball.kit.PbKitHandler;
-import me.gorgeousone.paintball.team.PbTeam;
 import me.gorgeousone.paintball.util.ConfigUtil;
 import me.gorgeousone.paintball.util.ItemUtil;
 import me.gorgeousone.paintball.util.LocationUtil;
@@ -29,6 +31,9 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+/**
+ * Class to manage players joined in a lobby and to run a game start countdown when enough players are in the lobby.
+ */
 public class PbLobby {
 	
 	private static final Set<Integer> ANNOUNCEMENT_INTERVALS = Set.of(300, 240, 180, 120, 60, 30, 20, 10, 3, 2, 1);
@@ -47,14 +52,18 @@ public class PbLobby {
 	private final PbCountdown countdown;
 	private GameBoard board;
 	
-	public PbLobby(String name, Location joinSpawn, JavaPlugin plugin, PbLobbyHandler lobbyHandler, PbKitHandler kitHandler) {
+	public PbLobby(String name,
+			Location joinSpawn,
+			JavaPlugin plugin,
+			PbLobbyHandler lobbyHandler,
+			PbKitHandler kitHandler) {
 		this.lobbyHandler = lobbyHandler;
 		this.kitHandler = kitHandler;
 		this.plugin = plugin;
-
+		
 		this.name = name;
 		this.joinSpawn = LocationUtil.cleanSpawn(joinSpawn);
-
+		
 		this.arenas = new LinkedList<>();
 		this.teamQueue = new TeamQueue();
 		this.mapVoting = new MapVoting();
@@ -103,19 +112,18 @@ public class PbLobby {
 		UUID playerId = player.getUniqueId();
 		
 		if (game.hasPlayer(playerId)) {
-			throw new IllegalArgumentException(StringUtil.format("You already are in lobby %s.", name));
+			throw new IllegalArgumentException(Message.LOBBY_ALREADY_JOINED.format(name));
 		}
 		//TODO join as spectator?
 		if (game.isRunning()) {
-			throw new IllegalStateException(StringUtil.format("The game has already started! Please wait for the next round."));
+			throw new IllegalStateException(Message.LOBBY_RUNNING.format());
 		}
 		if (game.size() >= ConfigSettings.MAX_PLAYERS) {
-			throw new IllegalStateException(StringUtil.format("Lobby %s is full!", name));
+			throw new IllegalStateException(Message.LOBBY_FULL.format(name));
 		}
 		ItemUtil.saveInventory(player, getExitSpawn(), plugin);
 		player.setGameMode(GameMode.ADVENTURE);
-		StringUtil.msg(player, "Joined lobby %s.", name);
-		
+		Message.LOBBY_YOU_JOIN.send(player, name);
 		player.teleport(joinSpawn);
 		equipment.equip(player);
 		board.addPlayer(player);
@@ -126,7 +134,7 @@ public class PbLobby {
 			countdown.start(ConfigSettings.COUNTDOWN_SECS);
 		}
 		if (arenas.size() == 0) {
-			game.allPlayers(p -> StringUtil.msg(p, "Lobby %s cannot start a game because no arenas to play are linked to it. /pb link %s <arena name>", name, name));
+			Message.LOBBY_ARENA_MISSING.send(player, name);
 		}
 	}
 	
@@ -136,15 +144,14 @@ public class PbLobby {
 	
 	public void removePlayer(Player player) {
 		UUID playerId = player.getUniqueId();
-
+		
 		if (!game.hasPlayer(playerId)) {
 			throw new IllegalArgumentException("Can't remove player with id: " + playerId + ". They are not in this game");
 		}
 		teamQueue.removePlayer(playerId);
 		game.removePlayer(playerId);
 		ItemUtil.loadInventory(player, plugin);
-		StringUtil.msg(player, "You left lobby %s.", name);
-		
+		Message.PLAYER_LEAVE.send(player, name);
 		if (!game.isRunning()) {
 			board.removePlayer(player);
 			updateLobbyBoard();
@@ -178,7 +185,7 @@ public class PbLobby {
 	
 	public void linkArena(PbArena arena) {
 		if (arenas.contains(arena)) {
-			throw new IllegalArgumentException(StringUtil.format("Arena %s already linked to this lobby!", arena.getName()));
+			throw new IllegalArgumentException(Message.ARENA_ALREADY_LINKED.format(arena.getName(), name));
 		}
 		arenas.add(arena);
 		
@@ -189,7 +196,7 @@ public class PbLobby {
 	
 	public void unlinkArena(PbArena arena) {
 		if (!arenas.contains(arena)) {
-			throw new IllegalArgumentException(StringUtil.format("Arena %s is not linked to this lobby!", arena.getName()));
+			throw new IllegalArgumentException(Message.ARENA_NOT_LINKED.format(arena.getName()));
 		}
 		arenas.remove(arena);
 		lobbyHandler.saveLobby(this);
@@ -200,7 +207,7 @@ public class PbLobby {
 		
 		if (ANNOUNCEMENT_INTERVALS.contains(secondsLeft)) {
 			game.allPlayers(p -> {
-				StringUtil.msgPlain(p, "Game starts in %d seconds.", secondsLeft);
+				Message.LOBBY_COUNTDOWN.send(p, secondsLeft);
 				p.playSound(p.getLocation(), SoundUtil.COUNTDOWN_SOUND, .5f, 1f);
 			});
 		}
@@ -216,14 +223,13 @@ public class PbLobby {
 	
 	public void startGame() {
 		if (arenas.isEmpty()) {
-			throw new IllegalStateException(StringUtil.format(
-					"Lobby %s cannot start a game because no arenas to play are linked to it. /pb link %s <arena name>", name, name));
+			throw new IllegalStateException(Message.LOBBY_ARENA_MISSING.format(name, name));
 		}
 		if (game.size() < ConfigSettings.MIN_PLAYERS) {
-			throw new IllegalStateException( "Not enough players to start the game.");
+			throw new IllegalStateException(Message.LOBBY_UNDERFULL.format(game.size(), ConfigSettings.MIN_PLAYERS));
 		}
 		if (game.getState() != GameState.LOBBYING) {
-			throw new IllegalStateException("The game is already running.");
+			throw new IllegalStateException(Message.LOBBY_RUNNING.format());
 		}
 		countdown.cancel();
 		PbArena arenaToPlay = mapVoting.pickArena(arenas);
@@ -247,26 +253,26 @@ public class PbLobby {
 	public void reset() {
 		game.allPlayers(p -> {
 			ItemUtil.loadInventory(p, plugin);
-			StringUtil.msg(p, "Lobby %s closed.", name);
+			Message.LOBBY_CLOSE.send(p, name);
 		});
 		game.reset();
 	}
 	
 	private void createGameBoard() {
 		board = new GameBoard(7);
-		board.setTitle(ChatColor.BOLD + "Waiting for Players");
-		board.setLine(6, "" + ChatColor.GREEN + ChatColor.BOLD + "Players");
+		board.setTitle(Message.UI_WAIT_FOR_PLAYERS);
+		board.setLine(6, Message.UI_PLAYERS);
 		board.setLine(5, game.size() + "/" + ConfigSettings.MAX_PLAYERS);
-		board.setLine(3, "" + ChatColor.GREEN + ChatColor.BOLD + "Lobby");
+		board.setLine(3, Message.UI_LOBBY);
 		board.setLine(2, name);
 	}
 	
 	private void updateLobbyBoard() {
 		if (game.size() < ConfigSettings.MIN_PLAYERS) {
-			board.setTitle(ChatColor.BOLD + "Waiting for Players");
+			board.setTitle(Message.UI_WAIT_FOR_PLAYERS);
 			
 		} else {
-			board.setTitle(ChatColor.BOLD + "Starting Game in " + ChatColor.GOLD + countdown.getSecondsLeft() + " Seconds");
+			board.setTitle(Message.UI_COUNTDOWN.format(countdown.getSecondsLeft()));
 		}
 		board.setLine(5, game.size() + "/" + ConfigSettings.MAX_PLAYERS);
 	}
@@ -290,7 +296,7 @@ public class PbLobby {
 			PbArenaHandler arenaHandler,
 			PbKitHandler kitHandler) {
 		ConfigurationSection section = parentSection.getConfigurationSection(name);
-
+		
 		try {
 			ConfigUtil.assertKeyExists(section, "spawn");
 			ConfigUtil.assertKeyExists(section, "arenas");

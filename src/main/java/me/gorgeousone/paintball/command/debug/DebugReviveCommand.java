@@ -1,8 +1,8 @@
-package me.gorgeousone.paintball.command;
+package me.gorgeousone.paintball.command.debug;
 
+import me.gorgeousone.paintball.cmdframework.command.BaseCommand;
 import me.gorgeousone.paintball.game.PbGame;
 import me.gorgeousone.paintball.game.PbLobbyHandler;
-import me.gorgeousone.paintball.cmdframework.command.BaseCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.ArmorStand;
@@ -10,6 +10,9 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
+/**
+ * Debug command to revive yourself in a game.
+ */
 public class DebugReviveCommand extends BaseCommand {
 	
 	private final PbLobbyHandler lobbyHandler;

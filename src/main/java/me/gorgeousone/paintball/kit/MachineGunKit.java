@@ -14,6 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Class for the machine gun kit, which is a full-automatic gun with limited magazine that slowly reloads over time.
+ * Accuracy drops with longer use.
+ */
 public class MachineGunKit extends AbstractKit {
 	
 	private final Map<UUID, Integer> magazines;
