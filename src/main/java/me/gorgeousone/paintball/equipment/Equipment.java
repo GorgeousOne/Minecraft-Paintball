@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.equipment;
 
+import me.gorgeousone.paintball.util.ItemUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -31,6 +32,23 @@ public class Equipment {
 			//this is a stupid workaround so re-equipping after changing kit won't replace team queuing enchantment glow
 			if (oldItem == null || oldItem.getType() != item.getType()) {
 				inv.setItem(slot, items.get(slot).clone());
+			}
+		}
+	}
+	
+	/**
+	 * Updates item names in the player's inventory if the items are already in the inventory.
+	 */
+	public void updateNames(Player player) {
+		PlayerInventory inv = player.getInventory();
+		
+		for (int slot : items.keySet()) {
+			ItemStack newItem = items.get(slot);
+			ItemStack oldItem = inv.getItem(slot);
+			
+			if (oldItem != null && oldItem.getType() == newItem.getType()) {
+				ItemUtil.nameItem(oldItem, newItem.getItemMeta().getDisplayName());
+				inv.setItem(slot, oldItem);
 			}
 		}
 	}

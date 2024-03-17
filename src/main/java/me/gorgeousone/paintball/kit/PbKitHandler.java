@@ -42,9 +42,9 @@ public class PbKitHandler {
 	}
 	
 	public void updateConfigKitVals() {
-		getKit(KitType.RIFLE).reload(1, ConfigSettings.RIFLE_BULLET_DMG, ConfigSettings.RIFLE_BULLET_SPEED, ConfigSettings.RIFLE_BULLET_SPREAD);
-		getKit(KitType.SHOTGUN).reload(ConfigSettings.SHOTGUN_BULLET_COUNT, ConfigSettings.SHOTGUN_BULLET_DMG, ConfigSettings.SHOTGUN_BULLET_SPEED, ConfigSettings.SHOTGUN_BULLET_SPREAD);
-		getKit(KitType.MACHINE_GUN).reload(1, ConfigSettings.MACHINE_GUN_BULLET_DMG, ConfigSettings.MACHINE_GUN_BULLET_SPEED, ConfigSettings.MACHINE_GUN_MAX_BULLET_SPREAD);
+		getKit(KitType.RIFLE).updateSpecs(1, ConfigSettings.RIFLE_BULLET_DMG, ConfigSettings.RIFLE_BULLET_SPEED, ConfigSettings.RIFLE_BULLET_SPREAD);
+		getKit(KitType.SHOTGUN).updateSpecs(ConfigSettings.SHOTGUN_BULLET_COUNT, ConfigSettings.SHOTGUN_BULLET_DMG, ConfigSettings.SHOTGUN_BULLET_SPEED, ConfigSettings.SHOTGUN_BULLET_SPREAD);
+		getKit(KitType.MACHINE_GUN).updateSpecs(1, ConfigSettings.MACHINE_GUN_BULLET_DMG, ConfigSettings.MACHINE_GUN_BULLET_SPEED, ConfigSettings.MACHINE_GUN_MAX_BULLET_SPREAD);
 		WATER_BOMBS = createWaterBombs();
 	}
 	

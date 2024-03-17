@@ -51,7 +51,7 @@ public abstract class AbstractKit {
 		this.shootCooldowns = new HashMap<>();
 	}
 	
-	public void reload(int bulletCount, int bulletDmg, float bulletSpeed, float bulletSpread) {
+	public void updateSpecs(int bulletCount, int bulletDmg, float bulletSpeed, float bulletSpread) {
 		this.bulletCount = bulletCount;
 		this.bulletDmg = bulletDmg;
 		this.bulletSpeed = bulletSpeed;
@@ -80,6 +80,9 @@ public abstract class AbstractKit {
 		return true;
 	}
 	
+	/**
+	 * Adds kit specific status effects to the player.
+	 */
 	public void prepPlayer(Player player) {}
 	
 	//TODO make own gunshots sound high pitched

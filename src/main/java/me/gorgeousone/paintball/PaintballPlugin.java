@@ -63,12 +63,10 @@ public final class PaintballPlugin extends JavaPlugin {
 		
 		PbKitHandler.createKits(this);
 		this.kitHandler = new PbKitHandler();
-		
-		reload();
-		
 		this.arenaHandler = new PbArenaHandler(this);
 		this.lobbyHandler = new PbLobbyHandler(this, kitHandler);
-		
+
+		reload();
 		loadBackup();
 		registerCommands();
 		registerListeners();
@@ -84,6 +82,7 @@ public final class PaintballPlugin extends JavaPlugin {
 		loadLanguage();
 		
 		kitHandler.updateConfigKitVals();
+		lobbyHandler.updateLobbyUis();
 		KitType.updateLanguage();
 		KitType.updateItems();
 		TeamType.updateItems();

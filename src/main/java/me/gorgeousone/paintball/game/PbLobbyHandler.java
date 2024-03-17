@@ -38,6 +38,10 @@ public class PbLobbyHandler {
 		this.lobbies = new HashMap<>();
 	}
 	
+	public void updateLobbyUis() {
+		lobbies.values().forEach(PbLobby::updateUi);
+	}
+	
 	public PbLobby createLobby(String name, Location spawn) {
 		if (lobbies.containsKey(name)) {
 			throw new IllegalArgumentException(Message.LOBBY_EXISTS.format(name));

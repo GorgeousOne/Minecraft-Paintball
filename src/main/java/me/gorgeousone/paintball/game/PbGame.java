@@ -47,7 +47,7 @@ public class PbGame {
 	private final Map<TeamType, PbTeam> teams;
 	private GameBoard gameBoard;
 	private final Runnable onGameEnd;
-	private final Equipment equipment;
+	private Equipment equipment;
 	private PbArena playedArena;
 	
 	private GameStats gameStats;
@@ -64,7 +64,13 @@ public class PbGame {
 		for (TeamType teamType : TeamType.values()) {
 			teams.put(teamType, new PbTeam(teamType, this, plugin, this.kitHandler));
 		}
-		equipment = new IngameEquipment(this::onShoot, this::onThrowWaterBomb, kitHandler);
+		this.equipment = new IngameEquipment(this::onShoot, this::onThrowWaterBomb, kitHandler);
+	}
+	
+	public void updateUi() {
+		this.equipment = new IngameEquipment(this::onShoot, this::onThrowWaterBomb, kitHandler);
+		createScoreboard();
+		updateAliveScores();
 	}
 	
 	public Equipment getEquip() {

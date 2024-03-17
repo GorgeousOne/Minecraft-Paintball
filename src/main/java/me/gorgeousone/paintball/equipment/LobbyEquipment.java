@@ -35,7 +35,6 @@ public class LobbyEquipment extends Equipment {
 		for (TeamType teamType : TeamType.values()) {
 			ItemStack teamItem = teamType.getJoinItem();
 			ItemUtil.nameItem(teamItem, Message.LOBBY_ITEM_NAME.format(Message.UI_TEAM + " " + teamType.displayName));
-			
 			setItem(i, teamItem, onTeamSelect);
 			++i;
 		}

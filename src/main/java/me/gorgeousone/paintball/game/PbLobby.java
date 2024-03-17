@@ -48,8 +48,8 @@ public class PbLobby {
 	private final PbGame game;
 	private final TeamQueue teamQueue;
 	private final MapVoting mapVoting;
-	private final Equipment equipment;
 	private final PbCountdown countdown;
+	private Equipment equipment;
 	private GameBoard board;
 	
 	public PbLobby(String name,
@@ -72,6 +72,25 @@ public class PbLobby {
 		this.equipment = new LobbyEquipment(teamQueue::onQueueForTeam, this::onMapVote, this::onSelectKit, this::onQuit, kitHandler);
 		this.countdown = new PbCountdown(this::onCountdownTick, this::onCountdownEnd, plugin);
 		createGameBoard();
+	}
+	
+	/**
+	 * Updates the UI of the lobby board and the equipment of all players in the lobby.
+	 * Item names will only update after rejoining the lobby (too complicated to update
+	 */
+	public void updateUi() {
+		this.equipment = new LobbyEquipment(teamQueue::onQueueForTeam, this::onMapVote, this::onSelectKit, this::onQuit, kitHandler);
+		createGameBoard();
+		updateLobbyBoard();
+		
+		if (game.isRunning()) {
+			game.updateUi();
+		}else {
+			game.allPlayers(p -> {
+				board.addPlayer(p);
+				equipment.updateNames(p);
+			});
+		}
 	}
 	
 	public String getName() {
@@ -108,6 +127,9 @@ public class PbLobby {
 		return game.hasPlayer(playerId);
 	}
 	
+	/**
+	 * Adds a player to the lobby and teleports them to the join spawn, saves and replaces their inventory.
+	 */
 	public void joinPlayer(Player player) {
 		UUID playerId = player.getUniqueId();
 		
@@ -152,6 +174,7 @@ public class PbLobby {
 		game.removePlayer(playerId);
 		ItemUtil.loadInventory(player, plugin);
 		Message.PLAYER_LEAVE.send(player, name);
+		
 		if (!game.isRunning()) {
 			board.removePlayer(player);
 			updateLobbyBoard();
@@ -267,10 +290,12 @@ public class PbLobby {
 		board.setLine(2, name);
 	}
 	
+	/**
+	 * Updates the countdown in the title of the lobby board and current player count.
+	 */
 	private void updateLobbyBoard() {
 		if (game.size() < ConfigSettings.MIN_PLAYERS) {
 			board.setTitle(Message.UI_WAIT_FOR_PLAYERS);
-			
 		} else {
 			board.setTitle(Message.UI_COUNTDOWN.format(countdown.getSecondsLeft()));
 		}
