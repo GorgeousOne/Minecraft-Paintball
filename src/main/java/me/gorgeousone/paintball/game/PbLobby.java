@@ -146,7 +146,7 @@ public class PbLobby {
 		ItemUtil.saveInventory(player, getExitSpawn(), plugin);
 		player.setGameMode(GameMode.ADVENTURE);
 		Message.LOBBY_YOU_JOIN.send(player, name);
-		player.teleport(joinSpawn);
+		LocationUtil.tpTick(player, joinSpawn, plugin);
 		equipment.equip(player);
 		board.addPlayer(player);
 		game.joinPlayer(playerId);
@@ -262,7 +262,7 @@ public class PbLobby {
 	
 	public void returnToLobby() {
 		game.allPlayers(p -> {
-			p.teleport(joinSpawn);
+			LocationUtil.tpTick(p, joinSpawn, plugin);
 			p.getInventory().clear();
 			equipment.equip(p);
 			board.addPlayer(p);

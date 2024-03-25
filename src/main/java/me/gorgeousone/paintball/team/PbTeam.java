@@ -4,6 +4,7 @@ import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.game.PbGame;
 import me.gorgeousone.paintball.kit.KitType;
 import me.gorgeousone.paintball.kit.PbKitHandler;
+import me.gorgeousone.paintball.util.LocationUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -69,7 +70,7 @@ public class PbTeam {
 		
 		for (UUID playerId : players) {
 			Player player = Bukkit.getPlayer(playerId);
-			player.teleport(spawns.get(i % spawns.size()));
+			LocationUtil.tpTick(player, spawns.get(i % spawns.size()), plugin);
 			alivePlayers.add(playerId);
 			healPlayer(player);
 			equipPlayer(player);

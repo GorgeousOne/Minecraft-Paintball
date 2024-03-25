@@ -3,6 +3,9 @@ package me.gorgeousone.paintball.util;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 public class LocationUtil {
@@ -34,6 +37,18 @@ public class LocationUtil {
 		spawn.setY(spawn.getBlockY());
 		spawn.setZ(spawn.getBlockZ() + .5);
 		return spawn;
+	}
+	
+	/**
+	 * Executes a teleportation 1 tick later to prevent "<Player> moved too quickly" warnings.
+	 */
+	public static void tpTick(Player player, Location location, JavaPlugin plugin) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				player.teleport(location);
+			}
+		}.runTaskLater(plugin, 1);
 	}
 	
 	public static String humanBlockPos(Location location) {

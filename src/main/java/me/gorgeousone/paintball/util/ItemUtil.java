@@ -90,7 +90,7 @@ public abstract class ItemUtil {
 		float xp = (float) backup.getDouble("xp");
 		player.setLevel((int) xp);
 		player.setExp(xp % 1);
-		player.teleport((Location) backup.get("spawn"));
+		LocationUtil.tpTick(player, (Location) backup.get("spawn"), plugin);
 		
 		ConfigurationSection itemSection = backup.getConfigurationSection("items");
 		PlayerInventory inv = player.getInventory();

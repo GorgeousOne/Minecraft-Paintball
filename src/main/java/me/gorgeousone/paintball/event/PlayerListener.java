@@ -7,6 +7,7 @@ import me.gorgeousone.paintball.game.PbLobbyHandler;
 import me.gorgeousone.paintball.kit.PbKitHandler;
 import me.gorgeousone.paintball.team.PbTeam;
 import me.gorgeousone.paintball.util.ItemUtil;
+import me.gorgeousone.paintball.util.LocationUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -56,10 +57,10 @@ public class PlayerListener implements Listener {
 		PbGame game = lobby.getGame();
 		
 		if (game.getState() == GameState.LOBBYING) {
-			player.teleport(lobby.getJoinSpawn());
+			LocationUtil.tpTick(player, lobby.getJoinSpawn(), plugin);
 		} else {
 			PbTeam team = game.getTeam(player.getUniqueId());
-			player.teleport(game.getPlayedArena().getSpawns(team.getType()).get(0));
+			LocationUtil.tpTick(player, game.getPlayedArena().getSpawns(team.getType()).get(0), plugin);
 		}
 	}
 	
