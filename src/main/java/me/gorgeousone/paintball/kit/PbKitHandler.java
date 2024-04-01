@@ -75,7 +75,7 @@ public class PbKitHandler {
 	}
 	
 	private static ItemStack createWaterBombs() {
-		ItemStack waterBombs = new ItemStack(Material.SPLASH_POTION, 3);
+		ItemStack waterBombs = new ItemStack(Material.SPLASH_POTION, ConfigSettings.WATER_BOMB_COUNT);
 		PotionMeta meta = (PotionMeta) waterBombs.getItemMeta();
 		meta.setDisplayName(Message.UI_WATER_BOMB);
 		meta.setBasePotionData(new PotionData(PotionType.AWKWARD));

@@ -17,6 +17,7 @@ public class ConfigSettings {
 	public static int MIN_PLAYERS;
 	public static int MAX_PLAYERS;
 	public static int PLAYER_HEALTH_POINTS;
+	public static int WATER_BOMB_COUNT;
 	public static String CHAT_PREFIX_ALIVE;
 	public static String CHAT_PREFIX_DEAD;
 	
@@ -42,7 +43,8 @@ public class ConfigSettings {
 		ConfigurationSection gameSection = config.getConfigurationSection("game");
 		MIN_PLAYERS = clamp(gameSection.getInt("min-players"), 2, 24);
 		MAX_PLAYERS = clamp(gameSection.getInt("max-players"), MIN_PLAYERS, 24);
-		PLAYER_HEALTH_POINTS = clamp(gameSection.getInt("player-health-points"), 4, 20);
+		PLAYER_HEALTH_POINTS = clamp(gameSection.getInt("player-health-points"), 2, 20);
+		WATER_BOMB_COUNT = clamp(gameSection.getInt("water-bombs", 3), 0, 100);
 		SCHEM_FOLDER = config.getString("schematics-folder");
 		
 		if (!new File(SCHEM_FOLDER).isDirectory()) {
