@@ -100,7 +100,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		//TODO check if file searching is expensive
-		ItemUtil.loadInventory(event.getPlayer(), plugin);
+		ItemUtil.loadInventory(event.getPlayer(), plugin, false);
 	}
 	
 	@EventHandler

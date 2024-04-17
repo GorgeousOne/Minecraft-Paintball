@@ -67,7 +67,7 @@ public class PbLobbyHandler {
 		if (!lobbies.containsKey(name)) {
 			return;
 		}
-		lobby.reset();
+		lobby.reset(false);
 		lobbies.remove(name);
 		
 		ConfigurationSection lobbiesSection = backupConfig.getConfigurationSection("lobbies");
@@ -168,6 +168,6 @@ public class PbLobbyHandler {
 	}
 	
 	public void closeLobbies() {
-		lobbies.values().forEach(PbLobby::reset);
+		lobbies.values().forEach(l -> l.reset(true));
 	}
 }

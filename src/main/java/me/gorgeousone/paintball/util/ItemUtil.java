@@ -71,7 +71,7 @@ public abstract class ItemUtil {
 		player.setExp(0);
 	}
 	
-	public static boolean loadInventory(Player player, JavaPlugin plugin) {
+	public static boolean loadInventory(Player player, JavaPlugin plugin, boolean isShutdown) {
 		File backupFile = ConfigUtil.matchFirstFile(player.getUniqueId().toString(), BACKUPS_FOLDER, plugin);
 		
 		if (backupFile == null) {
@@ -90,8 +90,14 @@ public abstract class ItemUtil {
 		float xp = (float) backup.getDouble("xp");
 		player.setLevel((int) xp);
 		player.setExp(xp % 1);
-		LocationUtil.tpTick(player, (Location) backup.get("spawn"), plugin);
-		
+
+		Location spawn = (Location) backup.get("spawn");
+
+		if (isShutdown) {
+			player.teleport(spawn);
+		} else {
+			LocationUtil.tpTick(player, spawn, plugin);
+		}
 		ConfigurationSection itemSection = backup.getConfigurationSection("items");
 		PlayerInventory inv = player.getInventory();
 		inv.clear();

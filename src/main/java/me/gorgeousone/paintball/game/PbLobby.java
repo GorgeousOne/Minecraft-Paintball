@@ -172,7 +172,7 @@ public class PbLobby {
 		}
 		teamQueue.removePlayer(playerId);
 		game.removePlayer(playerId);
-		ItemUtil.loadInventory(player, plugin);
+		ItemUtil.loadInventory(player, plugin, false);
 		Message.PLAYER_LEAVE.send(player, name);
 		
 		if (!game.isRunning()) {
@@ -273,9 +273,9 @@ public class PbLobby {
 		updateLobbyBoard();
 	}
 	
-	public void reset() {
+	public void reset(boolean isShutdown) {
 		game.allPlayers(p -> {
-			ItemUtil.loadInventory(p, plugin);
+			ItemUtil.loadInventory(p, plugin, isShutdown);
 			Message.LOBBY_CLOSE.send(p, name);
 		});
 		game.reset();
