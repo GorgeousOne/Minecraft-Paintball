@@ -62,9 +62,12 @@ public class SkellyInteractListener implements Listener {
 	
 	private void throwPotion(PlayerInventory inv, int slot) {
 		ItemStack heldItem = inv.getItem(slot);
+
+		if (heldItem == null) {
+			return;
+		}
 		ThrownPotion waterBomb = inv.getHolder().launchProjectile(ThrownPotion.class);
 		waterBomb.setItem(heldItem);
 		heldItem.setAmount(heldItem.getAmount() - 1);
-		inv.setItem(slot, heldItem);
 	}
 }

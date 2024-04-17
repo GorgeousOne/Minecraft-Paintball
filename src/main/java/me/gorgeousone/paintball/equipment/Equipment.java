@@ -68,7 +68,7 @@ public class Equipment {
 		Consumer<SlotClickEvent> onClick = onClicks.get(slot);
 		
 		if (onClick != null) {
-			SlotClickEvent event = new SlotClickEvent(player, slot, items.get(slot).clone());
+			SlotClickEvent event = new SlotClickEvent(player, slot, player.getInventory().getItem(slot));
 			onClick.accept(event);
 			return event;
 		}

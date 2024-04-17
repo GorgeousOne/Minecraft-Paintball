@@ -40,7 +40,7 @@ public class LocationUtil {
 	}
 	
 	/**
-	 * Executes a teleportation 1 tick later to prevent "<Player> moved too quickly" warnings.
+	 * Executes a teleportation 1 tick later to prevent "Player moved too quickly" warnings.
 	 */
 	public static void tpTick(Player player, Location location, JavaPlugin plugin) {
 		new BukkitRunnable() {
