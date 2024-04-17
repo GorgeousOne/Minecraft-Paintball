@@ -15,7 +15,6 @@ import me.gorgeousone.paintball.util.LocationUtil;
 import me.gorgeousone.paintball.util.SoundUtil;
 import me.gorgeousone.paintball.util.StringUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -172,7 +171,7 @@ public class PbLobby {
 		}
 		teamQueue.removePlayer(playerId);
 		game.removePlayer(playerId);
-		ItemUtil.loadInventory(player, plugin, false);
+		ItemUtil.loadPlayerBackup(player, plugin, false);
 		Message.PLAYER_LEAVE.send(player, name);
 		
 		if (!game.isRunning()) {
@@ -275,7 +274,7 @@ public class PbLobby {
 	
 	public void reset(boolean isShutdown) {
 		game.allPlayers(p -> {
-			ItemUtil.loadInventory(p, plugin, isShutdown);
+			ItemUtil.loadPlayerBackup(p, plugin, isShutdown);
 			Message.LOBBY_CLOSE.send(p, name);
 		});
 		game.reset();

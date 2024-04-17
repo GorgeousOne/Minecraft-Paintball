@@ -2,6 +2,7 @@ package me.gorgeousone.paintball.equipment;
 
 import me.gorgeousone.paintball.util.ItemUtil;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -60,15 +61,19 @@ public class Equipment {
 		items.put(slot, item);
 		onClicks.put(slot, onClick);
 	}
-	
-	public SlotClickEvent onClickSlot(Player player, int slot) {
+
+	/**
+	 * Activates the function bound to this hotbar slot / item
+	 * @return cancelled or uncancelled slot click event, if a function was found and an item was in the hotbar, otherwise null
+	 */
+	public SlotClickEvent onClickSlot(Player player, int slot, ItemStack item) {
 		if (!items.containsKey(slot)) {
 			return null;
 		}
 		Consumer<SlotClickEvent> onClick = onClicks.get(slot);
 		
-		if (onClick != null) {
-			SlotClickEvent event = new SlotClickEvent(player, slot, player.getInventory().getItem(slot));
+		if (onClick != null && item != null) {
+			SlotClickEvent event = new SlotClickEvent(player, slot, item);
 			onClick.accept(event);
 			return event;
 		}

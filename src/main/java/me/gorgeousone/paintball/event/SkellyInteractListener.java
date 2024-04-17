@@ -53,9 +53,9 @@ public class SkellyInteractListener implements Listener {
 		if (slot != IngameEquipment.WATER_BOMB_SLOT) {
 			return;
 		}
-		SlotClickEvent clickEvent = equip.onClickSlot(player, slot);
+		SlotClickEvent clickEvent = equip.onClickSlot(player, slot, event.getPlayer().getItemInUse());
 		
-		if (!clickEvent.isCancelled()) {
+		if (clickEvent != null && !clickEvent.isCancelled()) {
 			throwPotion(inv, slot);
 		}
 	}

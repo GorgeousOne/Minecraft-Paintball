@@ -12,35 +12,37 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 
 public abstract class ItemUtil {
-	
+
 	private static final String BACKUPS_FOLDER = "backups/inventory/";
-	
-	private ItemUtil() {}
-	
+
+	private ItemUtil() {
+	}
+
 	public static ItemStack nameItem(ItemStack item, String displayName) {
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(displayName);
 		item.setItemMeta(meta);
 		return item;
 	}
-	
+
 	public static void addMagicGlow(ItemStack item) {
 		ItemMeta meta = item.getItemMeta();
 		meta.addEnchant(Enchantment.ARROW_INFINITE, 1, false);
 		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		item.setItemMeta(meta);
 	}
-	
+
 	public static void removeMagicGlow(ItemStack item) {
 		ItemMeta meta = item.getItemMeta();
 		meta.removeEnchant(Enchantment.ARROW_INFINITE);
 		item.setItemMeta(meta);
 	}
-	
+
 	public static void saveInventory(Player player, Location spawn, JavaPlugin plugin) {
 		YamlConfiguration backup = new YamlConfiguration();
 		backup.set("gamemode", player.getGameMode().name());
@@ -49,14 +51,14 @@ public abstract class ItemUtil {
 		backup.set("food", player.getFoodLevel());
 		backup.set("xp", player.getLevel() + player.getExp());
 		backup.set("spawn", spawn);
-		
+
 		ConfigurationSection itemSection = backup.createSection("items");
 		PlayerInventory inv = player.getInventory();
 		ItemStack[] contents = inv.getContents();
-		
+
 		for (int i = 0; i < contents.length; ++i) {
 			ItemStack item = contents[i];
-			
+
 			if (item != null) {
 				itemSection.set("" + i, contents[i]);
 			}
@@ -70,16 +72,22 @@ public abstract class ItemUtil {
 		player.setLevel(0);
 		player.setExp(0);
 	}
-	
-	public static boolean loadInventory(Player player, JavaPlugin plugin, boolean isShutdown) {
+
+
+	/**
+	 * Loads backup file with player state before joining game.
+	 * Resets players items / gamemode / health / exp /hunger and tps them to lobby exit.
+	 * @param isShutdown indicator if tp and inventory reset can be delayed 1 tick or not.
+	 */
+	public static boolean loadPlayerBackup(Player player, JavaPlugin plugin, boolean isShutdown) {
 		File backupFile = ConfigUtil.matchFirstFile(player.getUniqueId().toString(), BACKUPS_FOLDER, plugin);
-		
+
 		if (backupFile == null) {
 			return false;
 		}
 		YamlConfiguration backup = YamlConfiguration.loadConfiguration(backupFile);
 		player.setGameMode(GameMode.valueOf(backup.getString("gamemode")));
-		
+
 		if (player.getGameMode() == GameMode.CREATIVE) {
 			player.setAllowFlight(true);
 		}
@@ -99,13 +107,29 @@ public abstract class ItemUtil {
 			LocationUtil.tpTick(player, spawn, plugin);
 		}
 		ConfigurationSection itemSection = backup.getConfigurationSection("items");
-		PlayerInventory inv = player.getInventory();
-		inv.clear();
-		
-		for (String slot : itemSection.getKeys(false)) {
-			inv.setItem(Integer.valueOf(slot), (ItemStack) itemSection.get(slot));
-		}
+		loadInvItems(itemSection, player.getInventory(), plugin, isShutdown);
+
 		backupFile.delete();
 		return true;
 	}
+
+	private static void loadInvItems(ConfigurationSection itemSection, PlayerInventory inv, JavaPlugin plugin, boolean isShotdown) {
+		ItemStack[] backupContents = new ItemStack[inv.getSize()];
+
+		for (String slot : itemSection.getKeys(false)) {
+			backupContents[Integer.valueOf(slot)] = (ItemStack) itemSection.get(slot);
+		}
+		if (isShotdown) {
+			inv.setContents(backupContents);
+			return;
+		}
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				inv.setContents(backupContents);
+			}
+		}.runTask(plugin);
+
+	}
+
 }
