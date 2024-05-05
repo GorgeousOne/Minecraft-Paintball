@@ -6,7 +6,7 @@
 
 	<groupId>me.gorgeousone</groupId>
 	<artifactId>paintball</artifactId>
-	<version>1.1.2</version>
+	<version>1.1.4</version>
 	<packaging>jar</packaging>
 
 	<name>MinecraftPaintball</name>

@@ -218,7 +218,7 @@ public class PbTeam {
 		player.setFlying(isSpectator);
 		
 		if (isSpectator) {
-			player.teleport(player.getLocation().add(0, 1, 0));
+			LocationUtil.tpMarked(player, player.getLocation().add(0, 1, 0));
 			game.hidePlayer(player);
 		} else {
 			game.showPlayer(player);
@@ -248,7 +248,7 @@ public class PbTeam {
 		Player player = Bukkit.getPlayer(playerId);
 		
 		setSpectator(player, false);
-		player.teleport(skelly.getLocation());
+		LocationUtil.tpMarked(player, skelly.getLocation());
 		skelly.remove();
 		
 		reviveSkellies.remove(skellyId);

@@ -100,7 +100,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		//TODO check if file searching is expensive
-		ItemUtil.loadPlayerBackup(event.getPlayer(), plugin, false);
+		ItemUtil.loadPlayerBackup(event.getPlayer(), plugin, true, false);
 	}
 	
 	@EventHandler
@@ -111,7 +111,7 @@ public class PlayerListener implements Listener {
 		kitHandler.removePlayer(playerId);
 		
 		if (lobby != null) {
-			lobby.removePlayer(player);
+			lobby.removePlayer(player, true);
 		}
 	}
 }

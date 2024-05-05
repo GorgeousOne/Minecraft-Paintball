@@ -1,8 +1,10 @@
 package me.gorgeousone.paintball.event;
 
 import me.gorgeousone.paintball.game.PbGame;
+import me.gorgeousone.paintball.game.PbLobby;
 import me.gorgeousone.paintball.game.PbLobbyHandler;
 import me.gorgeousone.paintball.kit.PbKitHandler;
+import me.gorgeousone.paintball.util.LocationUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -14,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -23,9 +26,11 @@ import java.util.UUID;
  */
 public class ProjectileListener implements Listener {
 	
+	private final JavaPlugin plugin;
 	private final PbLobbyHandler lobbyHandler;
 	
-	public ProjectileListener(PbLobbyHandler lobbyHandler) {
+	public ProjectileListener(JavaPlugin plugin, PbLobbyHandler lobbyHandler) {
+		this.plugin = plugin;
 		this.lobbyHandler = lobbyHandler;
 	}
 	
@@ -97,19 +102,29 @@ public class ProjectileListener implements Listener {
 	@EventHandler()
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		Player player = event.getPlayer();
-		
-		if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL &&
-		    lobbyHandler.getLobby(player.getUniqueId()) != null) {
-			event.setCancelled(true);
+
+		switch (event.getCause()) {
+			case ENDER_PEARL:
+				if (lobbyHandler.getLobby(player.getUniqueId()) != null) {
+					event.setCancelled(true);
+				}
+				break;
+			case PLUGIN:
+				if (player.hasMetadata(LocationUtil.TELEPORT_MARKER)) {
+					player.removeMetadata(LocationUtil.TELEPORT_MARKER, plugin);
+					break;
+				}
+				PbLobby lobby = lobbyHandler.getLobby(player.getUniqueId());
+
+				if (lobby != null && event.getFrom().distance(event.getTo()) > 10) {
+					lobby.removePlayer(player, false);
+				}
 		}
 	}
 	
 	/**
 	 * Custom method to get all entities effected by a thrown potion.
 	 * Because there were some issues with armorstands not being included in the event.getAffectedEntities() method(?)
-	 *
-	 * @param potion
-	 * @return
 	 */
 	private Collection<Entity> getEffectedEntities(ThrownPotion potion) {
 		Location pos = potion.getLocation();

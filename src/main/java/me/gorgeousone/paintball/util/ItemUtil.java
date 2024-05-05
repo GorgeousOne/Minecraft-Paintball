@@ -20,8 +20,7 @@ public abstract class ItemUtil {
 
 	private static final String BACKUPS_FOLDER = "backups/inventory/";
 
-	private ItemUtil() {
-	}
+	private ItemUtil() {}
 
 	public static ItemStack nameItem(ItemStack item, String displayName) {
 		ItemMeta meta = item.getItemMeta();
@@ -79,7 +78,7 @@ public abstract class ItemUtil {
 	 * Resets players items / gamemode / health / exp /hunger and tps them to lobby exit.
 	 * @param isShutdown indicator if tp and inventory reset can be delayed 1 tick or not.
 	 */
-	public static boolean loadPlayerBackup(Player player, JavaPlugin plugin, boolean isShutdown) {
+	public static boolean loadPlayerBackup(Player player, JavaPlugin plugin, boolean doTeleport, boolean isShutdown) {
 		File backupFile = ConfigUtil.matchFirstFile(player.getUniqueId().toString(), BACKUPS_FOLDER, plugin);
 
 		if (backupFile == null) {
@@ -99,12 +98,14 @@ public abstract class ItemUtil {
 		player.setLevel((int) xp);
 		player.setExp(xp % 1);
 
-		Location spawn = (Location) backup.get("spawn");
+		if (doTeleport) {
+			Location spawn = (Location) backup.get("spawn");
 
-		if (isShutdown) {
-			player.teleport(spawn);
-		} else {
-			LocationUtil.tpTick(player, spawn, plugin);
+			if (isShutdown) {
+				LocationUtil.tpMarked(player, spawn);
+			} else {
+				LocationUtil.tpTick(player, spawn, plugin);
+			}
 		}
 		ConfigurationSection itemSection = backup.getConfigurationSection("items");
 		loadInvItems(itemSection, player.getInventory(), plugin, isShutdown);

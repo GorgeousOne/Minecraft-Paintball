@@ -39,6 +39,7 @@ import me.gorgeousone.paintball.kit.KitType;
 import me.gorgeousone.paintball.kit.PbKitHandler;
 import me.gorgeousone.paintball.team.TeamType;
 import me.gorgeousone.paintball.util.ConfigUtil;
+import me.gorgeousone.paintball.util.LocationUtil;
 import me.gorgeousone.paintball.util.SoundUtil;
 import me.gorgeousone.paintball.util.blocktype.BlockType;
 import me.gorgeousone.paintball.util.version.VersionUtil;
@@ -60,7 +61,8 @@ public final class PaintballPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		setupVersion();
-		
+		LocationUtil.createTpMarker(this);
+
 		PbKitHandler.createKits(this);
 		this.kitHandler = new PbKitHandler();
 		this.arenaHandler = new PbArenaHandler(this);
@@ -158,7 +160,7 @@ public final class PaintballPlugin extends JavaPlugin {
 		manager.registerEvents(new MovementListener(lobbyHandler), this);
 		manager.registerEvents(new ChatListener(lobbyHandler), this);
 		
-		manager.registerEvents(new ProjectileListener(lobbyHandler), this);
+		manager.registerEvents(new ProjectileListener(this, lobbyHandler), this);
 		manager.registerEvents(new SkellyInteractListener(lobbyHandler), this);
 	}
 	
