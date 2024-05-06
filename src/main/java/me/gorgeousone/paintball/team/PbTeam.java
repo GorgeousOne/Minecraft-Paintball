@@ -61,7 +61,7 @@ public class PbTeam {
 		this.playerHealth = new HashMap<>();
 		this.uncoloredArmorSlots = new HashMap<>();
 		this.reviveSkellies = new HashMap<>();
-		this.teamArmorSet = TeamUtil.createColoredArmoSet(teamType.armorColor, ChatColor.WHITE + "Team " + teamType.displayName);
+		this.teamArmorSet = TeamUtil.createColoredArmoSet(teamType.armorColor, ChatColor.WHITE + Message.UI_TEAM + " " + teamType.displayName);
 	}
 	
 	public void startGame(List<Location> spawns, int maxHealthPoints) {
