@@ -17,6 +17,7 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -117,8 +118,15 @@ public class ProjectileListener implements Listener {
 				PbLobby lobby = lobbyHandler.getLobby(player.getUniqueId());
 
 				if (lobby != null && event.getFrom().distance(event.getTo()) > 10) {
-					lobby.removePlayer(player, false);
+					//remove player from game synchronously, Paper teleports can be async
+					new BukkitRunnable() {
+						@Override
+						public void run() {
+							lobby.removePlayer(player, false);
+						}
+					}.runTask(plugin);
 				}
+				break;
 		}
 	}
 	
