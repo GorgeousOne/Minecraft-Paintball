@@ -239,7 +239,7 @@ public class PbLobby {
 		try {
 			startGame();
 		} catch (IllegalArgumentException | IllegalStateException e) {
-			game.allPlayers(p -> StringUtil.msg(p, e.getMessage()));
+			game.allPlayers(p -> StringUtil.msgPlain(p, e.getMessage()));
 		}
 	}
 	

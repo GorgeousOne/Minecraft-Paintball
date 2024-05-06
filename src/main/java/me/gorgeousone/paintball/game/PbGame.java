@@ -198,7 +198,7 @@ public class PbGame {
 		state = GameState.RUNNING;
 		
 		for (PbTeam team : teams.values()) {
-			if (team.getAlivePlayers().size() == 0) {
+			if (team.getAlivePlayers().isEmpty()) {
 				onTeamKill(team);
 				break;
 			}

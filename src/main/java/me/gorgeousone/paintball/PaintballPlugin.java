@@ -39,11 +39,13 @@ import me.gorgeousone.paintball.kit.KitType;
 import me.gorgeousone.paintball.kit.PbKitHandler;
 import me.gorgeousone.paintball.team.TeamType;
 import me.gorgeousone.paintball.util.ConfigUtil;
+import me.gorgeousone.paintball.util.ItemUtil;
 import me.gorgeousone.paintball.util.LocationUtil;
 import me.gorgeousone.paintball.util.SoundUtil;
 import me.gorgeousone.paintball.util.blocktype.BlockType;
 import me.gorgeousone.paintball.util.version.VersionUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -62,6 +64,7 @@ public final class PaintballPlugin extends JavaPlugin {
 	public void onEnable() {
 		setupVersion();
 		LocationUtil.createTpMarker(this);
+		loadLeftoverPlayerBackups();
 
 		PbKitHandler.createKits(this);
 		this.kitHandler = new PbKitHandler();
@@ -82,7 +85,6 @@ public final class PaintballPlugin extends JavaPlugin {
 	public void reload() {
 		loadConfigSettings();
 		loadLanguage();
-		
 		kitHandler.updateConfigKitVals();
 		lobbyHandler.updateLobbyUis();
 		KitType.updateLanguage();
@@ -174,7 +176,14 @@ public final class PaintballPlugin extends JavaPlugin {
 	private void loadLanguage() {
 		Message.loadLanguage(ConfigUtil.loadConfig("language", this));
 	}
-	
+
+	private void loadLeftoverPlayerBackups() {
+		//I hope no one runs this on a 1000+ player server
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			ItemUtil.loadPlayerBackup(player, this, true, false);
+		}
+	}
+
 	private void loadBackup() {
 		this.saveDefaultConfig();
 		this.reloadConfig();
