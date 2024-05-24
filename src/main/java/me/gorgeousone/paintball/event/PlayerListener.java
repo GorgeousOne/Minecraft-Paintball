@@ -111,7 +111,7 @@ public class PlayerListener implements Listener {
 		kitHandler.removePlayer(playerId);
 		
 		if (lobby != null) {
-			lobby.removePlayer(player, true);
+			lobby.removePlayer(player, true, true);
 		}
 	}
 }

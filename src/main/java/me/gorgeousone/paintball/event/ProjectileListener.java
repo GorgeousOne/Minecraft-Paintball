@@ -122,7 +122,7 @@ public class ProjectileListener implements Listener {
 					new BukkitRunnable() {
 						@Override
 						public void run() {
-							lobby.removePlayer(player, false);
+							lobby.removePlayer(player, false, false);
 						}
 					}.runTask(plugin);
 				}

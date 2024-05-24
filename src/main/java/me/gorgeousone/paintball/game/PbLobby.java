@@ -160,10 +160,10 @@ public class PbLobby {
 	}
 	
 	private void onQuit(SlotClickEvent slotClickEvent) {
-		removePlayer(slotClickEvent.getPlayer(), true);
+		removePlayer(slotClickEvent.getPlayer(), true, false);
 	}
 	
-	public void removePlayer(Player player, boolean doTeleport) {
+	public void removePlayer(Player player, boolean doTeleport, boolean isImmediate) {
 		UUID playerId = player.getUniqueId();
 		
 		if (!game.hasPlayer(playerId)) {
@@ -171,7 +171,7 @@ public class PbLobby {
 		}
 		teamQueue.removePlayer(playerId);
 		game.removePlayer(playerId);
-		ItemUtil.loadPlayerBackup(player, plugin, doTeleport, false);
+		ItemUtil.loadPlayerBackup(player, plugin, doTeleport, isImmediate);
 		Message.PLAYER_LEAVE.send(player, name);
 		
 		if (!game.isRunning()) {
@@ -272,9 +272,9 @@ public class PbLobby {
 		updateLobbyBoard();
 	}
 	
-	public void reset(boolean isShutdown) {
+	public void reset(boolean isImmediate) {
 		game.allPlayers(p -> {
-			ItemUtil.loadPlayerBackup(p, plugin, true, isShutdown);
+			ItemUtil.loadPlayerBackup(p, plugin, true, isImmediate);
 			Message.LOBBY_CLOSE.send(p, name);
 		});
 		game.reset();

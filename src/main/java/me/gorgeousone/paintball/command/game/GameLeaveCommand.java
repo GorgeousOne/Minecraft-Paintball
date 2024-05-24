@@ -34,6 +34,6 @@ public class GameLeaveCommand extends ArgCommand {
 			Message.NOT_IN_LOBBY.send(sender);
 			return;
 		}
-		lobby.removePlayer(player, true);
+		lobby.removePlayer(player, true, false);
 	}
 }

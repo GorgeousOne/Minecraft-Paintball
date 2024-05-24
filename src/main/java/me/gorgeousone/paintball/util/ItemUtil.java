@@ -76,9 +76,9 @@ public abstract class ItemUtil {
 	/**
 	 * Loads backup file with player state before joining game.
 	 * Resets players items / gamemode / health / exp /hunger and tps them to lobby exit.
-	 * @param isShutdown indicator if tp and inventory reset can be delayed 1 tick or not.
+	 * @param isImmediate indicator if tp and inventory reset can be delayed 1 tick or not.
 	 */
-	public static boolean loadPlayerBackup(Player player, JavaPlugin plugin, boolean doTeleport, boolean isShutdown) {
+	public static boolean loadPlayerBackup(Player player, JavaPlugin plugin, boolean doTeleport, boolean isImmediate) {
 		File backupFile = ConfigUtil.matchFirstFile(player.getUniqueId().toString(), BACKUPS_FOLDER, plugin);
 
 		if (backupFile == null) {
@@ -101,26 +101,26 @@ public abstract class ItemUtil {
 		if (doTeleport) {
 			Location spawn = (Location) backup.get("spawn");
 
-			if (isShutdown) {
+			if (isImmediate) {
 				LocationUtil.tpMarked(player, spawn);
 			} else {
 				LocationUtil.tpTick(player, spawn, plugin);
 			}
 		}
 		ConfigurationSection itemSection = backup.getConfigurationSection("items");
-		loadInvItems(itemSection, player.getInventory(), plugin, isShutdown);
+		loadInvItems(itemSection, player.getInventory(), plugin, isImmediate);
 
 		backupFile.delete();
 		return true;
 	}
 
-	private static void loadInvItems(ConfigurationSection itemSection, PlayerInventory inv, JavaPlugin plugin, boolean isShotdown) {
+	private static void loadInvItems(ConfigurationSection itemSection, PlayerInventory inv, JavaPlugin plugin, boolean isImmediate) {
 		ItemStack[] backupContents = new ItemStack[inv.getSize()];
 
 		for (String slot : itemSection.getKeys(false)) {
 			backupContents[Integer.valueOf(slot)] = (ItemStack) itemSection.get(slot);
 		}
-		if (isShotdown) {
+		if (isImmediate) {
 			inv.setContents(backupContents);
 			return;
 		}
