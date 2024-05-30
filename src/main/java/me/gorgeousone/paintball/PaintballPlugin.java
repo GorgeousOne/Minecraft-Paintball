@@ -37,6 +37,7 @@ import me.gorgeousone.paintball.event.SkellyInteractListener;
 import me.gorgeousone.paintball.game.PbLobbyHandler;
 import me.gorgeousone.paintball.kit.KitType;
 import me.gorgeousone.paintball.kit.PbKitHandler;
+import me.gorgeousone.paintball.papi.GameStatsExpansion;
 import me.gorgeousone.paintball.team.TeamType;
 import me.gorgeousone.paintball.util.ConfigUtil;
 import me.gorgeousone.paintball.util.ItemUtil;
@@ -75,6 +76,7 @@ public final class PaintballPlugin extends JavaPlugin {
 		loadBackup();
 		registerCommands();
 		registerListeners();
+		hookPapi();
 	}
 	
 	@Override
@@ -197,6 +199,15 @@ public final class PaintballPlugin extends JavaPlugin {
 			lobbyHandler.loadLobbies(arenaHandler);
 		} catch (IllegalArgumentException e) {
 			Bukkit.getLogger().log(Level.WARNING, e.getMessage());
+		}
+	}
+
+	public void hookPapi() {
+		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+			new GameStatsExpansion(this).register();
+			getLogger().info("PlaceholderAPI detected and placeholders registered.");
+		} else {
+			getLogger().warning("PlaceholderAPI not found. Placeholders will not be available.");
 		}
 	}
 }
