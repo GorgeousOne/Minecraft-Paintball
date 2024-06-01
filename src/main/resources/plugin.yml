@@ -3,9 +3,12 @@ version: '${project.version}'
 main: me.gorgeousone.paintball.PaintballPlugin
 api-version: 1.13
 depend: [WorldEdit]
+softdepend: [PlaceholderAPI]
+
 commands:
     paintball:
         aliases: [pb]
+
 permissions:
     paintball.configure:
         default: op

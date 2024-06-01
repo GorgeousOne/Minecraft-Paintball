@@ -13,11 +13,11 @@ public final class VersionUtil {
 	
 	public static void setup(JavaPlugin plugin) {
 		PLUGIN_VERSION = new Version(plugin.getDescription().getVersion());
-		SERVER_VERSION = new Version(getServerVersionString(), "_");
+		SERVER_VERSION = new Version(getServerVersionString());
 		IS_LEGACY_SERVER = SERVER_VERSION.isBelow(new Version("1.13.0"));
 	}
 	
 	public static String getServerVersionString() {
-		return Bukkit.getServer().getClass().getName().split("\\.")[3].replaceAll("[a-zA-Z]", "");
+		return Bukkit.getBukkitVersion().split("-")[0];
 	}
 }

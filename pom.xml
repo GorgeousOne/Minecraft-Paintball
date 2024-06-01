@@ -5,14 +5,14 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>me.gorgeousone</groupId>
-	<artifactId>paintball</artifactId>
-	<version>1.1.6</version>
+	<artifactId>Minecraft-Paintball</artifactId>
+	<version>1.2.1</version>
 	<packaging>jar</packaging>
 
 	<name>MinecraftPaintball</name>
 
 	<properties>
-		<java.version>1.8</java.version>
+		<java.version>1.12</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -23,8 +23,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
-					<source>9</source>
-					<target>9</target>
+					<source>12</source>
+					<target>12</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -65,6 +65,10 @@
 			<id>enginehub-maven</id>
 			<url>https://maven.enginehub.org/repo/</url>
 		</repository>
+		<repository>
+			<id>placeholderapi</id>
+			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -78,7 +82,13 @@
 			<groupId>com.sk89q.worldedit</groupId>
 			<artifactId>worldedit-bukkit</artifactId>
 			<version>7.2.9</version>
-<!--			<version>6.1.4-SNAPSHOT</version>-->
+			<scope>provided</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.github.placeholderapi/placeholderapi -->
+		<dependency>
+			<groupId>me.clip</groupId>
+			<artifactId>placeholderapi</artifactId>
+			<version>2.11.6</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
