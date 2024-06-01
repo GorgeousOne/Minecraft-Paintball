@@ -1,7 +1,6 @@
 package me.gorgeousone.paintball.papi;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.kit.KitType;
 import me.gorgeousone.paintball.util.ConfigUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -58,27 +57,47 @@ public class GameStatsExpansion extends PlaceholderExpansion {
 				return stats.getInt("kills");
 			case "deaths":
 				return stats.getInt("deaths");
-			case "kd_ratio":
+			case "kd":
 				int deaths = stats.getInt("deaths");
-				return deaths == 0 ? stats.getInt("kills") : 1f * stats.getInt("kills") / deaths;
+				if (deaths == 0) {
+					return "0.00";
+				}
+				float kd = 1f * stats.getInt("kills") / deaths;
+				return String.format("%.2f", kd);
 			case "revives":
 				return stats.getInt("revives");
 			default:
-				if (key.startsWith("gun_")) {
-					KitType kitType = KitType.valueOf(key.substring(4).toUpperCase().replace("-", "_"));
-					String gunKey = "gun-stats." + kitType.name().toLowerCase().replace("_", "-");
+				KitType kitType;
 
-					return switch (key.substring(4)) {
-						case "times_used" -> stats.getInt(gunKey + ".times-used");
-						case "shots_fired" -> stats.getInt(gunKey + ".shots-fired");
-						case "accuracy" -> {
-							int shotsFired = stats.getInt(gunKey + ".shots-fired");
-							yield shotsFired == 0 ? 0 : 100f * stats.getInt(gunKey + ".bullet-hits") / shotsFired;
-						}
-						default -> null;
-					};
+				if (key.startsWith("rifle")) {
+					kitType = KitType.RIFLE;
+				} else if (key.startsWith("shotgun")) {
+					kitType = KitType.SHOTGUN;
+				} else if (key.startsWith("machine_gun")) {
+					kitType = KitType.MACHINE_GUN;
+				} else {
+					return null;
 				}
-				return null;
+				String gunKey = kitType.name().toLowerCase().replace("_", "-");
+				String statKey = key.substring(gunKey.length());
+
+				switch (statKey) {
+					case "_times_used":
+						return stats.getInt("gun-stats." + gunKey + ".times-used");
+					case "_shots_fired":
+						return stats.getInt("gun-stats." + gunKey + ".shots-fired");
+					case "_bullet_hits":
+						stats.getInt("gun-stats." + gunKey + ".bullet-hits");
+					case "_accuracy":
+						int shotsFired = stats.getInt("gun-stats." + gunKey + ".shots-fired");
+						if (shotsFired == 0) {
+							return 0;
+						}
+						float accuracy = 100f * stats.getInt("gun-stats." + gunKey + ".bullet-hits") / shotsFired;
+						return String.format("%.1f", accuracy) + "%";
+					default:
+						return null;
+				}
 		}
 	}
 }
