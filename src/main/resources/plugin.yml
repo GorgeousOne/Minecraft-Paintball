@@ -7,9 +7,12 @@ softdepend: [PlaceholderAPI]
 
 commands:
     paintball:
+        permission: paintball.play
         aliases: [pb]
 
 permissions:
+    paintball.play:
+        default: true
     paintball.configure:
         default: op
     paintball.moderator:
