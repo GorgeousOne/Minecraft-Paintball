@@ -22,6 +22,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -142,11 +143,19 @@ public class PbLobby {
 		if (game.size() >= ConfigSettings.MAX_PLAYERS) {
 			throw new IllegalStateException(Message.LOBBY_FULL.format(name));
 		}
-		ItemUtil.saveInventory(player, getExitSpawn(), plugin);
+		LocationUtil.tpMarked(player, joinSpawn);
 		player.setGameMode(GameMode.ADVENTURE);
 		Message.LOBBY_YOU_JOIN.send(player, name);
-		LocationUtil.tpTick(player, joinSpawn, plugin);
-		equipment.equip(player);
+
+		//first teleport, then replace inventory, in case inventories are saved before world changes
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				ItemUtil.saveInventory(player, getExitSpawn(), plugin);
+				equipment.equip(player);
+			}
+		}.runTaskLater(plugin, 2);
+
 		board.addPlayer(player);
 		game.joinPlayer(playerId);
 		updateLobbyBoard();
@@ -154,7 +163,7 @@ public class PbLobby {
 		if (game.size() >= ConfigSettings.MIN_PLAYERS && !countdown.isRunning()) {
 			countdown.start(ConfigSettings.COUNTDOWN_SECS);
 		}
-		if (arenas.size() == 0) {
+		if (arenas.isEmpty()) {
 			Message.LOBBY_ARENA_MISSING.send(player, name);
 		}
 	}
