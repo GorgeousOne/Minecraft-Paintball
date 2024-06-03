@@ -85,7 +85,7 @@ public class Message {
 	public final String text;
 	private final String[] tokens;
 	
-	private Message(String text, String... tokens) {
+	public Message(String text, String... tokens) {
 		this.text = text;
 		this.tokens = new String[tokens.length];
 		

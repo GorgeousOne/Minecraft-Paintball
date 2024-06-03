@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.game;
 
+import me.gorgeousone.paintball.CommandTrigger;
 import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.arena.PbArena;
 import me.gorgeousone.paintball.arena.PbArenaHandler;
@@ -29,12 +30,14 @@ public class PbLobbyHandler {
 	private final JavaPlugin plugin;
 	private final YamlConfiguration backupConfig;
 	private final PbKitHandler kitHandler;
+	private final CommandTrigger commandTrigger;
 	private final Map<String, PbLobby> lobbies;
 	
-	public PbLobbyHandler(JavaPlugin plugin, PbKitHandler kitHandler) {
+	public PbLobbyHandler(JavaPlugin plugin, PbKitHandler kitHandler, CommandTrigger commandTrigger) {
 		this.plugin = plugin;
 		this.backupConfig = ConfigUtil.loadConfig("lobbies", plugin);
 		this.kitHandler = kitHandler;
+		this.commandTrigger = commandTrigger;
 		this.lobbies = new HashMap<>();
 	}
 	
@@ -46,7 +49,7 @@ public class PbLobbyHandler {
 		if (lobbies.containsKey(name)) {
 			throw new IllegalArgumentException(Message.LOBBY_EXISTS.format(name));
 		}
-		PbLobby lobby = new PbLobby(name, spawn, plugin, this, kitHandler);
+		PbLobby lobby = new PbLobby(name, spawn, plugin, this, kitHandler, commandTrigger);
 		lobbies.put(lobby.getName(), lobby);
 		saveLobby(lobby);
 		return lobby;
@@ -158,7 +161,7 @@ public class PbLobbyHandler {
 		
 		for (String name : lobbySection.getKeys(false)) {
 			try {
-				PbLobby lobby = PbLobby.fromYml(name, lobbySection, plugin, this, arenaHandler, kitHandler);
+				PbLobby lobby = PbLobby.fromYml(name, lobbySection, plugin, this, arenaHandler, kitHandler, commandTrigger);
 				registerLobby(lobby);
 			} catch (IllegalArgumentException e) {
 				logger.log(Level.WARNING, e.getMessage());
