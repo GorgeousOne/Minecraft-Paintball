@@ -319,15 +319,15 @@ public class PbGame {
 			public void run() {
 				gameStats.save(plugin);
 				state = GameState.LOBBYING;
+				commandTrigger.triggerGameEndCommands();
+				commandTrigger.triggerPlayerWinCommands(winnerTeam);
+				commandTrigger.triggerPlayerLoseCommands(loserTeam);
 				teams.values().forEach(PbTeam::reset);
 				allPlayers(p -> {
 					gameBoard.removePlayer(p);
 					playedArena.resetSchem();
 					onGameEnd.run();
 				});
-				commandTrigger.triggerGameEndCommands();
-				commandTrigger.triggerPlayerWinCommands(winnerTeam);
-				commandTrigger.triggerPlayerLoseCommands(loserTeam);
 			}
 		};
 		restartTimer.runTaskLater(plugin, 8 * 20);
