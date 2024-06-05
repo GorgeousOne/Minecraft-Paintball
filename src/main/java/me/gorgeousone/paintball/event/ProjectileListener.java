@@ -116,8 +116,10 @@ public class ProjectileListener implements Listener {
 					break;
 				}
 				PbLobby lobby = lobbyHandler.getLobby(player.getUniqueId());
+				Location from = event.getFrom();
+				Location to = event.getTo();
 
-				if (lobby != null && event.getFrom().distance(event.getTo()) > 10) {
+				if (lobby != null && (from.getWorld() != to.getWorld() || from.distanceSquared(to) > 100)) {
 					//remove player from game synchronously, Paper teleports can be async
 					new BukkitRunnable() {
 						@Override
