@@ -27,3 +27,7 @@ kit-settings:
         bullet-speed: 2.25
         max-bullet-spread: 0.2
         player-speed: 1
+command-triggers:
+    game-end-commands: []
+    player-win-commands: []
+    player-lose-commands: []

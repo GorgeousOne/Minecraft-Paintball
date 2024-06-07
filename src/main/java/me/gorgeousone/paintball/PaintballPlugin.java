@@ -60,7 +60,8 @@ public final class PaintballPlugin extends JavaPlugin {
 	private PbLobbyHandler lobbyHandler;
 	private PbKitHandler kitHandler;
 	private PbArenaHandler arenaHandler;
-	
+	private CommandTrigger commandTrigger;
+
 	@Override
 	public void onEnable() {
 		setupVersion();
@@ -70,7 +71,8 @@ public final class PaintballPlugin extends JavaPlugin {
 		PbKitHandler.createKits(this);
 		this.kitHandler = new PbKitHandler();
 		this.arenaHandler = new PbArenaHandler(this);
-		this.lobbyHandler = new PbLobbyHandler(this, kitHandler);
+		this.commandTrigger = new CommandTrigger();
+		this.lobbyHandler = new PbLobbyHandler(this, kitHandler, commandTrigger);
 
 		reload();
 		loadBackup();
@@ -173,6 +175,7 @@ public final class PaintballPlugin extends JavaPlugin {
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 		ConfigSettings.loadSettings(getConfig());
+		commandTrigger.loadCommands(getConfig());
 	}
 	
 	private void loadLanguage() {

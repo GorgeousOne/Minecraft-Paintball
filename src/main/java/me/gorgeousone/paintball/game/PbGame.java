@@ -1,5 +1,6 @@
 package me.gorgeousone.paintball.game;
 
+import me.gorgeousone.paintball.CommandTrigger;
 import me.gorgeousone.paintball.GameBoard;
 import me.gorgeousone.paintball.Message;
 import me.gorgeousone.paintball.arena.PbArena;
@@ -42,6 +43,7 @@ public class PbGame {
 	
 	private final JavaPlugin plugin;
 	private final PbKitHandler kitHandler;
+	private final CommandTrigger commandTrigger;
 	private GameState state;
 	private final Set<UUID> players;
 	private final Map<TeamType, PbTeam> teams;
@@ -51,12 +53,19 @@ public class PbGame {
 	private PbArena playedArena;
 	
 	private GameStats gameStats;
-	
-	public PbGame(JavaPlugin plugin, PbKitHandler kitHandler, Runnable onGameEnd) {
+	private PbTeam winnerTeam;
+	private PbTeam loserTeam;
+
+	public PbGame(
+			JavaPlugin plugin,
+			PbKitHandler kitHandler,
+			Runnable onGameEnd,
+			CommandTrigger commandTrigger) {
 		this.plugin = plugin;
 		this.kitHandler = kitHandler;
 		this.onGameEnd = onGameEnd;
-		
+		this.commandTrigger = commandTrigger;
+
 		this.state = GameState.LOBBYING;
 		this.players = new HashSet<>();
 		this.teams = new HashMap<>();
@@ -280,19 +289,17 @@ public class PbGame {
 		if (state != GameState.RUNNING) {
 			return;
 		}
-		PbTeam leftTeam = null;
-		
+		loserTeam = killedTeam;
+
 		for (PbTeam team : teams.values()) {
-			if (team.getAlivePlayers().size() > 0) {
-				if (leftTeam != null) {
-					return;
-				}
-				leftTeam = team;
+			if (team != killedTeam) {
+				winnerTeam = team;
+				break;
 			}
 		}
 		allPlayers(p -> p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, .5f, 1f));
-		announceWinners(leftTeam);
-		leftTeam.getPlayers().forEach(id -> gameStats.setWin(id));
+		announceWinners(winnerTeam);
+		winnerTeam.getPlayers().forEach(id -> gameStats.setWin(id));
 		scheduleRestart();
 	}
 	
@@ -312,6 +319,9 @@ public class PbGame {
 			public void run() {
 				gameStats.save(plugin);
 				state = GameState.LOBBYING;
+				commandTrigger.triggerGameEndCommands();
+				commandTrigger.triggerPlayerWinCommands(winnerTeam);
+				commandTrigger.triggerPlayerLoseCommands(loserTeam);
 				teams.values().forEach(PbTeam::reset);
 				allPlayers(p -> {
 					gameBoard.removePlayer(p);
