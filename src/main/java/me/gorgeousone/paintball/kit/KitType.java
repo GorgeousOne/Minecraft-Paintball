@@ -1,6 +1,7 @@
 package me.gorgeousone.paintball.kit;
 
 import me.gorgeousone.paintball.Message;
+import me.gorgeousone.paintball.util.ItemUtil;
 import me.gorgeousone.paintball.util.version.VersionUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -14,14 +15,20 @@ import java.util.Arrays;
  */
 public enum KitType {
 	
-	RIFLE, SHOTGUN, MACHINE_GUN; //	SNIPER;
+	RIFLE(69420),
+	SHOTGUN(69421),
+	MACHINE_GUN(69422);
+	//	SNIPER;
 	
 	public String gunName;
 	public String[] gunLore;
 	public Material gunMaterial;
 	private ItemStack gunItem;
-	
-	KitType() {}
+	private final int modelData;
+
+	KitType(int modelData) {
+		this.modelData = modelData;
+	}
 	
 	private void setDescription(String displayName, String lore) {
 		this.gunName = ChatColor.YELLOW + displayName;
@@ -38,6 +45,7 @@ public enum KitType {
 		ItemMeta meta = gunItem.getItemMeta();
 		meta.setDisplayName(gunName);
 		meta.setLore(Arrays.asList(gunLore));
+		ItemUtil.setModelData(meta, modelData);
 		gunItem.setItemMeta(meta);
 	}
 	

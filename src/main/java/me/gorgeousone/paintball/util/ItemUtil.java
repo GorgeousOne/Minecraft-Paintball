@@ -29,6 +29,14 @@ public abstract class ItemUtil {
 		return item;
 	}
 
+	public static void setModelData(ItemMeta meta, int data) {
+		try {
+			meta.setCustomModelData(data);
+		} catch (NoSuchMethodError oneThirteen) {
+			meta.setUnbreakable(true);
+		}
+	}
+
 	public static void addMagicGlow(ItemStack item) {
 		ItemMeta meta = item.getItemMeta();
 		meta.addEnchant(Enchantment.ARROW_INFINITE, 1, false);
@@ -130,7 +138,5 @@ public abstract class ItemUtil {
 				inv.setContents(backupContents);
 			}
 		}.runTask(plugin);
-
 	}
-
 }

@@ -79,6 +79,7 @@ public class PbKitHandler {
 		PotionMeta meta = (PotionMeta) waterBombs.getItemMeta();
 		meta.setDisplayName(Message.UI_WATER_BOMB);
 		meta.setBasePotionData(new PotionData(PotionType.AWKWARD));
+		ItemUtil.setModelData(meta, 1337);
 		waterBombs.setItemMeta(meta);
 		return waterBombs;
 	}
