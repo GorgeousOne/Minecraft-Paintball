@@ -99,11 +99,11 @@ public abstract class ItemUtil {
 		if (player.getGameMode() == GameMode.CREATIVE) {
 			player.setAllowFlight(true);
 		}
-		setPlayerMaxHealth(player, backup.getDouble("max-health"));
-		player.setHealth(backup.getDouble("health"));
-		player.setFoodLevel(backup.getInt("food"));
-		player.setLevel(backup.getInt("level"));
-		float xp = (float) backup.getDouble("xp");
+		double maxHealth = backup.getDouble("max-health", 20);
+		setPlayerMaxHealth(player, maxHealth);
+		player.setHealth(Math.min(backup.getDouble("health", 20), maxHealth));
+		player.setFoodLevel(backup.getInt("food", 20));
+		float xp = (float) backup.getDouble("xp", 0);
 		player.setLevel((int) xp);
 		player.setExp(xp % 1);
 
