@@ -12,7 +12,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -95,9 +94,8 @@ public class PbArenaHandler {
 		ConfigUtil.saveConfig(backupConfig, "arenas", plugin);
 	}
 	
-	public void loadArenas(String schemFolder) {
-		Logger logger = Bukkit.getLogger();
-		logger.log(Level.INFO, "  Loading arenas:");
+	public void loadArenas(String schemFolder, Logger logger) {
+		logger.info("Loading arenas:");
 		
 		ConfigUtil.assertKeyExists(backupConfig, "arenas");
 		ConfigurationSection arenaSection = backupConfig.getConfigurationSection("arenas");
@@ -107,9 +105,9 @@ public class PbArenaHandler {
 				PbArena arena = PbArena.fromYml(name, arenaSection, schemFolder, plugin, this);
 				registerArena(arena);
 			} catch (IllegalArgumentException e) {
-				logger.log(Level.WARNING, e.getMessage());
+				logger.warning(e.getMessage());
 			}
 		}
-		logger.log(Level.INFO, String.format("  Loaded %d arenas", arenas.size()));
+		logger.info(String.format("Loaded %d arenas", arenas.size()));
 	}
 }

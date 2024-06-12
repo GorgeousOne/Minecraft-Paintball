@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * A class to store and manage the settings of a paintball arena.
@@ -191,7 +190,7 @@ public class PbArena {
 				throw new IllegalArgumentException(String.format("Could not load arena %s team %s spawns: %s", arena, teamName, e.getMessage()));
 			}
 		}
-		Bukkit.getLogger().log(Level.INFO, String.format("%s loaded", name));
+		plugin.getLogger().info(String.format("  %s loaded", name));
 		return arena;
 	}
 	

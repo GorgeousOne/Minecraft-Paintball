@@ -29,7 +29,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 /**
@@ -347,7 +346,7 @@ public class PbLobby {
 			List<String> arenaNames = section.getStringList("arenas");
 			arenaNames.forEach(n -> lobbyHandler.linkArena(lobby, arenaHandler.getArena(n)));
 
-			Bukkit.getLogger().log(Level.INFO, String.format("%s loaded", name));
+			plugin.getLogger().info(String.format("  %s loaded", name));
 			return lobby;
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException(String.format("Could not load lobby %s: %s", name, e.getMessage()));

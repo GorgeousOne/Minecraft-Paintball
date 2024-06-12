@@ -50,8 +50,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.logging.Level;
-
 /**
  * Main class to register commands, listeners, load config settings and trigger loading/saving of arenas and lobbies.
  */
@@ -75,6 +73,8 @@ public final class PaintballPlugin extends JavaPlugin {
 		this.lobbyHandler = new PbLobbyHandler(this, kitHandler, commandTrigger);
 
 		reload();
+		ConfigSettings.loadSchemFolder(this, getConfig());
+
 		loadBackup();
 		registerCommands();
 		registerListeners();
@@ -190,22 +190,19 @@ public final class PaintballPlugin extends JavaPlugin {
 	}
 
 	private void loadBackup() {
-		this.saveDefaultConfig();
-		this.reloadConfig();
-		
 		try {
-			arenaHandler.loadArenas(ConfigSettings.SCHEM_FOLDER);
+			arenaHandler.loadArenas(ConfigSettings.SCHEM_FOLDER, getLogger());
 		} catch (IllegalArgumentException e) {
-			Bukkit.getLogger().log(Level.WARNING, e.getMessage());
+			getLogger().warning(e.getMessage());
 		}
 		try {
 			lobbyHandler.loadLobbies(arenaHandler);
 		} catch (IllegalArgumentException e) {
-			Bukkit.getLogger().log(Level.WARNING, e.getMessage());
+			getLogger().warning(e.getMessage());
 		}
 	}
 
-	public void hookPapi() {
+	private void hookPapi() {
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
 			new GameStatsExpansion(this).register();
 			getLogger().info("PlaceholderAPI detected and placeholders registered.");

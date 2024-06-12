@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -154,8 +153,8 @@ public class PbLobbyHandler {
 	}
 	
 	public void loadLobbies(PbArenaHandler arenaHandler) {
-		Logger logger = Bukkit.getLogger();
-		logger.log(Level.INFO, "  Loading lobbies:");
+		Logger logger = plugin.getLogger();
+		logger.info("Loading lobbies:");
 		ConfigUtil.assertKeyExists(backupConfig, "lobbies");
 		ConfigurationSection lobbySection = backupConfig.getConfigurationSection("lobbies");
 		
@@ -164,10 +163,10 @@ public class PbLobbyHandler {
 				PbLobby lobby = PbLobby.fromYml(name, lobbySection, plugin, this, arenaHandler, kitHandler, commandTrigger);
 				registerLobby(lobby);
 			} catch (IllegalArgumentException e) {
-				logger.log(Level.WARNING, e.getMessage());
+				logger.warning(e.getMessage());
 			}
 		}
-		logger.log(Level.INFO, String.format("  Loaded %d lobbies", lobbies.size()));
+		logger.info(String.format("Loaded %d lobbies", lobbies.size()));
 	}
 	
 	public void closeLobbies() {

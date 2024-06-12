@@ -1,4 +1,4 @@
-schematics-folder: "plugins/WorldEdit/schematics"
+schematics-folder: "placeholder/path"
 countdown:
     seconds: 60
 game:
