@@ -3,6 +3,8 @@ package me.gorgeousone.paintball.util;
 import me.gorgeousone.paintball.ConfigSettings;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
@@ -53,7 +55,7 @@ public abstract class ItemUtil {
 	public static void saveInventory(Player player, Location spawn, JavaPlugin plugin) {
 		YamlConfiguration backup = new YamlConfiguration();
 		backup.set("gamemode", player.getGameMode().name());
-		backup.set("max-health", player.getMaxHealth());
+		backup.set("max-health", getPlayerBaseHealth(player));
 		backup.set("health", player.getHealth());
 		backup.set("food", player.getFoodLevel());
 		backup.set("xp", player.getLevel() + player.getExp());
@@ -73,13 +75,12 @@ public abstract class ItemUtil {
 		String backupPath = BACKUPS_FOLDER + player.getName() + player.getUniqueId();
 		ConfigUtil.saveConfig(backup, backupPath, plugin);
 		inv.clear();
-		player.setMaxHealth(2 * ConfigSettings.PLAYER_HEALTH_POINTS);
+		setPlayerMaxHealth(player, 2 * ConfigSettings.PLAYER_HEALTH_POINTS);
 		player.setHealth(2 * ConfigSettings.PLAYER_HEALTH_POINTS);
 		player.setFoodLevel(20);
 		player.setLevel(0);
 		player.setExp(0);
 	}
-
 
 	/**
 	 * Loads backup file with player state before joining game.
@@ -98,11 +99,11 @@ public abstract class ItemUtil {
 		if (player.getGameMode() == GameMode.CREATIVE) {
 			player.setAllowFlight(true);
 		}
-		player.setMaxHealth(backup.getDouble("max-health"));
-		player.setHealth(backup.getDouble("health"));
-		player.setFoodLevel(backup.getInt("food"));
-		player.setLevel(backup.getInt("level"));
-		float xp = (float) backup.getDouble("xp");
+		double maxHealth = backup.getDouble("max-health", 20);
+		setPlayerMaxHealth(player, maxHealth);
+		player.setHealth(Math.min(backup.getDouble("health", 20), maxHealth));
+		player.setFoodLevel(backup.getInt("food", 20));
+		float xp = (float) backup.getDouble("xp", 0);
 		player.setLevel((int) xp);
 		player.setExp(xp % 1);
 
@@ -138,5 +139,18 @@ public abstract class ItemUtil {
 				inv.setContents(backupContents);
 			}
 		}.runTask(plugin);
+	}
+
+	private static double getPlayerBaseHealth(Player player) {
+		return player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+	}
+
+	/**
+	 * Sets the base health of a player and removes all attribute modifiers
+	 */
+	private static void setPlayerMaxHealth(Player player, double value) {
+		AttributeInstance health = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+		health.setBaseValue(value);
+		health.getModifiers().forEach(health::removeModifier);
 	}
 }
