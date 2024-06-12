@@ -108,13 +108,19 @@ public class PbGame {
 			getTeam(playerId).removePlayer(playerId);
 			updateAliveScores();
 		}
+		if (gameBoard != null) {
+			allPlayers(p -> gameBoard.removePlayer(p));
+		}
 		players.remove(playerId);
 	}
 	
 	public GameState getState() {
 		return state;
 	}
-	
+
+	/**
+	 * Returns true if the players are currently inside the game's arena
+	 */
 	public boolean isRunning() {
 		return state != GameState.LOBBYING;
 	}
@@ -328,6 +334,7 @@ public class PbGame {
 					playedArena.resetSchem();
 					onGameEnd.run();
 				});
+				gameBoard = null;
 			}
 		};
 		restartTimer.runTaskLater(plugin, 8 * 20);
