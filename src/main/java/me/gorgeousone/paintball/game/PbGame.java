@@ -104,12 +104,17 @@ public class PbGame {
 		if (!players.contains(playerId)) {
 			return;
 		}
+		Player player = Bukkit.getPlayer(playerId);
+
 		if (isRunning()) {
+			if (!getTeam(playerId).isAlive(playerId)) {
+				showPlayer(player);
+			}
 			getTeam(playerId).removePlayer(playerId);
 			updateAliveScores();
 		}
 		if (gameBoard != null) {
-			allPlayers(p -> gameBoard.removePlayer(p));
+			gameBoard.removePlayer(player);
 		}
 		players.remove(playerId);
 	}
