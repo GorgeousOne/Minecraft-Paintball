@@ -1,4 +1,3 @@
-schematics-folder: "placeholder/path"
 countdown:
     seconds: 60
 game:

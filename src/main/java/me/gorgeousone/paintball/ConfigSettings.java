@@ -42,7 +42,7 @@ public class ConfigSettings {
 	 * Tries to auto-detect whether to use FAWE or WE folder on first plugin run
 	 */
 	public static void loadSchemFolder(JavaPlugin plugin, FileConfiguration config) {
-		SCHEM_FOLDER = config.getString("schematics-folder");
+		SCHEM_FOLDER = config.getString("schematics-folder", "placeholder");
 		detectSchemFolder(plugin, config, plugin.getLogger());
 		plugin.getLogger().info("Loading schematics from " + SCHEM_FOLDER + " (can be changed in config.yml).");
 
@@ -54,7 +54,7 @@ public class ConfigSettings {
 	}
 
 	private static void detectSchemFolder(JavaPlugin plugin, FileConfiguration config, Logger logger) {
-		if (!SCHEM_FOLDER.equals("placeholder/path")) {
+		if (!SCHEM_FOLDER.equals("placeholder")) {
 			return;
 		}
 		logger.info("Trying to auto-detect schematics folder.");
