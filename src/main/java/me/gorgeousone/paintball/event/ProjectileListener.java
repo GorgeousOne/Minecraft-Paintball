@@ -50,6 +50,10 @@ public class ProjectileListener implements Listener {
 		if (game == null || bulletDmg == 0) {
 			return;
 		}
+		//remove ender pearls to prevent teleport
+		//in 1.21.ish cancelling ender pearl tp still resets movement velocity
+		event.getEntity().remove();
+		
 		if (event.getHitBlock() != null) {
 			game.getTeam(playerId).paintBlock(event.getHitBlock());
 			return;

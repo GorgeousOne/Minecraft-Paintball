@@ -8,7 +8,7 @@ commands:
     arena-moved: Moved arena %source-arena% to %destination-arena%
     arena-not-linked: Arena %% is not linked to this lobby!
     arena-removed: Removed arena %arena%.
-    arena-removed-schematic-missing: Removed arena %arena% but could note find schematic to remove blocks
+    arena-removed-schematic-missing: Removed arena %arena% but could not find schematic to remove blocks
     arena-reset: Reset arena %arena% for a new game.
     arena-schematic-missing: Could not find the schematic %file% of arena %arena%.
     lobby-arena-detached: Arena %arena% is now detached from lobby %lobby%.

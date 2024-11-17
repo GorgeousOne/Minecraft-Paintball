@@ -48,7 +48,7 @@ public class ConfigSettings {
 
 		if (!new File(SCHEM_FOLDER).isDirectory()) {
 			String defaultSchemFolder = "plugins/WorldEdit/schematics";
-			plugin.getLogger().warning(String.format("Schematic folder %s does not exist! Falling back to %s", SCHEM_FOLDER, defaultSchemFolder));
+			plugin.getLogger().warning(String.format("Schematic folder %s does not exist! Falling back to %s.  You can change the folder in config.yml>schematics-folder.", SCHEM_FOLDER, defaultSchemFolder));
 			SCHEM_FOLDER = defaultSchemFolder;
 		}
 	}
@@ -57,7 +57,7 @@ public class ConfigSettings {
 		if (!SCHEM_FOLDER.equals("placeholder")) {
 			return;
 		}
-		logger.info("Trying to auto-detect schematics folder.");
+		logger.info("Trying to auto-detect schematics folder. You can change the folder in config.yml>schematics-folder.");
 		boolean isFAWEAvailable = plugin.getServer().getPluginManager().getPlugin("FastAsyncWorldEdit") != null;
 		boolean isWorldEditAvailable = plugin.getServer().getPluginManager().getPlugin("WorldEdit") != null;
 
