@@ -66,3 +66,6 @@ ui:
     vote-map: Vote a Map
     waiting-for-players: Waiting for Players
     water-bomb: Water Bomb
+teams:
+    red: Ember
+    blue: Ice

@@ -29,7 +29,9 @@ public class Message {
 			UI_TEAM,
 			UI_VOTE_MAP,
 			UI_WAIT_FOR_PLAYERS,
-			UI_WATER_BOMB;
+			UI_WATER_BOMB,
+			NAME_TEAM_RED,
+			NAME_TEAM_BLUE;
 		
 	public static String[]
 			UI_TITLE_GUNS,
@@ -160,6 +162,8 @@ public class Message {
 		LORE_RIFLE = config.getString("guns.lore-rifle");
 		LORE_SHOTGUN = config.getString("guns.lore-shotgun");
 		LORE_MACHINE_GUN = config.getString("guns.lore-machine-gun");
+		NAME_TEAM_RED = config.getString("teams.red");
+		NAME_TEAM_BLUE = config.getString("teams.blue");
 		
 		UI_ALIVE_PLAYERS = new Message(ChatColor.BOLD + config.getString("ui.alive-players"), "alive-players");
 		UI_COUNTDOWN = new Message(ChatColor.BOLD + config.getString("ui.countdown").replace("%seconds%", ChatColor.GOLD + "%seconds%"), "seconds");
