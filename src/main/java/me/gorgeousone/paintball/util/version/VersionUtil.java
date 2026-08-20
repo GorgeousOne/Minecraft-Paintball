@@ -18,6 +18,6 @@ public final class VersionUtil {
 	}
 	
 	public static String getServerVersionString() {
-		return Bukkit.getBukkitVersion().split("-")[0];
+		return Bukkit.getVersion().split("-")[0];
 	}
 }
