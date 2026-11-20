@@ -5,6 +5,8 @@ game:
     max-players: 16
     player-health-points: 8
     water-bombs: 3
+    # GameMode set when joining a lobby (ADVENTURE, SURVIVAL, NONE to keep player's current mode)
+    lobby-gamemode: ADVENTURE
 chat-prefix:
     alive: "%team-color%<%player%>&r"
     dead: "&7Dead %team-color%<%player%>&r"

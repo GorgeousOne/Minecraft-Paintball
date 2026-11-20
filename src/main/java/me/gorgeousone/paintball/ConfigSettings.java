@@ -1,31 +1,34 @@
 package me.gorgeousone.paintball;
 
+import org.bukkit.GameMode;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 /**
  * A class to store and load settings from the plugin's config file.
  */
 public class ConfigSettings {
-	
+
 	public static String SCHEM_FOLDER;
 	public static int COUNTDOWN_SECS;
 	public static int MIN_PLAYERS;
 	public static int MAX_PLAYERS;
 	public static int PLAYER_HEALTH_POINTS;
 	public static int WATER_BOMB_COUNT;
+	public static GameMode LOBBY_GAMEMODE;
 	public static String CHAT_PREFIX_ALIVE;
 	public static String CHAT_PREFIX_DEAD;
-	
+
 	public static int RIFLE_BULLET_DMG;
 	public static float RIFLE_BULLET_SPEED;
 	public static float RIFLE_BULLET_SPREAD;
 	public static int RIFLE_PLAYER_SPEED;
-	
+
 	public static int SHOTGUN_BULLET_COUNT;
 	public static int SHOTGUN_BULLET_DMG;
 	public static float SHOTGUN_BULLET_SPEED;
@@ -61,7 +64,6 @@ public class ConfigSettings {
 		boolean isFAWEAvailable = plugin.getServer().getPluginManager().getPlugin("FastAsyncWorldEdit") != null;
 		boolean isWorldEditAvailable = plugin.getServer().getPluginManager().getPlugin("WorldEdit") != null;
 
-		// Determine the default schematics directory path
 		if (isFAWEAvailable) {
 			SCHEM_FOLDER = "plugins/FastAsyncWorldEdit/schematics";
 			logger.info("  FAWE detected.");
@@ -84,6 +86,17 @@ public class ConfigSettings {
 		MAX_PLAYERS = clamp(gameSection.getInt("max-players"), MIN_PLAYERS, 24);
 		PLAYER_HEALTH_POINTS = clamp(gameSection.getInt("player-health-points"), 2, 20);
 		WATER_BOMB_COUNT = clamp(gameSection.getInt("water-bombs", 3), 0, 100);
+
+		String rawLobbyGameMode = gameSection.getString("lobby-gamemode", "ADVENTURE").toUpperCase(Locale.ROOT);
+		if (rawLobbyGameMode.equals("NONE") || rawLobbyGameMode.equals("KEEP") || rawLobbyGameMode.equals("OFF")) {
+			LOBBY_GAMEMODE = null;
+		} else {
+			try {
+				LOBBY_GAMEMODE = GameMode.valueOf(rawLobbyGameMode);
+			} catch (IllegalArgumentException e) {
+				LOBBY_GAMEMODE = GameMode.ADVENTURE;
+			}
+		}
 
 		ConfigurationSection prefixSection = config.getConfigurationSection("chat-prefix");
 		CHAT_PREFIX_ALIVE = prefixSection.getString("alive").replace('&', '§');
