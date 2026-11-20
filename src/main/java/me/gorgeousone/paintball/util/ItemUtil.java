@@ -15,6 +15,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.Bukkit;
 
 import java.io.File;
 
@@ -53,8 +54,12 @@ public abstract class ItemUtil {
 	}
 
 	public static void saveInventory(Player player, Location spawn, JavaPlugin plugin) {
+		saveInventory(player, player.getGameMode(), spawn, plugin);
+	}
+
+	public static void saveInventory(Player player, GameMode previousGameMode, Location spawn, JavaPlugin plugin) {
 		YamlConfiguration backup = new YamlConfiguration();
-		backup.set("gamemode", player.getGameMode().name());
+		backup.set("gamemode", (previousGameMode != null ? previousGameMode : player.getGameMode()).name());
 		backup.set("max-health", getPlayerBaseHealth(player));
 		backup.set("health", player.getHealth());
 		backup.set("food", player.getFoodLevel());
@@ -82,6 +87,7 @@ public abstract class ItemUtil {
 		player.setExp(0);
 	}
 
+
 	/**
 	 * Loads backup file with player state before joining game.
 	 * Resets players items / gamemode / health / exp /hunger and tps them to lobby exit.
@@ -94,7 +100,15 @@ public abstract class ItemUtil {
 			return false;
 		}
 		YamlConfiguration backup = YamlConfiguration.loadConfiguration(backupFile);
-		player.setGameMode(GameMode.valueOf(backup.getString("gamemode")));
+		GameMode restoredMode = Bukkit.getDefaultGameMode();
+		String savedModeName = backup.getString("gamemode");
+		if (savedModeName != null) {
+			try {
+				restoredMode = GameMode.valueOf(savedModeName);
+			} catch (IllegalArgumentException ignored) {
+			}
+		}
+		player.setGameMode(restoredMode);
 
 		if (player.getGameMode() == GameMode.CREATIVE) {
 			player.setAllowFlight(true);

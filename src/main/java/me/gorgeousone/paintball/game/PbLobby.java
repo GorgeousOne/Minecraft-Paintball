@@ -146,15 +146,18 @@ public class PbLobby {
 		if (game.size() >= ConfigSettings.MAX_PLAYERS) {
 			throw new IllegalStateException(Message.LOBBY_FULL.format(name));
 		}
+		GameMode previousGameMode = player.getGameMode();
 		LocationUtil.tpMarked(player, joinSpawn);
-		player.setGameMode(GameMode.ADVENTURE);
+		if (ConfigSettings.LOBBY_GAMEMODE != null) {
+			player.setGameMode(ConfigSettings.LOBBY_GAMEMODE);
+		}
 		Message.LOBBY_YOU_JOIN.send(player, name);
 
 		//first teleport, then replace inventory, in case inventories are saved before world changes
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				ItemUtil.saveInventory(player, getExitSpawn(), plugin);
+				ItemUtil.saveInventory(player, previousGameMode, getExitSpawn(), plugin);
 				equipment.equip(player);
 			}
 		}.runTaskLater(plugin, 2);
